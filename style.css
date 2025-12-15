@@ -430,7 +430,7 @@ body::before {
 }
 
 .card.back {
-  background:
+  background: 
     radial-gradient(circle at 50% 50%, rgba(220, 38, 38, 0.15) 0%, transparent 50%),
     repeating-linear-gradient(
       45deg,
@@ -443,6 +443,35 @@ body::before {
   border: 2px solid #334155;
   color: #e0f2fe;
   position: relative;
+  cursor: default;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card.back.clickable {
+  cursor: pointer;
+  animation: deckPulse 2s ease-in-out infinite;
+}
+
+.card.back.clickable:hover {
+  transform: translateY(-8px) scale(1.05);
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.4),
+    0 0 20px rgba(220, 38, 38, 0.5),
+    0 0 40px rgba(220, 38, 38, 0.3);
+}
+
+@keyframes deckPulse {
+  0%, 100% {
+    box-shadow: 
+      0 14px 30px rgba(0, 0, 0, 0.3),
+      0 0 0 0 rgba(220, 38, 38, 0.4);
+  }
+  50% {
+    box-shadow: 
+      0 14px 30px rgba(0, 0, 0, 0.3),
+      0 0 0 8px rgba(220, 38, 38, 0),
+      0 0 20px rgba(220, 38, 38, 0.3);
+  }
 }
 
 .card.back::before {

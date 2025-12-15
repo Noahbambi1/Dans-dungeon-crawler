@@ -16,6 +16,7 @@ const state = {
   floorFresh: true, // true when no actions taken on current floor
   originalDeck: [], // Store original deck for restart
   initialDeckOrder: [], // Store the exact deck order for restart (same shuffle)
+  firstFloorDealt: false, // Track if first floor has been dealt
 };
 
 const suitIcons = {
@@ -148,12 +149,8 @@ function initGame() {
   // Store the exact deck order for restart
   state.initialDeckOrder = [...shuffledDeck];
   state.discard = [];
-  // Initialize floor as array of 4 slots
-  state.floor = drawCards(4);
-  // Ensure floor has exactly 4 slots
-  while (state.floor.length < 4) {
-    state.floor.push(null);
-  }
+  // Initialize floor as array of 4 empty slots
+  state.floor = [null, null, null, null];
   state.weapon = null;
   state.weaponDamage = [];
   state.weaponMaxNext = Infinity;
@@ -161,7 +158,8 @@ function initGame() {
   state.floorNumber = 1;
   state.runUsed = false;
   state.floorFresh = true;
-  setStatus("New game started. Drag cards to interact.");
+  state.firstFloorDealt = false;
+  setStatus("Click the deck to deal your first floor!");
   render();
   // Initialize health bar
   const healthPercent = (state.health / MAX_HEALTH) * 100;
@@ -178,12 +176,8 @@ function restartGame() {
     state.initialDeckOrder = [...state.deck];
   }
   state.discard = [];
-  // Initialize floor as array of 4 slots
-  state.floor = drawCards(4);
-  // Ensure floor has exactly 4 slots
-  while (state.floor.length < 4) {
-    state.floor.push(null);
-  }
+  // Initialize floor as array of 4 empty slots
+  state.floor = [null, null, null, null];
   state.weapon = null;
   state.weaponDamage = [];
   state.weaponMaxNext = Infinity;
@@ -191,7 +185,8 @@ function restartGame() {
   state.floorNumber = 1;
   state.runUsed = false;
   state.floorFresh = true;
-  setStatus("Game restarted. Drag cards to interact.");
+  state.firstFloorDealt = false;
+  setStatus("Click the deck to deal your first floor!");
   render();
   // Initialize health bar
   const healthPercent = (state.health / MAX_HEALTH) * 100;
@@ -255,6 +250,18 @@ function render() {
   // Update health bar
   const healthPercent = (state.health / MAX_HEALTH) * 100;
   document.getElementById("healthBar").style.width = `${healthPercent}%`;
+
+  // Make deck clickable if first floor not dealt
+  const deckBack = document.getElementById("deckBack");
+  if (deckBack) {
+    if (!state.firstFloorDealt && state.deck.length > 0) {
+      deckBack.classList.add("clickable");
+      deckBack.title = "Click to deal your first floor";
+    } else {
+      deckBack.classList.remove("clickable");
+      deckBack.title = "";
+    }
+  }
 
   renderWeapon();
   renderWeaponDamage();
@@ -790,6 +797,86 @@ function setupButtons() {
     hideLoseModal();
     initGame();
   });
+
+  // Make deck clickable to deal first floor
+  document.getElementById("deckBack").addEventListener("click", () => {
+    if (!state.firstFloorDealt && state.deck.length > 0) {
+      dealFirstFloor();
+    }
+  });
+}
+
+function dealFirstFloor() {
+  if (state.firstFloorDealt) return;
+  
+  const deckBack = document.getElementById("deckBack");
+  const floorRow = document.getElementById("floorRow");
+  
+  if (!deckBack || !floorRow) return;
+  
+  // Draw 4 cards
+  const drawnCards = drawCards(4);
+  const deckRect = deckBack.getBoundingClientRect();
+  
+  // Fill floor slots
+  for (let i = 0; i < 4 && i < drawnCards.length; i++) {
+    state.floor[i] = drawnCards[i];
+  }
+  
+  state.firstFloorDealt = true;
+  state.floorFresh = true;
+  setStatus("First floor dealt! Drag cards to interact.");
+  
+  // Render to create card elements
+  render();
+  
+  // Animate cards being dealt
+  setTimeout(() => {
+    const floorCards = Array.from(floorRow.children).filter(el => el.dataset.cardId);
+    
+    floorCards.forEach((cardEl, index) => {
+      const cardRect = cardEl.getBoundingClientRect();
+      
+      // Create animated card
+      const tempCard = document.createElement("div");
+      tempCard.className = "card back";
+      tempCard.style.position = "fixed";
+      tempCard.style.left = `${deckRect.left}px`;
+      tempCard.style.top = `${deckRect.top}px`;
+      tempCard.style.width = `${deckRect.width}px`;
+      tempCard.style.height = `${deckRect.height}px`;
+      tempCard.style.zIndex = "10000";
+      tempCard.style.pointerEvents = "none";
+      tempCard.style.opacity = "0";
+      tempCard.style.transform = "rotate(0deg)";
+      document.body.appendChild(tempCard);
+      
+      // Hide the real card temporarily
+      cardEl.style.opacity = "0";
+      
+      setTimeout(() => {
+        requestAnimationFrame(() => {
+          tempCard.style.transition = "all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)";
+          tempCard.style.left = `${cardRect.left}px`;
+          tempCard.style.top = `${cardRect.top}px`;
+          tempCard.style.width = `${cardRect.width}px`;
+          tempCard.style.height = `${cardRect.height}px`;
+          tempCard.style.opacity = "1";
+          tempCard.style.transform = "rotate(360deg)";
+        });
+        
+        setTimeout(() => {
+          tempCard.remove();
+          cardEl.style.opacity = "1";
+          cardEl.classList.add("drawing");
+          setTimeout(() => {
+            cardEl.classList.remove("drawing");
+            attachDragListeners();
+          }, 800);
+        }, 800);
+      }, index * 200); // Stagger the animations
+    });
+  }, 50);
 }
 
 window.addEventListener("DOMContentLoaded", () => {
