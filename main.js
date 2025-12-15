@@ -613,8 +613,10 @@ function handleWeaponAreaDrop(card, from) {
 
 function postAction() {
   checkHealth();
-  refillIfNeeded();
-  render();
+  const needsRefill = refillIfNeeded();
+  if (!needsRefill) {
+    render();
+  }
   checkWin();
 }
 
@@ -623,7 +625,6 @@ function refillIfNeeded() {
   if (floorCardCount <= 1 && state.deck.length > 0) {
     const needed = Math.min(3, state.deck.length);
     const drawnCards = drawCards(needed);
-    const oldFloorCardCount = floorCardCount;
     
     // Track which slots are being filled
     const slotsToFill = [];
@@ -640,13 +641,22 @@ function refillIfNeeded() {
     state.floorFresh = true;
     state.healUsed = false;
     
-    // Render to get positions, but show new cards as backs initially
-    const floorRow = document.getElementById("floorRow");
-    if (floorRow) {
-      // Replace new card slots with back cards temporarily
+    // Render first to update UI (deck count, floor number, etc.)
+    render();
+    
+    // Now set up animation for new cards
+    setTimeout(() => {
+      const deckBack = document.getElementById("deckBack");
+      const floorRow = document.getElementById("floorRow");
+      
+      if (!deckBack || !floorRow) return;
+      
+      const deckRect = deckBack.getBoundingClientRect();
+      
+      // Replace new card slots with back cards for animation
       slotsToFill.forEach(slotIndex => {
         const existingEl = floorRow.children[slotIndex];
-        if (existingEl && existingEl.classList.contains("empty")) {
+        if (existingEl && existingEl.dataset.cardId) {
           const backCard = document.createElement("div");
           backCard.className = "card back";
           backCard.dataset.slotIndex = slotIndex;
@@ -654,14 +664,9 @@ function refillIfNeeded() {
           existingEl.replaceWith(backCard);
         }
       });
-    }
-    
-    // Animate card draws
-    setTimeout(() => {
-      const deckBack = document.getElementById("deckBack");
-      if (deckBack && floorRow) {
-        const deckRect = deckBack.getBoundingClientRect();
-        
+      
+      // Animate card draws
+      setTimeout(() => {
         slotsToFill.forEach((slotIndex, index) => {
           const backCardEl = floorRow.children[slotIndex];
           if (!backCardEl || !backCardEl.classList.contains("back")) return;
@@ -677,16 +682,18 @@ function refillIfNeeded() {
           tempCard.style.zIndex = "10000";
           tempCard.style.pointerEvents = "none";
           tempCard.style.opacity = "0";
+          tempCard.style.transform = "rotate(0deg)";
           document.body.appendChild(tempCard);
           
           setTimeout(() => {
             requestAnimationFrame(() => {
-              tempCard.style.transition = "all 0.6s cubic-bezier(0.4, 0, 0.2, 1)";
+              tempCard.style.transition = "all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)";
               tempCard.style.left = `${cardRect.left}px`;
               tempCard.style.top = `${cardRect.top}px`;
               tempCard.style.width = `${cardRect.width}px`;
               tempCard.style.height = `${cardRect.height}px`;
               tempCard.style.opacity = "1";
+              tempCard.style.transform = "rotate(360deg)";
               backCardEl.style.opacity = "1";
             });
             
@@ -705,14 +712,16 @@ function refillIfNeeded() {
                   attachDragListeners();
                 }, 200);
               }
-            }, 600);
-          }, index * 150);
+            }, 800);
+          }, index * 200); // Stagger the animations
         });
-      }
+      }, 50);
     }, 50);
     
     setStatus(`New dungeon floor ${state.floorNumber}. Drew ${needed} cards.`);
+    return true; // Indicate that refill happened and animation is in progress
   }
+  return false; // No refill needed
 }
 
 function checkHealth() {
