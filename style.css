@@ -1900,22 +1900,37 @@ main {
     font-size: 0.75rem;
   }
   
-  /* Hide regular controls on mobile, show burger menu */
+  /* Mobile controls - show by default, can be minimized */
   .game-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: center;
+    width: 100%;
+    order: 10;
+    padding-top: var(--spacing-sm);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    margin-top: var(--spacing-sm);
+    transition: all 0.3s ease;
+  }
+  
+  .game-controls.minimized {
     display: none;
   }
   
   .burger-menu-btn {
     display: flex;
     order: -1;
+    flex-shrink: 0;
   }
   
   .mobile-menu-overlay {
-    display: flex;
+    display: none;
   }
   
   .top-bar {
     justify-content: flex-start;
+    flex-wrap: wrap;
     gap: var(--spacing-sm);
   }
   
@@ -1924,8 +1939,18 @@ main {
     margin-left: auto;
   }
   
+  .control-btn {
+    padding: 8px 12px;
+    font-size: 0.75rem;
+    min-height: 38px;
+  }
+  
+  .btn-icon {
+    font-size: 1rem;
+  }
+  
   .btn-text {
-    font-size: 0.65rem;
+    font-size: 0.7rem;
   }
   
   /* Run button mobile */

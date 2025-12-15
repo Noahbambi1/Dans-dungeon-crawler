@@ -1762,65 +1762,30 @@ function showConfirmModal(options) {
   });
 }
 
-// Mobile burger menu setup
+// Mobile burger menu setup - toggles visibility of game controls
 function setupMobileMenu() {
   const burgerBtn = document.getElementById("burgerMenuBtn");
-  const overlay = document.getElementById("mobileMenuOverlay");
-  const closeBtn = document.getElementById("closeMobileMenu");
+  const gameControls = document.getElementById("gameControls");
   
-  if (!burgerBtn || !overlay) return;
+  if (!burgerBtn || !gameControls) return;
   
-  const toggleMenu = (show) => {
-    overlay.classList.toggle("show", show);
-    burgerBtn.classList.toggle("active", show);
-  };
+  // Load saved state from localStorage
+  const isMinimized = localStorage.getItem("menuMinimized") === "true";
+  if (isMinimized) {
+    gameControls.classList.add("minimized");
+  } else {
+    burgerBtn.classList.add("active"); // X shown when menu is visible
+  }
   
-  burgerBtn.addEventListener("click", () => toggleMenu(true));
-  closeBtn.addEventListener("click", () => toggleMenu(false));
-  overlay.addEventListener("click", (e) => {
-    if (e.target === overlay || e.target.classList.contains("confirm-modal-backdrop")) {
-      toggleMenu(false);
-    }
-  });
-  
-  // Mobile menu button handlers
-  document.getElementById("mobileUndoBtn").addEventListener("click", () => {
-    toggleMenu(false);
-    document.getElementById("undoButton").click();
-  });
-  
-  document.getElementById("mobileRestartBtn").addEventListener("click", async () => {
-    toggleMenu(false);
-    const confirmed = await showConfirmModal({
-      icon: "🔄",
-      title: "Restart Game?",
-      message: "This will restart with the same deck shuffle. Your current progress will be lost.",
-      okText: "Restart",
-      danger: false
-    });
-    if (confirmed) restartGame();
-  });
-  
-  document.getElementById("mobileNewGameBtn").addEventListener("click", async () => {
-    toggleMenu(false);
-    const confirmed = await showConfirmModal({
-      icon: "🎲",
-      title: "New Game?",
-      message: "This will shuffle a completely new deck. Ready for a fresh adventure?",
-      okText: "New Game",
-      danger: false
-    });
-    if (confirmed) initGame();
-  });
-  
-  document.getElementById("mobileSettingsBtn").addEventListener("click", () => {
-    toggleMenu(false);
-    document.getElementById("settingsButton").click();
-  });
-  
-  document.getElementById("mobileLeaderboardBtn").addEventListener("click", () => {
-    toggleMenu(false);
-    document.getElementById("leaderboardButton").click();
+  burgerBtn.addEventListener("click", () => {
+    const isCurrentlyMinimized = gameControls.classList.contains("minimized");
+    gameControls.classList.toggle("minimized");
+    
+    // X icon when menu visible, burger when minimized
+    burgerBtn.classList.toggle("active", isCurrentlyMinimized);
+    
+    // Save state to localStorage
+    localStorage.setItem("menuMinimized", !isCurrentlyMinimized);
   });
 }
 
