@@ -1242,6 +1242,7 @@ function handleWeaponDrop(card, from) {
     setStatus("Only diamonds can be equipped as weapons.");
     return;
   }
+  saveStateToHistory();
   removeFromPool(card, from);
   // Discard existing weapon and its defeated monsters when replacing
   if (state.weapon) {
@@ -1258,6 +1259,7 @@ function handleWeaponDrop(card, from) {
 function handleDiscardDrop(card, from) {
   // Only weapons can be discarded directly
   if (from === "weapon") {
+    saveStateToHistory();
     // Weapon discard - send weapon and all defeated monsters to discard
     state.discard.push(state.weapon, ...state.weaponDamage);
     state.weapon = null;
@@ -1277,6 +1279,7 @@ function handleHealthDamageDrop(card, from) {
     setStatus("Take damage only from monsters (clubs/spades).");
     return;
   }
+  saveStateToHistory();
   const damage = card.value;
   removeFromPool(card, from);
   state.health -= damage;
@@ -1343,6 +1346,7 @@ function handleWeaponAreaDrop(card, from) {
     const cardEl = document.querySelector(`[data-card-id="${card.id}"]`);
     // Find the card's slot index before removing
     const slotIndex = from === "floor" ? state.floor.findIndex((c) => c && c.id === card.id) : -1;
+    saveStateToHistory();
     removeFromPool(card, from);
     const ok = handleMonsterOnWeapon(card, cardEl);
     if (!ok) {
@@ -1350,6 +1354,9 @@ function handleWeaponAreaDrop(card, from) {
       if (from === "floor" && slotIndex !== -1) {
         state.floor[slotIndex] = card;
       }
+      // Remove the state we just saved since action was invalid
+      stateHistory.pop();
+      updateUndoButton();
     } else {
       postAction();
     }
@@ -1597,6 +1604,7 @@ function showRunAwayPopup() {
 }
 
 function handleRunAway() {
+  saveStateToHistory();
   // Collect all non-null floor cards and add to deck
   const floorCards = state.floor.filter(c => c !== null);
   state.deck.push(...floorCards);
@@ -1808,6 +1816,7 @@ function setupButtons() {
       setStatus("No weapon to discard.");
       return;
     }
+    saveStateToHistory();
     // Weapon discard - send weapon and all defeated monsters to discard
     state.discard.push(state.weapon, ...state.weaponDamage);
     state.weapon = null;
