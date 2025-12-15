@@ -7,13 +7,9 @@ const RANKS = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"]
 const CURRENT_PLAYER_KEY = "dungeonCrawlerCurrentPlayer";
 const MAX_LEADERBOARD_SIZE = 100;
 
-// ⚠️ SUPABASE SETUP: 
-// 1. Go to https://supabase.com and create a free account
-// 2. Create a new project
-// 3. Go to Settings > API and copy your URL and anon key below
-// 4. Run the SQL in the setup instructions to create the leaderboard table
-const SUPABASE_URL = "YOUR_SUPABASE_URL"; // e.g., "https://xxxxx.supabase.co"
-const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY"; // Your anon/public key
+// Supabase configuration for global leaderboard
+const SUPABASE_URL = "https://meleczsuyvvmjscajtng.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1lbGVjenN1eXZ2bWpzY2FqdG5nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU4MTkyMzMsImV4cCI6MjA4MTM5NTIzM30.ZBauOeC77BFIKmixV2aoKJLSj6GVvwFZ1o0MQf_H4WU";
 
 // Random name generator for anonymous players
 // NOTE: These must be defined BEFORE loadCurrentPlayer() is called
