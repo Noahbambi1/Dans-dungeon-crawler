@@ -256,6 +256,8 @@ body::before {
   flex-direction: column;
   gap: 6px;
   align-items: center;
+  /* Fix column height so discard stacking doesn't push other areas */
+  min-height: calc(var(--card-height) + 80px);
   background: linear-gradient(135deg, rgba(139, 69, 19, 0.2) 0%, rgba(101, 67, 33, 0.25) 100%);
   border: 2px solid rgba(160, 82, 45, 0.5);
   border-radius: 12px;
