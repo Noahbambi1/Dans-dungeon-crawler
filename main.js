@@ -972,6 +972,140 @@ function setupButtons() {
   });
 }
 
+// Touch drag and drop support for mobile
+let touchDragState = {
+  draggedCard: null,
+  draggedElement: null,
+  clone: null,
+  startX: 0,
+  startY: 0,
+  from: null
+};
+
+function setupTouchDragDrop() {
+  // Touch events for cards
+  document.addEventListener('touchstart', handleTouchStart, { passive: false });
+  document.addEventListener('touchmove', handleTouchMove, { passive: false });
+  document.addEventListener('touchend', handleTouchEnd, { passive: false });
+}
+
+function handleTouchStart(e) {
+  const cardEl = e.target.closest('.card');
+  if (!cardEl || !cardEl.draggable) return;
+  
+  e.preventDefault();
+  
+  const touch = e.touches[0];
+  const cardId = cardEl.dataset.cardId;
+  const from = cardEl.dataset.from || 'floor';
+  
+  touchDragState.draggedCard = findCardById(cardId, from);
+  touchDragState.draggedElement = cardEl;
+  touchDragState.from = from;
+  touchDragState.startX = touch.clientX;
+  touchDragState.startY = touch.clientY;
+  
+  // Create visual clone
+  const clone = cardEl.cloneNode(true);
+  clone.style.position = 'fixed';
+  clone.style.pointerEvents = 'none';
+  clone.style.zIndex = '10000';
+  clone.style.opacity = '0.9';
+  clone.style.transform = 'scale(1.1)';
+  clone.style.left = `${touch.clientX - cardEl.offsetWidth / 2}px`;
+  clone.style.top = `${touch.clientY - cardEl.offsetHeight / 2}px`;
+  clone.style.width = `${cardEl.offsetWidth}px`;
+  clone.style.height = `${cardEl.offsetHeight}px`;
+  document.body.appendChild(clone);
+  
+  touchDragState.clone = clone;
+  cardEl.style.opacity = '0.3';
+}
+
+function handleTouchMove(e) {
+  if (!touchDragState.clone) return;
+  
+  e.preventDefault();
+  
+  const touch = e.touches[0];
+  const cardEl = touchDragState.draggedElement;
+  
+  touchDragState.clone.style.left = `${touch.clientX - cardEl.offsetWidth / 2}px`;
+  touchDragState.clone.style.top = `${touch.clientY - cardEl.offsetHeight / 2}px`;
+  
+  // Highlight drop targets under touch
+  const dropTarget = findDropTargetUnderTouch(touch.clientX, touch.clientY);
+  document.querySelectorAll('.drop-target').forEach(target => {
+    target.classList.remove('highlight');
+  });
+  if (dropTarget) {
+    dropTarget.classList.add('highlight');
+  }
+}
+
+function handleTouchEnd(e) {
+  if (!touchDragState.clone) return;
+  
+  e.preventDefault();
+  
+  const touch = e.changedTouches[0];
+  const dropTarget = findDropTargetUnderTouch(touch.clientX, touch.clientY);
+  
+  // Clean up
+  touchDragState.clone.remove();
+  if (touchDragState.draggedElement) {
+    touchDragState.draggedElement.style.opacity = '1';
+  }
+  
+  document.querySelectorAll('.drop-target').forEach(target => {
+    target.classList.remove('highlight');
+  });
+  
+  // Handle drop
+  if (dropTarget && touchDragState.draggedCard) {
+    const targetType = dropTarget.dataset.drop;
+    const card = touchDragState.draggedCard;
+    const from = touchDragState.from;
+    
+    const handlers = {
+      heal: handleHealDrop,
+      weapon: handleWeaponAreaDrop,
+      weaponDamage: handleWeaponAreaDrop,
+      discard: handleDiscardDrop,
+      health: handleHealthDamageDrop,
+    };
+    
+    const handler = handlers[targetType];
+    if (handler) {
+      handler(card, from);
+    }
+  }
+  
+  // Reset state
+  touchDragState = {
+    draggedCard: null,
+    draggedElement: null,
+    clone: null,
+    startX: 0,
+    startY: 0,
+    from: null
+  };
+}
+
+function findDropTargetUnderTouch(x, y) {
+  const elements = document.elementsFromPoint(x, y);
+  for (const element of elements) {
+    if (element.classList.contains('drop-target')) {
+      return element;
+    }
+    const dropTarget = element.closest('.drop-target');
+    if (dropTarget) {
+      return dropTarget;
+    }
+  }
+  return null;
+}
+
 function dealFirstFloor() {
   if (state.firstFloorDealt) return;
   
@@ -1070,6 +1204,7 @@ function dealFirstFloor() {
 
 window.addEventListener("DOMContentLoaded", () => {
   setupButtons();
+  setupTouchDragDrop();
   initGame();
 });
 
