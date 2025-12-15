@@ -1194,6 +1194,10 @@ function dealFirstFloor() {
             setTimeout(() => {
               cardEl.classList.remove("drawing");
               attachDragListeners();
+              // Update run button after all cards are revealed
+              if (index === backCards.length - 1) {
+                renderRunButton();
+              }
             }, 200);
           }
         }, 800);
