@@ -1,0 +1,512 @@
+/**
+ * UI Component Styles
+ * Buttons, inputs, and reusable UI elements
+ */
+
+/* ===========================================
+   BUTTONS
+   =========================================== */
+
+.control-btn {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: none;
+  border-radius: 8px;
+  font-family: 'Quicksand', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.btn-icon {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.btn-text {
+  line-height: 1;
+}
+
+.control-btn:hover {
+  transform: translateY(-2px);
+}
+
+.control-btn:active {
+  transform: translateY(0);
+}
+
+.new-game-btn {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+}
+
+.new-game-btn:hover {
+  box-shadow: 0 4px 20px rgba(59, 130, 246, 0.5);
+}
+
+.restart-btn {
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
+}
+
+.restart-btn:hover {
+  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.5);
+}
+
+.undo-btn {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+}
+
+.undo-btn:hover {
+  box-shadow: 0 4px 20px rgba(245, 158, 11, 0.5);
+}
+
+.undo-btn:disabled,
+.control-btn:disabled {
+  background: var(--bg-elevated);
+  color: var(--text-muted);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+  opacity: 0.6;
+}
+
+.settings-btn {
+  background: linear-gradient(135deg, #475569 0%, #334155 100%);
+  color: var(--text-primary);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.settings-btn:hover {
+  background: linear-gradient(135deg, #64748b 0%, #475569 100%);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.leaderboard-btn {
+  background: linear-gradient(135deg, var(--accent-gold) 0%, var(--accent-gold-dark) 100%);
+  color: var(--bg-primary);
+  box-shadow: 0 2px 8px rgba(212, 168, 83, 0.3);
+}
+
+.leaderboard-btn:hover {
+  box-shadow: 0 4px 20px rgba(212, 168, 83, 0.5);
+}
+
+.small-btn {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border: none;
+  border-radius: 6px;
+  font-family: 'Quicksand', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  background: var(--accent-blue);
+  color: white;
+  transition: all var(--transition-fast);
+}
+
+.small-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 10px rgba(74, 158, 255, 0.3);
+}
+
+/* Discard Weapon Button */
+#discardWeaponBtn {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+  width: calc(100% - 8px);
+  padding: 10px 12px;
+  border: none;
+  border-radius: 0 0 10px 10px;
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  background: linear-gradient(180deg, rgba(45, 35, 30, 0.95) 0%, rgba(30, 22, 18, 0.98) 100%);
+  color: var(--accent-gold);
+  border-top: 1px solid rgba(212, 168, 83, 0.4);
+  box-shadow: 
+    0 -4px 12px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.3);
+  transition: all var(--transition-fast);
+}
+
+#discardWeaponBtn::before {
+  content: '⚔';
+  margin-right: 6px;
+  font-size: 0.85rem;
+  opacity: 0.8;
+}
+
+#discardWeaponBtn:hover {
+  background: linear-gradient(180deg, rgba(60, 45, 35, 0.98) 0%, rgba(40, 28, 22, 1) 100%);
+  color: var(--accent-gold-light);
+  border-top-color: rgba(212, 168, 83, 0.6);
+  box-shadow: 
+    0 -4px 16px rgba(0, 0, 0, 0.5),
+    0 0 20px rgba(212, 168, 83, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.3);
+  transform: translateX(-50%) translateY(-2px);
+}
+
+#discardWeaponBtn:active {
+  transform: translateX(-50%) translateY(0);
+  box-shadow: 
+    0 -2px 8px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+/* Run Button */
+.run-btn {
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border: none;
+  border-radius: 10px;
+  font-family: 'Quicksand', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  transition: all var(--transition-fast);
+  box-shadow: 
+    0 4px 12px rgba(16, 185, 129, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.run-btn::before {
+  content: '🏃';
+  margin-right: 8px;
+  font-size: 1.1rem;
+}
+
+.run-btn::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.run-btn:hover:not(:disabled)::after {
+  left: 100%;
+}
+
+.run-btn:hover:not(:disabled) {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 
+    0 6px 24px rgba(16, 185, 129, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.run-btn:active:not(:disabled) {
+  transform: translateY(-1px) scale(1);
+}
+
+.run-btn:disabled {
+  background: linear-gradient(135deg, #374151 0%, #1f2937 100%);
+  color: var(--text-muted);
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.run-btn:disabled::before {
+  content: '🚫';
+}
+
+.run-hint {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+/* ===========================================
+   DROP TARGETS
+   =========================================== */
+
+.drop-target {
+  width: var(--card-width);
+  height: var(--card-height);
+  border: 2px dashed var(--border-subtle);
+  border-radius: var(--card-radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.7rem;
+  padding: var(--spacing-sm);
+  transition: all var(--transition-fast);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.drop-target:hover {
+  border-color: var(--accent-blue);
+  background: rgba(74, 158, 255, 0.05);
+}
+
+.drop-target.highlight {
+  border-color: var(--accent-gold);
+  background: rgba(212, 168, 83, 0.1);
+  box-shadow: 0 0 20px rgba(212, 168, 83, 0.2);
+}
+
+.health-drop {
+  border-color: rgba(220, 53, 69, 0.3);
+  background: rgba(220, 53, 69, 0.05);
+}
+
+.heal-drop {
+  border-color: rgba(40, 167, 69, 0.3);
+  background: rgba(40, 167, 69, 0.05);
+}
+
+/* ===========================================
+   PRESET BUTTONS
+   =========================================== */
+
+.preset-buttons {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: var(--spacing-sm);
+}
+
+.preset-btn {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 2px solid;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-family: 'Quicksand', sans-serif;
+}
+
+.preset-btn.brutal {
+  background: rgba(127, 29, 29, 0.3);
+  border-color: #b91c1c;
+  color: #fca5a5;
+}
+
+.preset-btn.hard {
+  background: rgba(154, 52, 18, 0.3);
+  border-color: #c2410c;
+  color: #fed7aa;
+}
+
+.preset-btn.normal {
+  background: rgba(161, 98, 7, 0.3);
+  border-color: #ca8a04;
+  color: #fef08a;
+}
+
+.preset-btn.easy {
+  background: rgba(22, 101, 52, 0.3);
+  border-color: #16a34a;
+  color: #86efac;
+}
+
+.preset-btn.casual {
+  background: rgba(30, 64, 175, 0.3);
+  border-color: #2563eb;
+  color: #93c5fd;
+}
+
+.preset-btn:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.2);
+}
+
+/* ===========================================
+   FORM ELEMENTS
+   =========================================== */
+
+.setting-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-md);
+  gap: var(--spacing-md);
+}
+
+.setting-row label {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.setting-row select {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: 8px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  min-width: 180px;
+  cursor: pointer;
+  font-family: 'Quicksand', sans-serif;
+}
+
+.setting-row select:focus {
+  outline: none;
+  border-color: var(--accent-gold);
+}
+
+.checkbox-row {
+  justify-content: flex-start;
+}
+
+.checkbox-row label {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  cursor: pointer;
+}
+
+.checkbox-row input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--accent-gold);
+  cursor: pointer;
+}
+
+/* ===========================================
+   THEME SELECTOR
+   =========================================== */
+
+.theme-selector {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-sm);
+}
+
+.theme-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm);
+  border: 2px solid var(--border-subtle);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  background: var(--bg-primary);
+}
+
+.theme-option:hover {
+  border-color: var(--accent-gold);
+}
+
+.theme-option.active {
+  border-color: var(--accent-gold);
+  background: rgba(212, 168, 83, 0.1);
+}
+
+.theme-preview {
+  width: 40px;
+  height: 56px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+}
+
+.theme-option span {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+}
+
+/* Game Theme Previews */
+.game-theme-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+}
+
+.game-theme-selector .theme-preview {
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
+  font-size: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.dungeon-preview {
+  background: linear-gradient(135deg, #4a4560 0%, #3d3a4a 100%);
+  border: 2px solid #6b6580;
+  box-shadow: inset 0 0 20px rgba(255, 180, 50, 0.2);
+}
+
+.dragon-lair-preview {
+  background: linear-gradient(135deg, #4a1a1a 0%, #2d0a0a 100%);
+  border: 2px solid #8b2020;
+  box-shadow: inset 0 0 20px rgba(255, 100, 50, 0.3);
+}
+
+.enchanted-forest-preview {
+  background: linear-gradient(135deg, #1a3d2e 0%, #0d261a 100%);
+  border: 2px solid #2d8b5a;
+  box-shadow: inset 0 0 20px rgba(100, 255, 150, 0.2);
+}
+
+.frozen-throne-preview {
+  background: linear-gradient(135deg, #2a3d4d 0%, #1a2a3a 100%);
+  border: 2px solid #5a8bab;
+  box-shadow: inset 0 0 20px rgba(150, 200, 255, 0.3);
+}
+
+.shadow-realm-preview {
+  background: linear-gradient(135deg, #1a1a2e 0%, #0a0a15 100%);
+  border: 2px solid #4a4a6a;
+  box-shadow: inset 0 0 20px rgba(100, 50, 200, 0.3);
+}
+
+.celestial-preview {
+  background: linear-gradient(135deg, #2a2a4a 0%, #1a1a35 100%);
+  border: 2px solid #8080c0;
+  box-shadow: inset 0 0 20px rgba(200, 200, 255, 0.3);
+}
+
+.volcanic-preview {
+  background: linear-gradient(135deg, #3a2a1a 0%, #2a1a0a 100%);
+  border: 2px solid #c05020;
+  box-shadow: inset 0 0 20px rgba(255, 100, 0, 0.4);
+}
+
+.ancient-ruins-preview {
+  background: linear-gradient(135deg, #3a3530 0%, #2a2520 100%);
+  border: 2px solid #8b8070;
+  box-shadow: inset 0 0 20px rgba(200, 180, 150, 0.2);
+}
+
+/* Refresh Button */
+.refresh-btn {
+  padding: var(--spacing-sm) !important;
+  min-width: auto;
+}
+
+.refresh-btn:hover {
+  transform: rotate(180deg);
+}
+

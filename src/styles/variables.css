@@ -1,0 +1,120 @@
+/**
+ * CSS Variables and Base Styles
+ * Contains all design tokens and root styles
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Quicksand:wght@400;500;600;700&display=swap');
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  /* Color Palette - Bright Dungeon Stone Theme */
+  --bg-primary: #3d3a4a;
+  --bg-secondary: #4a4658;
+  --bg-card: #5a556b;
+  --bg-elevated: #6b6580;
+  
+  --accent-gold: #e8b923;
+  --accent-gold-light: #ffd54f;
+  --accent-gold-dark: #c49a1a;
+  
+  --accent-red: #e85454;
+  --accent-red-glow: rgba(232, 84, 84, 0.5);
+  
+  --accent-green: #4ade80;
+  --accent-green-glow: rgba(74, 222, 128, 0.5);
+  
+  --accent-blue: #60a5fa;
+  --accent-purple: #a78bfa;
+  
+  --text-primary: #f8f8fc;
+  --text-secondary: #d0d0e0;
+  --text-muted: #9090a0;
+  
+  --border-subtle: rgba(255, 255, 255, 0.15);
+  --border-gold: rgba(232, 185, 35, 0.4);
+  
+  /* Card Dimensions */
+  --card-width: 85px;
+  --card-height: 119px;
+  --card-radius: 8px;
+  
+  /* Spacing */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  
+  /* Transitions */
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.3s ease;
+  --transition-slow: 0.5s ease;
+}
+
+body {
+  font-family: 'Quicksand', sans-serif;
+  background: 
+    linear-gradient(135deg, #4a4560 0%, #3d3a4a 25%, #524d65 50%, #3d3a4a 75%, #4a4560 100%);
+  color: var(--text-primary);
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Dungeon stone wall texture */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(ellipse at 15% 30%, rgba(255, 180, 50, 0.2) 0%, transparent 40%),
+    radial-gradient(ellipse at 85% 70%, rgba(255, 180, 50, 0.15) 0%, transparent 40%),
+    radial-gradient(ellipse at 50% 10%, rgba(255, 200, 100, 0.1) 0%, transparent 50%),
+    radial-gradient(ellipse at 30% 60%, rgba(100, 90, 120, 0.3) 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 40%, rgba(80, 75, 100, 0.3) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Stone brick pattern */
+body::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    linear-gradient(0deg, rgba(30, 28, 40, 0.4) 2px, transparent 2px),
+    linear-gradient(90deg, rgba(30, 28, 40, 0.3) 2px, transparent 2px),
+    radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    radial-gradient(circle at 75% 75%, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+  background-size: 100% 60px, 120px 60px, 8px 8px, 12px 12px;
+  background-position: 0 0, 0 0, 0 0, 4px 4px;
+  pointer-events: none;
+  opacity: 0.7;
+  z-index: 0;
+}
+
+#app {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm);
+  max-width: 1600px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+

@@ -1,0 +1,451 @@
+/**
+ * Layout Styles
+ * Page structure, header, main areas, and game zones
+ */
+
+/* ===========================================
+   HEADER / TOP BAR
+   =========================================== */
+
+.top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-card) 100%);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.logo {
+  display: flex;
+  flex-direction: column;
+}
+
+.logo .title {
+  font-family: 'Cinzel', serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--accent-gold-light) 0%, var(--accent-gold) 50%, var(--accent-gold-dark) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: 1px;
+}
+
+.logo .subtitle {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.health-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-xs);
+  flex: 1;
+  max-width: 400px;
+}
+
+.health-label {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.health-bar-container {
+  width: 100%;
+  height: 20px;
+  background: var(--bg-primary);
+  border-radius: 10px;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--border-subtle);
+}
+
+.health-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent-red) 0%, #ff6b6b 100%);
+  border-radius: 11px;
+  transition: width var(--transition-normal);
+  box-shadow: 0 0 20px var(--accent-red-glow);
+}
+
+.health-value {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+.floor-value {
+  font-size: 0.85rem;
+  color: var(--accent-gold);
+  font-weight: 600;
+}
+
+.game-controls {
+  display: flex;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* ===========================================
+   MAIN GAME AREA
+   =========================================== */
+
+main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm);
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* Action Row */
+.action-row {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-lg);
+  flex-wrap: wrap;
+  flex-shrink: 0;
+  max-width: 600px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.action-slot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.action-label {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 600;
+}
+
+/* Play Area */
+.play-area {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--spacing-lg);
+  flex-wrap: wrap;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* Pile Containers */
+.pile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  min-width: calc(var(--card-width) + 24px);
+}
+
+.pile-title,
+.slot-title {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 600;
+}
+
+.pile-count {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+/* Floor Area */
+.floor-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-sm);
+  flex: 1;
+  min-width: 280px;
+  min-height: 0;
+}
+
+.floor-label {
+  font-family: 'Cinzel', serif;
+  font-size: 1rem;
+  color: var(--accent-gold);
+  letter-spacing: 2px;
+}
+
+.floor-row {
+  display: flex;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+  justify-content: center;
+  min-height: var(--card-height);
+}
+
+/* Equipment Area */
+.equipment-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-sm);
+  flex-shrink: 0;
+  max-width: 600px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.weapon-info-bar {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--accent-gold);
+  text-align: center;
+  padding: 8px 16px;
+  background: linear-gradient(135deg, rgba(45, 35, 25, 0.9) 0%, rgba(35, 28, 20, 0.95) 100%);
+  border: 1px solid rgba(212, 168, 83, 0.4);
+  border-radius: 8px;
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  min-height: 20px;
+  opacity: 0;
+  transform: translateY(-5px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.weapon-info-bar.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.equipment-slots {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-lg);
+  flex-wrap: wrap;
+}
+
+.slot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  min-width: calc(var(--card-width) + 24px);
+}
+
+/* Weapon slot container */
+.slot:has(#weaponSlot) {
+  position: relative;
+  padding-bottom: 38px;
+  overflow: hidden;
+}
+
+#weaponSlot {
+  min-height: var(--card-height);
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: var(--spacing-xs);
+}
+
+#weaponSlot .card {
+  position: relative;
+  z-index: 5;
+  margin-bottom: -20px;
+  transition: transform var(--transition-fast), margin-bottom var(--transition-fast);
+}
+
+#weaponSlot .card:hover {
+  transform: translateY(-8px);
+  z-index: 15;
+}
+
+#weaponDamageSlot {
+  min-height: calc(var(--card-height) + 20px);
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+/* Weapon tooltip */
+#weaponSlot .card::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) scale(0.9);
+  background: linear-gradient(135deg, rgba(30, 25, 20, 0.95) 0%, rgba(20, 18, 15, 0.98) 100%);
+  color: var(--text-primary);
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  border: 1px solid rgba(212, 168, 83, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  z-index: 100;
+}
+
+#weaponSlot .card:hover::after {
+  opacity: 1;
+  transform: translateX(-50%) scale(1);
+}
+
+/* Discard Corner */
+.discard-corner {
+  position: fixed;
+  bottom: var(--spacing-lg);
+  right: var(--spacing-lg);
+  z-index: 100;
+}
+
+.discard-pile {
+  background: var(--bg-card);
+  border: 1px solid var(--border-gold);
+}
+
+#discardSlot {
+  min-height: calc(var(--card-height) * 0.7);
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+/* ===========================================
+   STATUS BAR
+   =========================================== */
+
+.status-bar {
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+/* ===========================================
+   MOBILE MENU
+   =========================================== */
+
+.burger-menu-btn {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  width: 40px;
+  height: 40px;
+  padding: 8px;
+  background: linear-gradient(135deg, #475569 0%, #334155 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 1000;
+}
+
+.burger-menu-btn:hover {
+  background: linear-gradient(135deg, #64748b 0%, #475569 100%);
+  transform: scale(1.05);
+}
+
+.burger-line {
+  width: 20px;
+  height: 2px;
+  background: white;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+.burger-menu-btn.active .burger-line:nth-child(1) {
+  transform: rotate(45deg) translate(5px, 5px);
+}
+
+.burger-menu-btn.active .burger-line:nth-child(2) {
+  opacity: 0;
+}
+
+.burger-menu-btn.active .burger-line:nth-child(3) {
+  transform: rotate(-45deg) translate(5px, -5px);
+}
+
+.mobile-menu-overlay {
+  display: none;
+}
+
+.mobile-menu-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.mobile-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  color: var(--text-primary);
+  font-family: 'Quicksand', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.mobile-menu-item:hover {
+  background: rgba(212, 168, 83, 0.15);
+  border-color: rgba(212, 168, 83, 0.4);
+  transform: translateX(4px);
+}
+
+.mobile-menu-item:active {
+  transform: scale(0.98);
+}
+
+.menu-icon {
+  font-size: 1.3rem;
+}
+

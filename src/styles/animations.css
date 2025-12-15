@@ -1,0 +1,96 @@
+/**
+ * Animation Styles
+ * Game animations and overlays
+ */
+
+/* ===========================================
+   ANIMATION OVERLAY
+   =========================================== */
+
+#animationOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ===========================================
+   DAMAGE & HEAL ANIMATIONS
+   =========================================== */
+
+.damage-animation,
+.heal-animation {
+  position: absolute;
+  font-size: 4rem;
+  font-weight: 900;
+  text-shadow: 0 0 30px currentColor;
+  opacity: 0;
+  transform: translateY(0) scale(0.5);
+  pointer-events: none;
+}
+
+.damage-animation {
+  color: var(--accent-red);
+}
+
+.heal-animation {
+  color: var(--accent-green);
+}
+
+.damage-animation.animate,
+.heal-animation.animate {
+  animation: floatUp 1s ease-out forwards;
+}
+
+@keyframes floatUp {
+  0% {
+    opacity: 0;
+    transform: translateY(0) scale(0.5);
+  }
+  20% {
+    opacity: 1;
+    transform: translateY(-20px) scale(1.2);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-100px) scale(1);
+  }
+}
+
+/* ===========================================
+   FIGHT ANIMATION
+   =========================================== */
+
+.fight-animation {
+  position: fixed;
+  font-size: 5rem;
+  opacity: 0;
+  pointer-events: none;
+  filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.8));
+}
+
+.fight-animation.animate {
+  animation: fightPop 0.6s ease-out forwards;
+}
+
+@keyframes fightPop {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0) rotate(0deg);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.5) rotate(180deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(2) rotate(360deg);
+  }
+}
+

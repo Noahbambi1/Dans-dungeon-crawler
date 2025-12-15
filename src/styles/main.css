@@ -1,0 +1,31 @@
+/**
+ * Dungeon Floor Card Crawler - Main Stylesheet
+ * 
+ * This file imports all CSS modules in the correct order.
+ * The order matters for CSS cascade specificity.
+ */
+
+/* 1. Variables and base styles (must be first) */
+@import './variables.css';
+
+/* 2. Layout structure */
+@import './layout.css';
+
+/* 3. UI components */
+@import './components.css';
+
+/* 4. Card styles */
+@import './cards.css';
+
+/* 5. Modal styles */
+@import './modals.css';
+
+/* 6. Animations */
+@import './animations.css';
+
+/* 7. Game themes (overrides variables) */
+@import './themes.css';
+
+/* 8. Responsive (must be last for media queries) */
+@import './responsive.css';
+
