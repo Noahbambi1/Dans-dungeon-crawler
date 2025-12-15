@@ -1199,8 +1199,8 @@ main {
 /* Mobile Responsive Styles */
 @media (max-width: 768px) {
   :root {
-    --card-width: 65px;
-    --card-height: 91px;
+    --card-width: 60px;
+    --card-height: 84px;
   }
 
   body {
@@ -1213,6 +1213,7 @@ main {
 
   #app {
     padding: 8px;
+    padding-right: 8px;
     gap: 6px;
     min-height: auto;
     height: auto;
@@ -1223,21 +1224,32 @@ main {
     overflow: visible;
   }
 
+  /* Move discard pile inline on mobile */
+  .discard-corner {
+    position: relative;
+    top: auto;
+    right: auto;
+    transform: none;
+    order: 3;
+  }
+
   .top-bar {
     flex-direction: row;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 6px;
     padding: 8px 10px;
-    justify-content: space-between;
+    justify-content: center;
   }
 
   .logo {
     order: 1;
-    flex: 0 0 auto;
+    flex: 1 1 100%;
+    text-align: center;
+    margin-bottom: 4px;
   }
 
   .logo .title {
-    font-size: 14px;
+    font-size: 16px;
   }
 
   .logo .subtitle {
@@ -1457,53 +1469,189 @@ main {
 
 @media (max-width: 480px) {
   :root {
-    --card-width: 55px;
-    --card-height: 77px;
+    --card-width: 50px;
+    --card-height: 70px;
   }
 
   body {
-    padding: 3px;
+    padding: 2px;
   }
 
   #app {
-    padding: 6px;
-    gap: 5px;
+    padding: 5px;
+    gap: 4px;
   }
 
   .top-bar {
-    padding: 6px 8px;
+    padding: 5px 6px;
+    gap: 4px;
+  }
+
+  .logo {
+    margin-bottom: 2px;
   }
 
   .logo .title {
-    font-size: 12px;
+    font-size: 14px;
+  }
+
+  .logo .subtitle {
+    display: none;
+  }
+
+  .health-block {
+    gap: 2px;
   }
 
   .health-bar-container {
-    height: 18px;
+    height: 16px;
   }
 
   .health-value {
-    font-size: 10px;
+    font-size: 9px;
   }
 
   .health-label {
-    font-size: 10px;
+    font-size: 9px;
   }
 
+  .floor-value {
+    font-size: 9px;
+  }
+
+  .game-controls {
+    gap: 4px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  /* Show only icons on very small screens */
   .control-btn {
-    padding: 5px 10px;
-    font-size: 10px;
+    padding: 6px 8px;
+    font-size: 9px;
+    min-width: auto;
+  }
+
+  .undo-btn { font-size: 0; }
+  .undo-btn::before { content: "↩"; font-size: 14px; }
+  
+  .restart-btn { font-size: 0; }
+  .restart-btn::before { content: "🔄"; font-size: 12px; }
+  
+  .new-game-btn { font-size: 0; }
+  .new-game-btn::before { content: "🎮"; font-size: 12px; }
+  
+  .settings-btn { font-size: 0; padding: 6px 10px !important; }
+  .settings-btn::before { content: "⚙️"; font-size: 12px; }
+  
+  .leaderboard-btn { font-size: 0; padding: 6px 10px !important; }
+  .leaderboard-btn::before { content: "🏆"; font-size: 12px; }
+
+  .action-row {
+    gap: 6px;
+    padding: 0 4px;
   }
 
   .action-label {
-    font-size: 9px;
+    font-size: 8px;
   }
 
   .health-drop,
   .heal-drop {
-    width: 60px;
-    height: 60px;
+    width: 55px;
+    height: 55px;
+    font-size: 7px;
+    padding: 3px;
+  }
+
+  .run-btn {
+    padding: 6px 10px;
+    font-size: 10px;
+    min-height: 35px;
+  }
+
+  .run-hint {
+    font-size: 7px;
+  }
+
+  .play-area {
+    gap: 5px;
+  }
+
+  .pile {
+    padding: 5px;
+    min-width: calc(var(--card-width) + 12px);
+    max-width: calc(var(--card-width) + 12px);
+    min-height: calc(var(--card-height) + 40px);
+    max-height: calc(var(--card-height) + 40px);
+  }
+
+  .floor-row {
+    gap: 3px;
+  }
+
+  .floor-label {
+    font-size: 9px;
+  }
+
+  .equipment-area {
+    gap: 6px;
+  }
+
+  .slot {
+    padding: 5px;
+    min-height: calc(var(--card-height) + 35px);
+    max-height: calc(var(--card-height) + 35px);
+  }
+
+  .pile-title,
+  .slot-title {
     font-size: 8px;
+  }
+
+  .pile-count {
+    font-size: 8px;
+  }
+
+  .small-btn {
+    padding: 5px 8px;
+    font-size: 9px;
+    min-height: 30px;
+  }
+
+  .status-bar {
+    padding: 4px 8px;
+    font-size: 10px;
+    min-height: 24px;
+  }
+
+  /* Discard pile on mobile */
+  .discard-corner {
+    width: 100%;
+  }
+
+  .discard-corner .pile {
+    width: 100%;
+    max-width: 100%;
+    min-height: auto;
+    max-height: none;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .discard-corner .pile-title {
+    margin-bottom: 0;
+  }
+
+  .discard-corner #discardSlot {
+    flex: 1;
+    height: calc(var(--card-height) + 10px);
+    max-height: calc(var(--card-height) + 10px);
+  }
+
+  .discard-corner .pile-count {
+    margin-top: 0;
   }
 
   .run-btn {
@@ -1893,16 +2041,64 @@ main {
 
 @media (max-width: 480px) {
   .leaderboard-panel {
-    width: calc(100vw - 20px);
-    right: -50px;
+    position: fixed;
+    top: 60px;
+    left: 10px;
+    right: 10px;
+    width: auto;
+    max-height: 70vh;
+  }
+
+  .leaderboard-header {
+    padding: 10px;
+  }
+
+  .leaderboard-header h3 {
+    font-size: 14px;
+  }
+
+  .player-input input {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+
+  .player-input .small-btn {
+    padding: 6px 10px;
+    font-size: 11px;
+  }
+
+  .player-summary {
+    padding: 8px 10px;
+  }
+
+  .player-rank {
+    font-size: 12px;
+  }
+
+  .player-name {
+    font-size: 12px;
   }
   
   .player-stats-summary {
-    gap: 10px;
+    gap: 8px;
+  }
+
+  .stat-value {
+    font-size: 11px;
+  }
+
+  .stat-label {
+    font-size: 8px;
   }
   
   .mode-wins-grid {
     grid-template-columns: repeat(2, 1fr);
+    gap: 4px;
+  }
+
+  .mode-win-item {
+    padding: 4px;
+    font-size: 10px;
   }
 }
 
