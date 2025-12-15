@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-card-theme="classic">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Dungeon Floor Card Crawler</title>
   <link rel="stylesheet" href="style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚔️</text></svg>">
 </head>
 <body>
   <div id="app">
@@ -142,6 +143,36 @@
             <button data-preset="normal" class="preset-btn normal">Normal (~10%)</button>
             <button data-preset="easy" class="preset-btn easy">Easy (~40%)</button>
             <button data-preset="casual" class="preset-btn casual">Casual (~80%)</button>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <h3>Card Theme</h3>
+          <div class="theme-selector" id="themeSelector">
+            <div class="theme-option active" data-theme="classic">
+              <div class="theme-preview" style="background: linear-gradient(135deg, #1a1a2e, #16213e); border: 1px solid #2d3748;">⚔️</div>
+              <span>Classic</span>
+            </div>
+            <div class="theme-option" data-theme="dragon">
+              <div class="theme-preview" style="background: linear-gradient(135deg, #2d1b1b, #1a0a0a); border: 1px solid #5c2323;">🐉</div>
+              <span>Dragon</span>
+            </div>
+            <div class="theme-option" data-theme="mystic">
+              <div class="theme-preview" style="background: linear-gradient(135deg, #1a1a3e, #0a0a1e); border: 1px solid #3d3d8c;">🔮</div>
+              <span>Mystic</span>
+            </div>
+            <div class="theme-option" data-theme="nature">
+              <div class="theme-preview" style="background: linear-gradient(135deg, #1a2e1a, #0a1e0a); border: 1px solid #2d5c2d;">🌿</div>
+              <span>Nature</span>
+            </div>
+            <div class="theme-option" data-theme="royal">
+              <div class="theme-preview" style="background: linear-gradient(135deg, #2e2a1a, #1e1a0a); border: 1px solid #8b7355;">👑</div>
+              <span>Royal</span>
+            </div>
+            <div class="theme-option" data-theme="skull">
+              <div class="theme-preview" style="background: linear-gradient(135deg, #1a1a1a, #0a0a0a); border: 1px solid #404040;">💀</div>
+              <span>Skull</span>
+            </div>
           </div>
         </div>
 
