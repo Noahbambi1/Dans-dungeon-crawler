@@ -229,7 +229,7 @@ main {
   justify-content: center;
   align-items: stretch;
   gap: var(--spacing-md);
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
 }
 
 .slot {
@@ -244,9 +244,11 @@ main {
   min-width: calc(var(--card-width) + 24px);
 }
 
-/* Remove double border from weapon and damage slots */
+/* Remove double border from all action section slots */
 .slot.weapon-slot,
-.slot.weapon-damage-slot {
+.slot.weapon-damage-slot,
+.slot.damage-slot,
+.slot.heal-slot {
   border: none;
   background: transparent;
 }
@@ -284,18 +286,13 @@ main {
 }
 
 /* Damage slot - Red theme */
-.slot.damage-slot {
-  border-color: rgba(220, 53, 69, 0.4);
-  background: rgba(220, 53, 69, 0.08);
-}
-
 .slot.damage-slot .slot-title {
   color: #ff6b7a;
 }
 
 .slot.damage-slot .health-drop {
   background: rgba(220, 53, 69, 0.15);
-  border: 2px dashed rgba(220, 53, 69, 0.5);
+  border: 2px solid rgba(220, 53, 69, 0.5);
 }
 
 .slot.damage-slot .drop-text {
@@ -310,18 +307,13 @@ main {
 }
 
 /* Heal slot - Green theme */
-.slot.heal-slot {
-  border-color: rgba(40, 167, 69, 0.4);
-  background: rgba(40, 167, 69, 0.08);
-}
-
 .slot.heal-slot .slot-title {
   color: #5ced8a;
 }
 
 .slot.heal-slot .heal-drop {
   background: rgba(40, 167, 69, 0.15);
-  border: 2px dashed rgba(40, 167, 69, 0.5);
+  border: 2px solid rgba(40, 167, 69, 0.5);
 }
 
 .slot.heal-slot .drop-text {

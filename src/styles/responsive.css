@@ -415,37 +415,72 @@
   
   .equipment-area {
     max-width: 100%;
+    overflow-x: auto;
   }
   
   .equipment-slots {
-    gap: var(--spacing-sm);
+    gap: var(--spacing-xs);
     justify-content: center;
+    flex-wrap: nowrap;
+    width: 100%;
+  }
+  
+  /* Action section - fit in one row */
+  .equipment-slots .slot {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: var(--spacing-xs);
+  }
+  
+  .slot.action-slot .drop-target {
+    width: 100%;
+    min-width: 50px;
+    max-width: var(--card-width);
+    height: auto;
+    aspect-ratio: 5/7;
   }
   
   .slot.action-slot .drop-icon {
-    font-size: 1.4rem;
+    font-size: 1.2rem;
   }
   
   .slot.action-slot .drop-text {
+    font-size: 0.45rem;
+    line-height: 1.2;
+  }
+  
+  .slot-title {
     font-size: 0.55rem;
+    white-space: nowrap;
   }
   
   .slot.weapon-slot {
-    padding-bottom: 32px;
+    padding-bottom: 28px;
   }
   
   #discardWeaponBtn {
-    padding: 8px 10px;
-    font-size: 0.6rem;
-    border-radius: 0 0 8px 8px;
+    padding: 6px 8px;
+    font-size: 0.5rem;
+    border-radius: 0 0 6px 6px;
   }
   
   #weaponSlot .card {
-    margin-bottom: -16px;
+    margin-bottom: -14px;
+  }
+  
+  /* Weapon and damage slots scale proportionally */
+  #weaponSlot,
+  #weaponDamageSlot {
+    width: 100%;
+    min-width: 50px;
+    max-width: var(--card-width);
+    height: auto;
   }
   
   .slot.weapon-slot,
-  .slot.weapon-damage-slot {
+  .slot.weapon-damage-slot,
+  .slot.damage-slot,
+  .slot.heal-slot {
     border: none;
     background: transparent;
   }
@@ -582,12 +617,30 @@
     flex-direction: row;
     gap: var(--spacing-xs);
     flex: 0 0 auto;
+    flex-wrap: nowrap;
   }
   
-  .drop-target {
-    width: calc(var(--card-width) * 0.9);
-    height: calc(var(--card-height) * 0.9);
-    font-size: 0.5rem;
+  .equipment-slots .slot {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: var(--spacing-xs);
+  }
+  
+  .slot.action-slot .drop-target {
+    width: 100%;
+    min-width: 45px;
+    max-width: var(--card-width);
+    height: auto;
+    aspect-ratio: 5/7;
+    font-size: 0.45rem;
+  }
+  
+  .slot.action-slot .drop-icon {
+    font-size: 1rem;
+  }
+  
+  .slot.action-slot .drop-text {
+    font-size: 0.4rem;
   }
   
   .play-area {
@@ -626,8 +679,8 @@
 
 @media (max-width: 380px) {
   :root {
-    --card-width: 55px;
-    --card-height: 77px;
+    --card-width: 50px;
+    --card-height: 70px;
   }
   
   .floor-row {
@@ -655,17 +708,82 @@
     display: none;
   }
   
+  /* Action section - very compact */
+  .equipment-slots {
+    gap: 2px;
+  }
+  
+  .equipment-slots .slot {
+    padding: 2px;
+  }
+  
+  .slot-title {
+    font-size: 0.45rem;
+  }
+  
+  .slot.action-slot .drop-icon {
+    font-size: 1rem;
+  }
+  
+  .slot.action-slot .drop-text {
+    font-size: 0.4rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
   .slot.weapon-slot {
-    padding-bottom: 26px;
+    padding-bottom: 22px;
   }
   
   #discardWeaponBtn {
-    padding: 5px 6px;
-    font-size: 0.5rem;
+    padding: 4px 5px;
+    font-size: 0.45rem;
   }
   
   #weaponSlot .card {
-    margin-bottom: -10px;
+    margin-bottom: -8px;
+  }
+}
+
+/* ===========================================
+   EXTRA SMALL SCREENS (<320px)
+   =========================================== */
+
+@media (max-width: 320px) {
+  :root {
+    --card-width: 45px;
+    --card-height: 63px;
+  }
+  
+  .equipment-slots {
+    gap: 1px;
+  }
+  
+  .equipment-slots .slot {
+    padding: 1px;
+  }
+  
+  .slot-title {
+    font-size: 0.4rem;
+  }
+  
+  .slot.action-slot .drop-icon {
+    font-size: 0.9rem;
+  }
+  
+  .slot.action-slot .drop-text {
+    font-size: 0.35rem;
+  }
+  
+  .slot.weapon-slot {
+    padding-bottom: 18px;
+  }
+  
+  #discardWeaponBtn {
+    padding: 3px 4px;
+    font-size: 0.4rem;
   }
 }
 
