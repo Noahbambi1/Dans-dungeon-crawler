@@ -1940,20 +1940,19 @@ main {
     padding: var(--spacing-sm);
     border-radius: 12px;
     flex-wrap: wrap;
-    justify-content: space-between;
-    gap: var(--spacing-sm);
+    justify-content: center;
+    gap: var(--spacing-xs);
   }
   
-  /* First row: burger, title (centered), health */
+  /* First row: burger and title */
   .burger-menu-btn {
     display: flex;
     flex-shrink: 0;
   }
   
   .logo {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
+    flex: 1;
+    text-align: center;
   }
   
   .logo .title {
@@ -1966,9 +1965,12 @@ main {
     text-align: center;
   }
   
+  /* Health bar on second row */
   .health-block {
-    flex-shrink: 0;
-    max-width: 120px;
+    width: 100%;
+    max-width: 100%;
+    order: 5;
+    margin-top: var(--spacing-xs);
   }
   
   .health-bar-container {
@@ -2121,15 +2123,28 @@ main {
     font-size: 1.6rem;
   }
   
+  /* Discard next to deck on mobile - uses calc to position beside center */
   .discard-corner {
     position: fixed;
-    bottom: var(--spacing-sm);
-    right: var(--spacing-sm);
+    bottom: auto;
+    right: auto;
+    top: 50%;
+    left: calc(50% + var(--card-width) / 2 + var(--spacing-lg));
+    transform: translateY(-50%);
+    z-index: 50;
   }
   
   .discard-corner .pile {
     padding: var(--spacing-xs);
     min-width: auto;
+  }
+  
+  .discard-corner .pile-title {
+    font-size: 0.6rem;
+  }
+  
+  .discard-corner .pile-count {
+    font-size: 0.6rem;
   }
   
   .leaderboard-panel {
