@@ -227,8 +227,18 @@ body::after {
   transition: all var(--transition-fast);
   display: flex;
   align-items: center;
-  gap: var(--spacing-xs);
+  justify-content: center;
+  gap: 6px;
   white-space: nowrap;
+}
+
+.btn-icon {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.btn-text {
+  line-height: 1;
 }
 
 .control-btn:hover {
@@ -240,30 +250,33 @@ body::after {
 }
 
 .new-game-btn {
-  background: linear-gradient(135deg, var(--accent-blue) 0%, #3182ce 100%);
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
   color: white;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
 }
 
 .new-game-btn:hover {
-  box-shadow: 0 4px 20px rgba(74, 158, 255, 0.4);
+  box-shadow: 0 4px 20px rgba(59, 130, 246, 0.5);
 }
 
 .restart-btn {
-  background: linear-gradient(135deg, var(--accent-purple) 0%, #7c3aed 100%);
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
   color: white;
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
 }
 
 .restart-btn:hover {
-  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.4);
+  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.5);
 }
 
 .undo-btn {
   background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
   color: white;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
 }
 
 .undo-btn:hover {
-  box-shadow: 0 4px 20px rgba(245, 158, 11, 0.4);
+  box-shadow: 0 4px 20px rgba(245, 158, 11, 0.5);
 }
 
 .undo-btn:disabled,
@@ -273,26 +286,28 @@ body::after {
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
+  opacity: 0.6;
 }
 
 .settings-btn {
-  background: var(--bg-elevated);
-  color: var(--text-secondary);
-  border: 1px solid var(--border-subtle);
+  background: linear-gradient(135deg, #475569 0%, #334155 100%);
+  color: var(--text-primary);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .settings-btn:hover {
-  background: var(--bg-card);
-  color: var(--text-primary);
+  background: linear-gradient(135deg, #64748b 0%, #475569 100%);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
 }
 
 .leaderboard-btn {
   background: linear-gradient(135deg, var(--accent-gold) 0%, var(--accent-gold-dark) 100%);
   color: var(--bg-primary);
+  box-shadow: 0 2px 8px rgba(212, 168, 83, 0.3);
 }
 
 .leaderboard-btn:hover {
-  box-shadow: 0 4px 20px rgba(212, 168, 83, 0.4);
+  box-shadow: 0 4px 20px rgba(212, 168, 83, 0.5);
 }
 
 .small-btn {
@@ -314,27 +329,64 @@ body::after {
 }
 
 .run-btn {
-  padding: var(--spacing-sm) var(--spacing-md);
+  padding: var(--spacing-sm) var(--spacing-lg);
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   font-family: 'Quicksand', sans-serif;
-  font-size: 0.85rem;
-  font-weight: 600;
+  font-size: 0.9rem;
+  font-weight: 700;
   cursor: pointer;
   background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   color: white;
   transition: all var(--transition-fast);
+  box-shadow: 
+    0 4px 12px rgba(16, 185, 129, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.run-btn::before {
+  content: '🏃';
+  margin-right: 8px;
+  font-size: 1.1rem;
+}
+
+.run-btn::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.run-btn:hover:not(:disabled)::after {
+  left: 100%;
 }
 
 .run-btn:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 
+    0 6px 24px rgba(16, 185, 129, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.run-btn:active:not(:disabled) {
+  transform: translateY(-1px) scale(1);
 }
 
 .run-btn:disabled {
-  background: var(--bg-elevated);
+  background: linear-gradient(135deg, #374151 0%, #1f2937 100%);
   color: var(--text-muted);
   cursor: not-allowed;
+  box-shadow: none;
+}
+
+.run-btn:disabled::before {
+  content: '🚫';
 }
 
 .run-hint {
@@ -1809,11 +1861,21 @@ main {
   #app {
     padding: var(--spacing-sm);
     gap: var(--spacing-sm);
+    min-height: 100vh;
+    height: auto;
+    overflow-y: auto;
+  }
+  
+  body {
+    height: auto;
+    min-height: 100vh;
+    overflow-y: auto;
   }
   
   .top-bar {
     padding: var(--spacing-sm);
     border-radius: 12px;
+    flex-wrap: wrap;
   }
   
   .logo .title {
@@ -1833,39 +1895,41 @@ main {
   }
   
   .game-controls {
-    gap: var(--spacing-xs);
-  }
-  
-  .control-btn {
-    padding: var(--spacing-xs) var(--spacing-sm);
-    font-size: 0.75rem;
-  }
-  
-  /* Icon-only buttons on mobile */
-  .undo-btn,
-  .restart-btn,
-  .new-game-btn,
-  .settings-btn,
-  .leaderboard-btn {
-    padding: var(--spacing-sm);
-    min-width: 40px;
+    gap: 6px;
+    flex-wrap: wrap;
     justify-content: center;
   }
   
-  .undo-btn::before { content: '↩'; }
-  .restart-btn::before { content: '🔄'; }
-  .new-game-btn::before { content: '🎮'; }
+  .control-btn {
+    padding: 8px 10px;
+    font-size: 0.7rem;
+    border-radius: 8px;
+    min-height: 36px;
+  }
   
-  .control-btn:not(.settings-btn):not(.leaderboard-btn) span,
-  .undo-btn:not(:empty),
-  .restart-btn:not(:empty),
-  .new-game-btn:not(:empty) {
-    font-size: 0;
+  .btn-icon {
+    font-size: 1rem;
+  }
+  
+  .btn-text {
+    font-size: 0.65rem;
+  }
+  
+  /* Run button mobile */
+  .run-btn {
+    padding: 10px 16px;
+    font-size: 0.8rem;
+  }
+  
+  .run-btn::before {
+    font-size: 1rem;
   }
   
   main {
     gap: var(--spacing-md);
     padding: var(--spacing-sm);
+    flex: 1;
+    overflow: visible;
   }
   
   .action-row {
@@ -1882,6 +1946,8 @@ main {
   
   .play-area {
     gap: var(--spacing-md);
+    flex: 0 0 auto;
+    overflow: visible;
   }
   
   .floor-row {
@@ -2179,6 +2245,86 @@ main {
   
   .theme-selector {
     grid-template-columns: repeat(2, 1fr);
+  }
+  
+  /* Smaller buttons on very small screens */
+  .control-btn {
+    padding: 6px 8px;
+    min-height: 32px;
+  }
+  
+  .btn-icon {
+    font-size: 0.9rem;
+  }
+  
+  .btn-text {
+    display: none;
+  }
+  
+  .run-btn {
+    padding: 8px 12px;
+    font-size: 0.75rem;
+  }
+}
+
+/* Short screens - ensure content is scrollable and deck visible */
+@media (max-height: 700px) {
+  body {
+    height: auto;
+    min-height: 100vh;
+    overflow-y: auto;
+  }
+  
+  #app {
+    height: auto;
+    min-height: 100vh;
+    overflow: visible;
+  }
+  
+  main {
+    overflow: visible;
+    flex: 0 0 auto;
+  }
+  
+  .play-area {
+    overflow: visible;
+    flex: 0 0 auto;
+  }
+}
+
+@media (max-height: 600px) {
+  :root {
+    --card-width: 60px;
+    --card-height: 84px;
+    --spacing-sm: 6px;
+    --spacing-md: 10px;
+  }
+  
+  .top-bar {
+    padding: var(--spacing-xs) var(--spacing-sm);
+  }
+  
+  .health-bar-container {
+    height: 18px;
+  }
+  
+  .control-btn {
+    padding: 4px 6px;
+    min-height: 28px;
+  }
+  
+  .btn-text {
+    display: none;
+  }
+  
+  .pile,
+  .slot {
+    padding: var(--spacing-xs);
+  }
+  
+  .pile-title,
+  .slot-title {
+    font-size: 0.6rem;
   }
 }
 
