@@ -105,6 +105,7 @@ function render() {
   document.getElementById("floorValue").textContent = state.floorNumber;
 
   renderWeapon();
+  renderWeaponDamage();
   renderRunButton();
   attachDragListeners();
 }
@@ -131,6 +132,31 @@ function renderWeapon() {
       ? "Fresh weapon"
       : `Can attack monsters ≤ ${Math.max(2, state.weaponMaxNext)}`;
   slot.appendChild(info);
+}
+
+function renderWeaponDamage() {
+  const slot = document.getElementById("weaponDamageSlot");
+  slot.innerHTML = "";
+  if (state.weaponDamage.length === 0) {
+    const empty = document.createElement("div");
+    empty.className = "slot-drop";
+    empty.textContent = "No defeated monsters";
+    slot.appendChild(empty);
+    return;
+  }
+  // Stack cards with offset so corners are visible
+  const stackContainer = document.createElement("div");
+  stackContainer.className = "card-stack";
+  state.weaponDamage.forEach((card, index) => {
+    const el = createCardEl(card);
+    el.classList.add("stacked");
+    el.style.position = "absolute";
+    el.style.zIndex = index + 1;
+    el.style.transform = `translate(${index * 10}px, ${index * 10}px)`;
+    el.style.transition = "transform 0.12s ease";
+    stackContainer.appendChild(el);
+  });
+  slot.appendChild(stackContainer);
 }
 
 function renderRunButton() {
@@ -262,9 +288,9 @@ function handleWeaponDrop(card, from) {
     return;
   }
   removeFromPool(card, from);
-  // Discard existing weapon when replacing (monsters already in discard)
+  // Discard existing weapon and its defeated monsters when replacing
   if (state.weapon) {
-    state.discard.push(state.weapon);
+    state.discard.push(state.weapon, ...state.weaponDamage);
   }
   state.weapon = card;
   state.weaponDamage = [];
@@ -277,8 +303,8 @@ function handleWeaponDrop(card, from) {
 function handleDiscardDrop(card, from) {
   // Only weapons can be discarded directly
   if (from === "weapon") {
-    // Weapon discard (monsters already in discard from when they were defeated)
-    state.discard.push(state.weapon);
+    // Weapon discard - send weapon and all defeated monsters to discard
+    state.discard.push(state.weapon, ...state.weaponDamage);
     state.weapon = null;
     state.weaponDamage = [];
     state.weaponMaxNext = Infinity;
@@ -319,9 +345,8 @@ function handleMonsterOnWeapon(monsterCard) {
   }
   const damage = Math.max(0, monsterValue - state.weapon.value);
   state.health -= damage;
-  // Track defeated monster for weapon degradation, then discard
+  // Track defeated monster for weapon degradation (keep in weaponDamage, not discard yet)
   state.weaponDamage.push(monsterCard);
-  state.discard.push(monsterCard);
   state.weaponMaxNext = Math.min(state.weaponMaxNext, monsterValue - 1);
   state.floorFresh = false;
   setStatus(
@@ -414,8 +439,8 @@ function setupButtons() {
       setStatus("No weapon to discard.");
       return;
     }
-    // Weapon discard (monsters already in discard from when they were defeated)
-    state.discard.push(state.weapon);
+    // Weapon discard - send weapon and all defeated monsters to discard
+    state.discard.push(state.weapon, ...state.weaponDamage);
     state.weapon = null;
     state.weaponDamage = [];
     state.weaponMaxNext = Infinity;

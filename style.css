@@ -344,6 +344,34 @@ body {
   justify-content: center;
 }
 
+.equipment-area #weaponDamageSlot {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  min-height: var(--card-height);
+  padding: 10px;
+}
+
+.card-stack {
+  position: relative;
+  width: var(--card-width);
+  height: calc(var(--card-height) + 40px);
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+.card.stacked {
+  position: absolute;
+  top: 0;
+  left: 0;
+  cursor: default;
+}
+
+.card.stacked:hover {
+  transform: translateY(-2px) translate(var(--stack-offset-x, 0), var(--stack-offset-y, 0));
+}
+
 .run-btn,
 .small-btn {
   padding: 6px 10px;
