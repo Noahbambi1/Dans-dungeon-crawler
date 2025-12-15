@@ -20,6 +20,10 @@ const state = {
   firstFloorDealt: false, // Track if first floor has been dealt
 };
 
+// History for undo functionality
+let stateHistory = [];
+const MAX_HISTORY = 10; // Keep last 10 moves
+
 const suitIcons = {
   hearts: "♥",
   diamonds: "♦",
@@ -161,8 +165,13 @@ function initGame() {
   state.floorFresh = true;
   state.healUsed = false;
   state.firstFloorDealt = false;
+  
+  // Clear history on new game
+  stateHistory = [];
+  
   setStatus("Click the deck to deal your first floor!");
   render();
+  updateUndoButton();
   // Initialize health bar
   const healthPercent = (state.health / MAX_HEALTH) * 100;
   document.getElementById("healthBar").style.width = `${healthPercent}%`;
@@ -189,8 +198,13 @@ function restartGame() {
   state.floorFresh = true;
   state.healUsed = false;
   state.firstFloorDealt = false;
+  
+  // Clear history on restart
+  stateHistory = [];
+  
   setStatus("Click the deck to deal your first floor!");
   render();
+  updateUndoButton();
   // Initialize health bar
   const healthPercent = (state.health / MAX_HEALTH) * 100;
   document.getElementById("healthBar").style.width = `${healthPercent}%`;
@@ -490,6 +504,8 @@ function handleHealDrop(card, from) {
     setStatus("Only hearts can heal.");
     return;
   }
+  
+  saveStateToHistory();
   removeFromPool(card, from);
   state.discard.push(card);
   state.floorFresh = false;
@@ -620,6 +636,64 @@ function handleWeaponAreaDrop(card, from) {
     return;
   }
   setStatus("Only weapons (diamonds) or monsters go here.");
+}
+
+function saveStateToHistory() {
+  // Deep clone the current state
+  const stateCopy = {
+    deck: state.deck.map(c => ({...c})),
+    discard: state.discard.map(c => ({...c})),
+    floor: state.floor.map(c => c ? {...c} : null),
+    weapon: state.weapon ? {...state.weapon} : null,
+    weaponDamage: state.weaponDamage.map(c => ({...c})),
+    weaponMaxNext: state.weaponMaxNext,
+    health: state.health,
+    floorNumber: state.floorNumber,
+    runUsed: state.runUsed,
+    floorFresh: state.floorFresh,
+    healUsed: state.healUsed,
+    firstFloorDealt: state.firstFloorDealt,
+  };
+  
+  stateHistory.push(stateCopy);
+  
+  // Keep only the last MAX_HISTORY states
+  if (stateHistory.length > MAX_HISTORY) {
+    stateHistory.shift();
+  }
+  
+  updateUndoButton();
+}
+
+function restoreStateFromHistory() {
+  if (stateHistory.length === 0) return;
+  
+  const previousState = stateHistory.pop();
+  
+  // Restore all state properties
+  state.deck = previousState.deck.map(c => ({...c}));
+  state.discard = previousState.discard.map(c => ({...c}));
+  state.floor = previousState.floor.map(c => c ? {...c} : null);
+  state.weapon = previousState.weapon ? {...previousState.weapon} : null;
+  state.weaponDamage = previousState.weaponDamage.map(c => ({...c}));
+  state.weaponMaxNext = previousState.weaponMaxNext;
+  state.health = previousState.health;
+  state.floorNumber = previousState.floorNumber;
+  state.runUsed = previousState.runUsed;
+  state.floorFresh = previousState.floorFresh;
+  state.healUsed = previousState.healUsed;
+  state.firstFloorDealt = previousState.firstFloorDealt;
+  
+  render();
+  updateUndoButton();
+  setStatus("Undone last action.");
+}
+
+function updateUndoButton() {
+  const btn = document.getElementById("undoButton");
+  if (btn) {
+    btn.disabled = stateHistory.length === 0;
+  }
 }
 
 function postAction() {
@@ -962,6 +1036,10 @@ function setupButtons() {
   document.getElementById("loseNewGameBtn").addEventListener("click", () => {
     hideLoseModal();
     initGame();
+  });
+
+  document.getElementById("undoButton").addEventListener("click", () => {
+    restoreStateFromHistory();
   });
 
   // Make deck clickable to deal first floor
