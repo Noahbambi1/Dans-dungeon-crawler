@@ -286,7 +286,7 @@ main {
   box-shadow: 
     0 4px 8px rgba(0, 0, 0, 0.2),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  overflow: hidden;
+  overflow: visible;
   flex-shrink: 0;
   position: relative;
 }
@@ -304,7 +304,7 @@ main {
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
   height: calc(var(--card-height) + 100px);
   max-height: calc(var(--card-height) + 100px);
-  overflow: hidden;
+  overflow: visible;
 }
 
 .pile-title,
@@ -548,7 +548,7 @@ main {
   height: calc(var(--card-height) + 40px);
   max-height: calc(var(--card-height) + 40px);
   padding: 10px;
-  overflow: hidden;
+  overflow: visible;
   position: relative;
 }
 
