@@ -615,8 +615,71 @@ main {
 
 /* Royal Monster Graphics */
 .card.monster-royal .suit {
-  font-size: 2.2rem;
-  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.2)) saturate(0.85);
+  font-size: 2.4rem;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
+  animation: monsterIdle 4s ease-in-out infinite;
+  transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+/* Idle breathing animation */
+@keyframes monsterIdle {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1);
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
+  }
+  25% {
+    transform: translate(-50%, -50%) scale(1.02);
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1);
+    filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.5)) brightness(1.1);
+  }
+  75% {
+    transform: translate(-50%, -50%) scale(1.02);
+  }
+}
+
+/* Hover animation for monster royals */
+.card.monster-royal:hover .suit {
+  animation: monsterHover 0.6s ease-in-out infinite;
+  filter: drop-shadow(0 4px 12px rgba(255, 100, 50, 0.6)) brightness(1.15);
+}
+
+@keyframes monsterHover {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1.1) rotate(0deg);
+  }
+  25% {
+    transform: translate(-50%, -50%) scale(1.15) rotate(-3deg);
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.1) rotate(0deg);
+  }
+  75% {
+    transform: translate(-50%, -50%) scale(1.15) rotate(3deg);
+  }
+}
+
+/* Subtle glow behind monster on hover */
+.card.monster-royal::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 50px;
+  height: 50px;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(255, 120, 50, 0) 0%, rgba(255, 120, 50, 0) 100%);
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.card.monster-royal:hover::before {
+  width: 70px;
+  height: 70px;
+  background: radial-gradient(circle, rgba(255, 120, 50, 0.4) 0%, rgba(255, 80, 30, 0) 70%);
 }
 
 .card.monster-royal::after {
@@ -624,8 +687,7 @@ main {
   position: absolute;
   inset: 0;
   background: 
-    linear-gradient(180deg, transparent 40%, rgba(101, 85, 60, 0.12) 100%),
-    radial-gradient(ellipse at 50% 0%, rgba(255, 250, 240, 0.15) 0%, transparent 60%);
+    linear-gradient(180deg, transparent 50%, rgba(80, 60, 40, 0.08) 100%);
   border-radius: var(--card-radius);
   pointer-events: none;
 }
