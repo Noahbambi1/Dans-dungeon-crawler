@@ -129,6 +129,7 @@ body::after {
   border-radius: 12px;
   flex-wrap: wrap;
   flex-shrink: 0;
+  position: relative;
 }
 
 .logo {
@@ -412,9 +413,12 @@ main {
 .action-row {
   display: flex;
   justify-content: center;
-  gap: var(--spacing-md);
+  gap: var(--spacing-lg);
   flex-wrap: wrap;
   flex-shrink: 0;
+  max-width: 600px;
+  margin: 0 auto;
+  width: 100%;
 }
 
 .action-slot {
@@ -542,6 +546,9 @@ main {
   align-items: center;
   gap: var(--spacing-sm);
   flex-shrink: 0;
+  max-width: 600px;
+  margin: 0 auto;
+  width: 100%;
 }
 
 .weapon-info-bar {
@@ -1933,22 +1940,51 @@ main {
     padding: var(--spacing-sm);
     border-radius: 12px;
     flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--spacing-sm);
+  }
+  
+  /* First row: burger, title (centered), health */
+  .burger-menu-btn {
+    display: flex;
+    flex-shrink: 0;
+  }
+  
+  .logo {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
   }
   
   .logo .title {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
+    text-align: center;
   }
   
   .logo .subtitle {
-    font-size: 0.65rem;
+    font-size: 0.6rem;
+    text-align: center;
+  }
+  
+  .health-block {
+    flex-shrink: 0;
+    max-width: 120px;
   }
   
   .health-bar-container {
-    height: 20px;
+    height: 18px;
   }
   
   .health-value {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
+  }
+  
+  .health-label {
+    font-size: 0.6rem;
+  }
+  
+  .floor-value {
+    font-size: 0.7rem;
   }
   
   /* Mobile controls - show by default, can be minimized */
@@ -1969,25 +2005,8 @@ main {
     display: none;
   }
   
-  .burger-menu-btn {
-    display: flex;
-    order: -1;
-    flex-shrink: 0;
-  }
-  
   .mobile-menu-overlay {
     display: none;
-  }
-  
-  .top-bar {
-    justify-content: flex-start;
-    flex-wrap: wrap;
-    gap: var(--spacing-sm);
-  }
-  
-  .health-block {
-    flex: 1;
-    margin-left: auto;
   }
   
   .control-btn {
