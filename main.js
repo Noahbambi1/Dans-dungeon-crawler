@@ -13,14 +13,10 @@ const PANTRY_API_URL = "https://getpantry.cloud/apiv1/pantry";
 const PANTRY_ID = "YOUR_PANTRY_ID_HERE"; // Replace with your Pantry ID
 const LEADERBOARD_BASKET = "globalLeaderboard";
 const MAX_LEADERBOARD_SIZE = 100;
-
-let leaderboard = {};
-let currentPlayerName = loadCurrentPlayer();
-let isSyncing = false;
-let lastSyncTime = 0;
 const SYNC_COOLDOWN = 5000; // 5 seconds between syncs
 
 // Random name generator for anonymous players
+// NOTE: These must be defined BEFORE loadCurrentPlayer() is called
 const NAME_ADJECTIVES = [
   "Swift", "Brave", "Clever", "Dark", "Epic", "Fierce", "Ghostly", "Hidden",
   "Iron", "Jade", "Keen", "Lucky", "Mystic", "Noble", "Proud", "Quick",
@@ -41,6 +37,12 @@ function generateRandomName() {
   const num = Math.floor(Math.random() * 100);
   return `${adj}${noun}${num}`;
 }
+
+// State variables - initialized AFTER all dependencies are defined
+let leaderboard = {};
+let currentPlayerName = loadCurrentPlayer();
+let isSyncing = false;
+let lastSyncTime = 0;
 
 function loadCurrentPlayer() {
   try {
