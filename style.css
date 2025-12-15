@@ -557,19 +557,6 @@ main {
   z-index: 10;
 }
 
-/* Vintage inner border and vignette for face cards */
-.card.red::before,
-.card.black::before {
-  content: '';
-  position: absolute;
-  inset: 4px;
-  border: 1px solid rgba(140, 125, 100, 0.25);
-  border-radius: 4px;
-  background: 
-    radial-gradient(ellipse at center, transparent 60%, rgba(100, 85, 65, 0.08) 100%);
-  pointer-events: none;
-}
-
 .card:active {
   cursor: grabbing;
 }
@@ -579,16 +566,13 @@ main {
 .card.black {
   background: 
     /* Paper texture overlay */
-    url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E"),
-    /* Aged paper gradient */
-    linear-gradient(145deg, #e8e4dc 0%, #d9d4c8 50%, #cec8ba 100%);
-  border: 1px solid #a89f8f;
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.05'/%3E%3C/svg%3E"),
+    /* Aged paper gradient - lighter */
+    linear-gradient(145deg, #f5f2ec 0%, #ebe7df 50%, #e2ddd3 100%);
+  border: 1px solid #c5baa8;
   box-shadow: 
-    0 4px 12px rgba(0, 0, 0, 0.35),
-    inset 0 1px 0 rgba(255, 255, 255, 0.4),
-    inset 0 -1px 2px rgba(0, 0, 0, 0.05);
-  /* Subtle worn edges effect */
-  filter: contrast(0.95);
+    0 4px 12px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
 }
 
 .card.red {
