@@ -631,16 +631,47 @@ function refillIfNeeded() {
 function checkHealth() {
   if (state.health <= 0) {
     state.health = 0;
-    setStatus("You have been defeated. Restarting game.");
-    setTimeout(initGame, 800);
+    setStatus("You have been defeated!");
+    setTimeout(() => showLoseModal(), 500);
   }
 }
 
 function checkWin() {
   if (state.deck.length === 0 && state.floor.length === 0) {
-    setStatus("You cleared the dungeon! Restarting game.");
-    setTimeout(initGame, 1000);
+    setStatus("You cleared the dungeon!");
+    setTimeout(() => showWinModal(), 500);
   }
+}
+
+function showWinModal() {
+  const modal = document.getElementById("winModal");
+  modal.classList.add("show");
+  // Trigger streamer animation
+  setTimeout(() => {
+    document.querySelectorAll(".streamer").forEach((streamer, index) => {
+      setTimeout(() => {
+        streamer.classList.add("animate");
+      }, index * 100);
+    });
+  }, 100);
+}
+
+function hideWinModal() {
+  const modal = document.getElementById("winModal");
+  modal.classList.remove("show");
+  document.querySelectorAll(".streamer").forEach(streamer => {
+    streamer.classList.remove("animate");
+  });
+}
+
+function showLoseModal() {
+  const modal = document.getElementById("loseModal");
+  modal.classList.add("show");
+}
+
+function hideLoseModal() {
+  const modal = document.getElementById("loseModal");
+  modal.classList.remove("show");
 }
 
 function safeParse(str) {
@@ -696,6 +727,21 @@ function setupButtons() {
     if (confirm("Restart this game? This will reshuffle the current deck.")) {
       restartGame();
     }
+  });
+
+  document.getElementById("winNewGameBtn").addEventListener("click", () => {
+    hideWinModal();
+    initGame();
+  });
+
+  document.getElementById("loseRestartBtn").addEventListener("click", () => {
+    hideLoseModal();
+    restartGame();
+  });
+
+  document.getElementById("loseNewGameBtn").addEventListener("click", () => {
+    hideLoseModal();
+    initGame();
   });
 }
 

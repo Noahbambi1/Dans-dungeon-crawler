@@ -78,6 +78,39 @@
     </footer>
 
     <div id="animationOverlay"></div>
+
+    <!-- Win Modal -->
+    <div id="winModal" class="game-modal">
+      <div class="modal-content win-content">
+        <div class="celebration">
+          <div class="streamer streamer-1"></div>
+          <div class="streamer streamer-2"></div>
+          <div class="streamer streamer-3"></div>
+          <div class="streamer streamer-4"></div>
+          <div class="streamer streamer-5"></div>
+          <div class="streamer streamer-6"></div>
+          <div class="streamer streamer-7"></div>
+          <div class="streamer streamer-8"></div>
+        </div>
+        <h2 class="modal-title win-title">🎉 You Win! 🎉</h2>
+        <p class="modal-message">You cleared the dungeon!</p>
+        <div class="modal-buttons">
+          <button id="winNewGameBtn" class="control-btn new-game-btn">New Game</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Lose Modal -->
+    <div id="loseModal" class="game-modal">
+      <div class="modal-content lose-content">
+        <h2 class="modal-title lose-title">💀 You Lose 💀</h2>
+        <p class="modal-message">You have been defeated!</p>
+        <div class="modal-buttons">
+          <button id="loseRestartBtn" class="control-btn restart-btn">Restart Game</button>
+          <button id="loseNewGameBtn" class="control-btn new-game-btn">New Game</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script type="module" src="main.js"></script>
