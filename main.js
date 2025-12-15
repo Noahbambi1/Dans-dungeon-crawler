@@ -377,7 +377,7 @@ function renderDiscard() {
     el.classList.add("stacked");
     el.style.position = "absolute";
     el.style.zIndex = index + 1;
-    el.style.transform = `translate(${index * 10}px, ${index * 10}px)`;
+    el.style.transform = `translateY(${index * 3}px)`;
     el.style.transition = "transform 0.12s ease";
     stackContainer.appendChild(el);
   });
