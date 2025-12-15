@@ -118,7 +118,7 @@ function renderWeapon() {
   if (!state.weapon) {
     const empty = document.createElement("div");
     empty.className = "slot-drop";
-    empty.textContent = "No weapon equipped";
+    empty.textContent = "Drop diamonds to equip";
     slot.appendChild(empty);
     return;
   }
@@ -142,7 +142,7 @@ function renderWeaponDamage() {
   if (state.weaponDamage.length === 0) {
     const empty = document.createElement("div");
     empty.className = "slot-drop";
-    empty.textContent = "No defeated monsters yet";
+    empty.textContent = "Monsters defeated";
     slot.appendChild(empty);
     return;
   }

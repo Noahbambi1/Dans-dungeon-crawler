@@ -9,6 +9,8 @@
   --panel: rgba(255, 255, 255, 0.06);
   --panel-border: rgba(255, 255, 255, 0.1);
   --glow: rgba(14, 165, 233, 0.45);
+  --card-width: 120px;
+  --card-height: 168px;
 }
 
 body {
@@ -19,36 +21,39 @@ body {
     #0b1221;
   color: #e5e7eb;
   min-height: 100vh;
-  padding: 16px;
+  padding: 12px;
+  overflow-x: hidden;
 }
 
 #app {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 .top-bar {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: auto 1fr 1fr 1fr;
   gap: 12px;
   background: rgba(255, 255, 255, 0.05);
-  padding: 12px;
+  padding: 10px;
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.1);
+  align-items: center;
 }
 
 .logo .title {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 700;
+  white-space: nowrap;
 }
 
 .logo .subtitle {
   display: block;
   color: #9ca3af;
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .health-block,
@@ -61,24 +66,33 @@ body {
 
 .health-value,
 .floor-value {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 700;
+}
+
+.health-label,
+.heal-label {
+  font-size: 12px;
+  color: #94a3b8;
 }
 
 .health-drop,
 .heal-drop,
 .slot-drop,
 .pile-drop {
-  border: 1px dashed rgba(255, 255, 255, 0.3);
-  padding: 8px;
-  border-radius: 8px;
-  min-height: 60px;
+  width: var(--card-width);
+  height: var(--card-height);
+  border: 2px dashed rgba(255, 255, 255, 0.3);
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
   color: #cbd5e1;
+  font-size: 11px;
+  padding: 8px;
   transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
+  flex-shrink: 0;
 }
 
 .drop-target:hover {
@@ -86,14 +100,26 @@ body {
   transform: translateY(-1px);
 }
 
-.deck-area,
+.deck-area {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
 .equipment-area {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 12px;
 }
 
-.pile,
+.pile {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+}
+
 .slot {
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -109,30 +135,34 @@ body {
 .floor-label {
   color: #cbd5e1;
   font-weight: 600;
+  font-size: 13px;
+  text-align: center;
 }
 
 .pile-count {
-  font-size: 14px;
+  font-size: 12px;
   color: #94a3b8;
+  text-align: center;
 }
 
 .floor-area {
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 12px;
-  padding: 12px;
+  padding: 10px;
 }
 
 .floor-row {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  display: flex;
   gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .card {
-  width: 100%;
-  aspect-ratio: 3 / 4.2;
-  border-radius: 12px;
+  width: var(--card-width);
+  height: var(--card-height);
+  border-radius: 10px;
   background: linear-gradient(145deg, #fdfefe, #eef2f7);
   color: #0f172a;
   border: 1px solid #d6dbe5;
@@ -147,6 +177,7 @@ body {
   user-select: none;
   overflow: hidden;
   transition: transform 0.12s ease, box-shadow 0.12s ease;
+  flex-shrink: 0;
 }
 
 .card::after {
@@ -170,32 +201,47 @@ body {
 }
 
 .card.small {
-  width: 90%;
-  aspect-ratio: 3 / 4.2;
+  width: calc(var(--card-width) * 0.7);
+  height: calc(var(--card-height) * 0.7);
   box-shadow: none;
   border-width: 1px;
 }
 
+.card.small .corner {
+  font-size: 10px;
+  top: 4px;
+  left: 5px;
+}
+
+.card.small .corner.bottom {
+  bottom: 4px;
+  right: 5px;
+}
+
+.card.small .suit {
+  font-size: 20px;
+}
+
 .card .corner {
   position: absolute;
-  top: 8px;
-  left: 10px;
+  top: 6px;
+  left: 8px;
   text-align: left;
-  line-height: 1.15;
-  font-size: 18px;
+  line-height: 1.1;
+  font-size: 14px;
   font-weight: 800;
 }
 
 .card .corner.bottom {
   top: auto;
   left: auto;
-  bottom: 8px;
-  right: 10px;
+  bottom: 6px;
+  right: 8px;
   transform: rotate(180deg);
 }
 
 .card .suit {
-  font-size: 40px;
+  font-size: 32px;
 }
 
 .card.red {
@@ -241,12 +287,43 @@ body {
 }
 
 .card.back {
-  background:
-    radial-gradient(circle at 30% 30%, rgba(14, 165, 233, 0.2), transparent 45%),
-    radial-gradient(circle at 70% 70%, rgba(94, 234, 212, 0.18), transparent 45%),
-    repeating-linear-gradient(45deg, #0f172a 0, #0f172a 8px, #111827 8px, #111827 16px);
-  border: 2px solid #0ea5e9;
+  background: 
+    radial-gradient(circle at 50% 50%, rgba(220, 38, 38, 0.15) 0%, transparent 50%),
+    repeating-linear-gradient(
+      45deg,
+      #1a1a2e 0px,
+      #1a1a2e 20px,
+      #16213e 20px,
+      #16213e 40px
+    ),
+    linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  border: 2px solid #334155;
   color: #e0f2fe;
+  position: relative;
+}
+
+.card.back::before {
+  content: '';
+  position: absolute;
+  inset: 8px;
+  border: 2px solid rgba(220, 38, 38, 0.4);
+  border-radius: 6px;
+  background: 
+    radial-gradient(circle at 30% 30%, rgba(220, 38, 38, 0.1), transparent 60%),
+    radial-gradient(circle at 70% 70%, rgba(220, 38, 38, 0.1), transparent 60%);
+}
+
+.card.back::after {
+  content: '♠♥♦♣';
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+  color: rgba(220, 38, 38, 0.25);
+  letter-spacing: 8px;
+  font-weight: 900;
 }
 
 .drop-target.highlight {
@@ -254,23 +331,33 @@ body {
   box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.4);
 }
 
-.equipment-area #weaponSlot,
-.equipment-area #weaponDamageSlot {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+.equipment-area #weaponSlot {
+  display: flex;
   gap: 6px;
+  min-height: var(--card-height);
+  align-items: flex-start;
+}
+
+.equipment-area #weaponDamageSlot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-height: var(--card-height);
+  align-items: flex-start;
 }
 
 .run-btn,
 .small-btn {
-  padding: 8px 10px;
+  padding: 6px 10px;
   border: none;
-  border-radius: 8px;
+  border-radius: 6px;
   background: #0ea5e9;
   color: #0b1020;
   font-weight: 700;
+  font-size: 12px;
   cursor: pointer;
   transition: transform 0.1s ease, opacity 0.2s ease;
+  white-space: nowrap;
 }
 
 .run-btn:disabled,
@@ -282,18 +369,18 @@ body {
 }
 
 .run-hint {
-  font-size: 12px;
+  font-size: 10px;
   color: #94a3b8;
 }
 
 .status-bar {
   background: rgba(0, 0, 0, 0.35);
   border-radius: 10px;
-  padding: 10px 12px;
-  min-height: 32px;
+  padding: 8px 12px;
+  min-height: 28px;
   border: 1px solid rgba(255, 255, 255, 0.06);
   color: #e2e8f0;
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .health-drop {
@@ -312,14 +399,15 @@ body {
   background: rgba(14, 165, 233, 0.08);
 }
 
-.top-bar .health-block .health-drop {
-  min-height: 72px;
-}
-
 .floor-row .empty {
-  border: 1px dashed rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
-  min-height: 60px;
+  width: var(--card-width);
+  height: var(--card-height);
+  border: 2px dashed rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
 }
 
 .weapon-info {
