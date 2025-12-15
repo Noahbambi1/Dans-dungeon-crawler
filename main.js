@@ -1,7 +1,146 @@
 const SUITS = ["hearts", "diamonds", "clubs", "spades"];
 const RANKS = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
 
-const MAX_HEALTH = 20;
+// ============================================
+// GAME BALANCE SETTINGS
+// ============================================
+// These settings can be adjusted to change difficulty
+// Default settings give ~0.25% win rate with perfect play
+
+const gameSettings = {
+  // Starting/max health (default: 20)
+  // Higher = easier. Try 25 or 30 for easier games
+  maxHealth: 20,
+
+  // Weapon degradation mode:
+  // "strict" (default) - weapon can only fight monsters LESS than last killed
+  // "equal" - weapon can fight monsters LESS OR EQUAL to last killed  
+  // "none" - weapon never degrades (very easy)
+  weaponDegradation: "strict",
+
+  // Number of times you can run away per game (default: 1)
+  // Try 2 or 3 for easier games, 0 for harder
+  maxRuns: 1,
+
+  // Healing limit per floor:
+  // "once" (default) - only first heart heals each floor
+  // "unlimited" - all hearts heal
+  healingMode: "once",
+
+  // Include diamond royals (J, Q, K) as weapons?
+  // false (default) - only 2-10 diamonds
+  // true - adds 11, 12, 13 value weapons (much easier!)
+  includeDiamondRoyals: false,
+
+  // Include heart royals (J, Q, K) as healing?
+  // false (default) - only 2-10 hearts  
+  // true - adds 11, 12, 13 value heals
+  includeHeartRoyals: false,
+
+  // Remove aces from monster deck?
+  // false (default) - aces are 14-value monsters
+  // true - no ace monsters (removes 28 total damage)
+  removeAceMonsters: false,
+};
+
+// Preset difficulty levels
+const DIFFICULTY_PRESETS = {
+  brutal: {
+    maxHealth: 20,
+    weaponDegradation: "strict",
+    maxRuns: 1,
+    healingMode: "once",
+    includeDiamondRoyals: false,
+    includeHeartRoyals: false,
+    removeAceMonsters: false,
+  },
+  hard: {
+    maxHealth: 25,
+    weaponDegradation: "strict",
+    maxRuns: 2,
+    healingMode: "once",
+    includeDiamondRoyals: false,
+    includeHeartRoyals: false,
+    removeAceMonsters: false,
+  },
+  normal: {
+    maxHealth: 25,
+    weaponDegradation: "equal",
+    maxRuns: 2,
+    healingMode: "once",
+    includeDiamondRoyals: false,
+    includeHeartRoyals: false,
+    removeAceMonsters: true,
+  },
+  easy: {
+    maxHealth: 30,
+    weaponDegradation: "equal",
+    maxRuns: 3,
+    healingMode: "unlimited",
+    includeDiamondRoyals: true,
+    includeHeartRoyals: false,
+    removeAceMonsters: true,
+  },
+  casual: {
+    maxHealth: 35,
+    weaponDegradation: "none",
+    maxRuns: 999,
+    healingMode: "unlimited",
+    includeDiamondRoyals: true,
+    includeHeartRoyals: true,
+    removeAceMonsters: true,
+  },
+};
+
+function applyDifficultyPreset(presetName) {
+  const preset = DIFFICULTY_PRESETS[presetName];
+  if (preset) {
+    Object.assign(gameSettings, preset);
+    updateSettingsUI();
+  }
+}
+
+function updateSettingsUI() {
+  const els = {
+    maxHealth: document.getElementById("settingMaxHealth"),
+    weaponDegradation: document.getElementById("settingWeaponDegradation"),
+    maxRuns: document.getElementById("settingMaxRuns"),
+    healingMode: document.getElementById("settingHealingMode"),
+    includeDiamondRoyals: document.getElementById("settingDiamondRoyals"),
+    includeHeartRoyals: document.getElementById("settingHeartRoyals"),
+    removeAceMonsters: document.getElementById("settingRemoveAces"),
+  };
+  
+  if (els.maxHealth) els.maxHealth.value = gameSettings.maxHealth;
+  if (els.weaponDegradation) els.weaponDegradation.value = gameSettings.weaponDegradation;
+  if (els.maxRuns) els.maxRuns.value = gameSettings.maxRuns;
+  if (els.healingMode) els.healingMode.value = gameSettings.healingMode;
+  if (els.includeDiamondRoyals) els.includeDiamondRoyals.checked = gameSettings.includeDiamondRoyals;
+  if (els.includeHeartRoyals) els.includeHeartRoyals.checked = gameSettings.includeHeartRoyals;
+  if (els.removeAceMonsters) els.removeAceMonsters.checked = gameSettings.removeAceMonsters;
+}
+
+function readSettingsFromUI() {
+  const els = {
+    maxHealth: document.getElementById("settingMaxHealth"),
+    weaponDegradation: document.getElementById("settingWeaponDegradation"),
+    maxRuns: document.getElementById("settingMaxRuns"),
+    healingMode: document.getElementById("settingHealingMode"),
+    includeDiamondRoyals: document.getElementById("settingDiamondRoyals"),
+    includeHeartRoyals: document.getElementById("settingHeartRoyals"),
+    removeAceMonsters: document.getElementById("settingRemoveAces"),
+  };
+  
+  if (els.maxHealth) gameSettings.maxHealth = parseInt(els.maxHealth.value) || 20;
+  if (els.weaponDegradation) gameSettings.weaponDegradation = els.weaponDegradation.value;
+  if (els.maxRuns) gameSettings.maxRuns = parseInt(els.maxRuns.value) || 1;
+  if (els.healingMode) gameSettings.healingMode = els.healingMode.value;
+  if (els.includeDiamondRoyals) gameSettings.includeDiamondRoyals = els.includeDiamondRoyals.checked;
+  if (els.includeHeartRoyals) gameSettings.includeHeartRoyals = els.includeHeartRoyals.checked;
+  if (els.removeAceMonsters) gameSettings.removeAceMonsters = els.removeAceMonsters.checked;
+}
+
+// ============================================
 
 const state = {
   deck: [],
@@ -9,12 +148,12 @@ const state = {
   floor: [],
   weapon: null,
   weaponDamage: [],
-  weaponMaxNext: Infinity, // highest monster value weapon can still face (strictly decreasing)
-  health: MAX_HEALTH,
+  weaponMaxNext: Infinity, // highest monster value weapon can still face (based on degradation mode)
+  health: 20, // Will be set from gameSettings on init
   floorNumber: 1,
-  runUsed: false,
+  runsRemaining: 1, // Will be set from gameSettings on init
   floorFresh: true, // true when no actions taken on current floor
-  healUsed: false, // true if heal has been used on current floor
+  healUsed: false, // true if heal has been used on current floor (in "once" mode)
   originalDeck: [], // Store original deck for restart
   initialDeckOrder: [], // Store the exact deck order for restart (same shuffle)
   firstFloorDealt: false, // Track if first floor has been dealt
@@ -115,10 +254,23 @@ function buildDeck() {
     for (const rank of RANKS) {
       const color = suit === "hearts" || suit === "diamonds" ? "red" : "black";
       const value = rankValue(rank, suit);
-      const isRedRoyal = color === "red" && ["J", "Q", "K"].includes(rank);
-      const isRedAce = color === "red" && rank === "A";
-      if (isRedRoyal || isRedAce) continue;
-      // No jokers are generated.
+      const isRoyal = ["J", "Q", "K"].includes(rank);
+      const isAce = rank === "A";
+      
+      // Apply game settings to filter cards
+      
+      // Red aces are always excluded
+      if (color === "red" && isAce) continue;
+      
+      // Diamond royals: excluded by default, included if setting enabled
+      if (suit === "diamonds" && isRoyal && !gameSettings.includeDiamondRoyals) continue;
+      
+      // Heart royals: excluded by default, included if setting enabled
+      if (suit === "hearts" && isRoyal && !gameSettings.includeHeartRoyals) continue;
+      
+      // Ace monsters: included by default, excluded if setting enabled
+      if ((suit === "clubs" || suit === "spades") && isAce && gameSettings.removeAceMonsters) continue;
+      
       cards.push({
         id: `${suit}-${rank}-${Math.random().toString(16).slice(2)}`,
         suit,
@@ -159,9 +311,9 @@ function initGame() {
   state.weapon = null;
   state.weaponDamage = [];
   state.weaponMaxNext = Infinity;
-  state.health = MAX_HEALTH;
+  state.health = gameSettings.maxHealth;
   state.floorNumber = 1;
-  state.runUsed = false;
+  state.runsRemaining = gameSettings.maxRuns;
   state.floorFresh = true;
   state.healUsed = false;
   state.firstFloorDealt = false;
@@ -173,7 +325,7 @@ function initGame() {
   render();
   updateUndoButton();
   // Initialize health bar
-  const healthPercent = (state.health / MAX_HEALTH) * 100;
+  const healthPercent = (state.health / gameSettings.maxHealth) * 100;
   document.getElementById("healthBar").style.width = `${healthPercent}%`;
 }
 
@@ -192,9 +344,9 @@ function restartGame() {
   state.weapon = null;
   state.weaponDamage = [];
   state.weaponMaxNext = Infinity;
-  state.health = MAX_HEALTH;
+  state.health = gameSettings.maxHealth;
   state.floorNumber = 1;
-  state.runUsed = false;
+  state.runsRemaining = gameSettings.maxRuns;
   state.floorFresh = true;
   state.healUsed = false;
   state.firstFloorDealt = false;
@@ -206,7 +358,7 @@ function restartGame() {
   render();
   updateUndoButton();
   // Initialize health bar
-  const healthPercent = (state.health / MAX_HEALTH) * 100;
+  const healthPercent = (state.health / gameSettings.maxHealth) * 100;
   document.getElementById("healthBar").style.width = `${healthPercent}%`;
 }
 
@@ -260,11 +412,11 @@ function render() {
   }
 
   document.getElementById("discardCount").textContent = `${state.discard.length} cards`;
-  document.getElementById("healthValue").textContent = `${state.health} / ${MAX_HEALTH}`;
+  document.getElementById("healthValue").textContent = `${state.health} / ${gameSettings.maxHealth}`;
   document.getElementById("floorValue").textContent = state.floorNumber;
   
   // Update health bar
-  const healthPercent = (state.health / MAX_HEALTH) * 100;
+  const healthPercent = (state.health / gameSettings.maxHealth) * 100;
   document.getElementById("healthBar").style.width = `${healthPercent}%`;
 
   renderDeck();
@@ -292,10 +444,18 @@ function renderWeapon() {
 
   const info = document.createElement("div");
   info.className = "weapon-info";
-  info.textContent =
-    state.weaponDamage.length === 0
-      ? "Fresh weapon"
-      : `Can attack monsters ≤ ${Math.max(2, state.weaponMaxNext)}`;
+  
+  if (gameSettings.weaponDegradation === "none") {
+    info.textContent = "No degradation";
+  } else if (state.weaponDamage.length === 0) {
+    info.textContent = "Fresh weapon";
+  } else {
+    const comparison = gameSettings.weaponDegradation === "strict" ? "<" : "≤";
+    const maxVal = gameSettings.weaponDegradation === "strict" 
+      ? Math.max(2, state.weaponMaxNext + 1)
+      : Math.max(2, state.weaponMaxNext);
+    info.textContent = `Can attack monsters ${comparison} ${maxVal}`;
+  }
   slot.appendChild(info);
 }
 
@@ -387,8 +547,16 @@ function renderDiscard() {
 
 function renderRunButton() {
   const btn = document.getElementById("runButton");
-  btn.disabled = state.runUsed || !state.floorFresh || getFloorCardCount() === 0;
-  btn.textContent = state.runUsed ? "Run used" : "Run away (once)";
+  const canRun = state.runsRemaining > 0 && state.floorFresh && getFloorCardCount() > 0;
+  btn.disabled = !canRun;
+  
+  if (state.runsRemaining <= 0) {
+    btn.textContent = "No runs left";
+  } else if (gameSettings.maxRuns === 1) {
+    btn.textContent = "Run away (once)";
+  } else {
+    btn.textContent = `Run away (${state.runsRemaining} left)`;
+  }
 }
 
 function createCardEl(card) {
@@ -510,18 +678,19 @@ function handleHealDrop(card, from) {
   state.discard.push(card);
   state.floorFresh = false;
   
-  // Heal only works once per floor
-  if (state.healUsed) {
+  // Check healing mode
+  const canHeal = gameSettings.healingMode === "unlimited" || !state.healUsed;
+  
+  if (!canHeal) {
     setStatus(`Used ${card.rank} of hearts, but healing only works once per floor.`);
     postAction();
     return;
   }
   
-  // First heal on this floor - apply healing
+  // Apply healing
   state.healUsed = true;
-  const before = state.health;
-  const healed = Math.min(MAX_HEALTH, state.health + card.value) - state.health;
-  state.health = Math.min(MAX_HEALTH, state.health + card.value);
+  const healed = Math.min(gameSettings.maxHealth, state.health + card.value) - state.health;
+  state.health = Math.min(gameSettings.maxHealth, state.health + card.value);
   setStatus(`Healed ${healed} health with ${card.rank} of hearts.`);
   if (healed > 0) {
     showHealAnimation(healed);
@@ -585,17 +754,29 @@ function handleMonsterOnWeapon(monsterCard, monsterEl) {
     return false;
   }
   const monsterValue = monsterCard.value;
-  if (monsterValue > state.weaponMaxNext) {
+  
+  // Check weapon degradation based on settings
+  if (gameSettings.weaponDegradation !== "none" && monsterValue > state.weaponMaxNext) {
+    const comparison = gameSettings.weaponDegradation === "strict" ? "<" : "≤";
     setStatus(
-      `Weapon can only fight monsters ≤ ${Math.max(2, state.weaponMaxNext)} now.`
+      `Weapon can only fight monsters ${comparison} ${Math.max(2, state.weaponMaxNext + (gameSettings.weaponDegradation === "equal" ? 1 : 0))} now.`
     );
     return false;
   }
+  
   const damage = Math.max(0, monsterValue - state.weapon.value);
   state.health -= damage;
   // Track defeated monster for weapon degradation (keep in weaponDamage, not discard yet)
   state.weaponDamage.push(monsterCard);
-  state.weaponMaxNext = Math.min(state.weaponMaxNext, monsterValue - 1);
+  
+  // Apply weapon degradation based on mode
+  if (gameSettings.weaponDegradation === "strict") {
+    state.weaponMaxNext = Math.min(state.weaponMaxNext, monsterValue - 1);
+  } else if (gameSettings.weaponDegradation === "equal") {
+    state.weaponMaxNext = Math.min(state.weaponMaxNext, monsterValue);
+  }
+  // "none" mode: weaponMaxNext stays at Infinity
+  
   state.floorFresh = false;
   setStatus(
     `Fought ${monsterCard.rank} ${monsterCard.suit} (power ${monsterValue}). Took ${damage} damage.`
@@ -649,7 +830,7 @@ function saveStateToHistory() {
     weaponMaxNext: state.weaponMaxNext,
     health: state.health,
     floorNumber: state.floorNumber,
-    runUsed: state.runUsed,
+    runsRemaining: state.runsRemaining,
     floorFresh: state.floorFresh,
     healUsed: state.healUsed,
     firstFloorDealt: state.firstFloorDealt,
@@ -679,7 +860,7 @@ function restoreStateFromHistory() {
   state.weaponMaxNext = previousState.weaponMaxNext;
   state.health = previousState.health;
   state.floorNumber = previousState.floorNumber;
-  state.runUsed = previousState.runUsed;
+  state.runsRemaining = previousState.runsRemaining;
   state.floorFresh = previousState.floorFresh;
   state.healUsed = previousState.healUsed;
   state.firstFloorDealt = previousState.firstFloorDealt;
@@ -877,7 +1058,7 @@ function handleRunAway() {
   // Reset floor
   state.floor = [null, null, null, null];
   
-  state.runUsed = true;
+  state.runsRemaining -= 1;
   state.floorFresh = true;
   state.healUsed = false;
   state.floorNumber += 1;
@@ -990,7 +1171,7 @@ function safeParse(str) {
 
 function setupButtons() {
   document.getElementById("runButton").addEventListener("click", () => {
-    if (state.runUsed) return;
+    if (state.runsRemaining <= 0) return;
     if (!state.floorFresh) {
       setStatus("You can only run at the start of a floor.");
       return;
@@ -1059,6 +1240,49 @@ function setupButtons() {
       dealFirstFloor();
     }
   });
+
+  // Settings button
+  const settingsBtn = document.getElementById("settingsButton");
+  if (settingsBtn) {
+    settingsBtn.addEventListener("click", showSettingsModal);
+  }
+
+  // Settings modal buttons
+  const closeSettingsBtn = document.getElementById("closeSettingsBtn");
+  if (closeSettingsBtn) {
+    closeSettingsBtn.addEventListener("click", hideSettingsModal);
+  }
+
+  const applySettingsBtn = document.getElementById("applySettingsBtn");
+  if (applySettingsBtn) {
+    applySettingsBtn.addEventListener("click", () => {
+      readSettingsFromUI();
+      hideSettingsModal();
+      initGame(); // Start new game with new settings
+    });
+  }
+
+  // Difficulty preset buttons
+  document.querySelectorAll("[data-preset]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      applyDifficultyPreset(btn.dataset.preset);
+    });
+  });
+}
+
+function showSettingsModal() {
+  const modal = document.getElementById("settingsModal");
+  if (modal) {
+    updateSettingsUI();
+    modal.classList.add("show");
+  }
+}
+
+function hideSettingsModal() {
+  const modal = document.getElementById("settingsModal");
+  if (modal) {
+    modal.classList.remove("show");
+  }
 }
 
 // Touch drag and drop support for mobile
