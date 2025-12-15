@@ -73,7 +73,7 @@ body::before {
     );
   border-radius: 20px;
   padding: 15px;
-  padding-top: 15px;
+  padding-right: 170px; /* Space for discard pile */
   box-shadow: 
     0 20px 60px rgba(0, 0, 0, 0.5),
     inset 0 0 100px rgba(0, 0, 0, 0.2),
@@ -91,7 +91,6 @@ body::before {
   align-items: center;
   background: linear-gradient(135deg, rgba(139, 69, 19, 0.4) 0%, rgba(101, 67, 33, 0.5) 100%);
   padding: 10px 20px;
-  padding-right: 150px; /* Space for discard pile */
   border-radius: 12px;
   border: 2px solid rgba(160, 82, 45, 0.6);
   box-shadow: 
@@ -681,8 +680,8 @@ main {
 }
 
 .discard-corner {
-  position: fixed;
-  right: 20px;
+  position: absolute;
+  right: 15px;
   top: 50%;
   transform: translateY(-50%);
   z-index: 100;
