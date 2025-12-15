@@ -608,11 +608,13 @@ function refillIfNeeded() {
     const drawnCards = drawCards(needed);
     const oldFloorCardCount = floorCardCount;
     
-    // Fill null slots in floor with new cards
+    // Track which slots are being filled
+    const slotsToFill = [];
     let cardIndex = 0;
     for (let i = 0; i < 4 && cardIndex < drawnCards.length; i++) {
       if (state.floor[i] === null) {
         state.floor[i] = drawnCards[cardIndex];
+        slotsToFill.push(i);
         cardIndex++;
       }
     }
@@ -620,21 +622,33 @@ function refillIfNeeded() {
     state.floorNumber += 1;
     state.floorFresh = true;
     
-    // Render to get the new card positions
-    render();
+    // Render to get positions, but show new cards as backs initially
+    const floorRow = document.getElementById("floorRow");
+    if (floorRow) {
+      // Replace new card slots with back cards temporarily
+      slotsToFill.forEach(slotIndex => {
+        const existingEl = floorRow.children[slotIndex];
+        if (existingEl && existingEl.classList.contains("empty")) {
+          const backCard = document.createElement("div");
+          backCard.className = "card back";
+          backCard.dataset.slotIndex = slotIndex;
+          backCard.style.opacity = "0";
+          existingEl.replaceWith(backCard);
+        }
+      });
+    }
     
-    // Animate card draws after render
+    // Animate card draws
     setTimeout(() => {
       const deckBack = document.getElementById("deckBack");
-      const floorRow = document.getElementById("floorRow");
       if (deckBack && floorRow) {
         const deckRect = deckBack.getBoundingClientRect();
-        // Get only the actual card elements (not placeholders) that are new
-        const allCards = Array.from(floorRow.children).filter(el => el.dataset.cardId);
-        const newCards = allCards.slice(oldFloorCardCount);
         
-        newCards.forEach((cardEl, index) => {
-          const cardRect = cardEl.getBoundingClientRect();
+        slotsToFill.forEach((slotIndex, index) => {
+          const backCardEl = floorRow.children[slotIndex];
+          if (!backCardEl || !backCardEl.classList.contains("back")) return;
+          
+          const cardRect = backCardEl.getBoundingClientRect();
           const tempCard = document.createElement("div");
           tempCard.className = "card back";
           tempCard.style.position = "fixed";
@@ -647,9 +661,6 @@ function refillIfNeeded() {
           tempCard.style.opacity = "0";
           document.body.appendChild(tempCard);
           
-          // Hide the real card temporarily
-          cardEl.style.opacity = "0";
-          
           setTimeout(() => {
             requestAnimationFrame(() => {
               tempCard.style.transition = "all 0.6s cubic-bezier(0.4, 0, 0.2, 1)";
@@ -658,13 +669,24 @@ function refillIfNeeded() {
               tempCard.style.width = `${cardRect.width}px`;
               tempCard.style.height = `${cardRect.height}px`;
               tempCard.style.opacity = "1";
+              backCardEl.style.opacity = "1";
             });
             
             setTimeout(() => {
               tempCard.remove();
-              cardEl.style.opacity = "1";
-              cardEl.classList.add("drawing");
-              setTimeout(() => cardEl.classList.remove("drawing"), 600);
+              // Reveal the actual card face
+              const card = state.floor[slotIndex];
+              if (card) {
+                const cardEl = createCardEl(card);
+                cardEl.draggable = true;
+                cardEl.dataset.from = "floor";
+                cardEl.classList.add("drawing");
+                backCardEl.replaceWith(cardEl);
+                setTimeout(() => {
+                  cardEl.classList.remove("drawing");
+                  attachDragListeners();
+                }, 200);
+              }
             }, 600);
           }, index * 150);
         });
@@ -827,15 +849,29 @@ function dealFirstFloor() {
   state.floorFresh = true;
   setStatus("First floor dealt! Drag cards to interact.");
   
-  // Render to create card elements
-  render();
+  // Render cards as backs initially
+  floorRow.innerHTML = "";
+  for (let i = 0; i < 4; i++) {
+    if (state.floor[i]) {
+      const backCard = document.createElement("div");
+      backCard.className = "card back";
+      backCard.dataset.slotIndex = i;
+      backCard.style.opacity = "0";
+      floorRow.appendChild(backCard);
+    } else {
+      const empty = document.createElement("div");
+      empty.className = "empty floor-placeholder";
+      floorRow.appendChild(empty);
+    }
+  }
   
   // Animate cards being dealt
   setTimeout(() => {
-    const floorCards = Array.from(floorRow.children).filter(el => el.dataset.cardId);
+    const backCards = Array.from(floorRow.children).filter(el => el.classList.contains("back"));
     
-    floorCards.forEach((cardEl, index) => {
-      const cardRect = cardEl.getBoundingClientRect();
+    backCards.forEach((backCardEl, index) => {
+      const slotIndex = parseInt(backCardEl.dataset.slotIndex);
+      const cardRect = backCardEl.getBoundingClientRect();
       
       // Create animated card
       const tempCard = document.createElement("div");
@@ -851,9 +887,6 @@ function dealFirstFloor() {
       tempCard.style.transform = "rotate(0deg)";
       document.body.appendChild(tempCard);
       
-      // Hide the real card temporarily
-      cardEl.style.opacity = "0";
-      
       setTimeout(() => {
         requestAnimationFrame(() => {
           tempCard.style.transition = "all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)";
@@ -863,16 +896,24 @@ function dealFirstFloor() {
           tempCard.style.height = `${cardRect.height}px`;
           tempCard.style.opacity = "1";
           tempCard.style.transform = "rotate(360deg)";
+          backCardEl.style.opacity = "1";
         });
         
         setTimeout(() => {
           tempCard.remove();
-          cardEl.style.opacity = "1";
-          cardEl.classList.add("drawing");
-          setTimeout(() => {
-            cardEl.classList.remove("drawing");
-            attachDragListeners();
-          }, 800);
+          // Now reveal the actual card face
+          const card = state.floor[slotIndex];
+          if (card) {
+            const cardEl = createCardEl(card);
+            cardEl.draggable = true;
+            cardEl.dataset.from = "floor";
+            cardEl.classList.add("drawing");
+            backCardEl.replaceWith(cardEl);
+            setTimeout(() => {
+              cardEl.classList.remove("drawing");
+              attachDragListeners();
+            }, 200);
+          }
         }, 800);
       }, index * 200); // Stagger the animations
     });
