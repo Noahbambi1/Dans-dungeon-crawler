@@ -1,6 +1,51 @@
 const SUITS = ["hearts", "diamonds", "clubs", "spades"];
 const RANKS = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
 
+// Card theme management
+const CARD_THEME_KEY = "dungeonCrawlerCardTheme";
+
+function loadCardTheme() {
+  try {
+    return localStorage.getItem(CARD_THEME_KEY) || "classic";
+  } catch (e) {
+    return "classic";
+  }
+}
+
+function saveCardTheme(theme) {
+  try {
+    localStorage.setItem(CARD_THEME_KEY, theme);
+  } catch (e) {
+    console.error("Failed to save card theme:", e);
+  }
+}
+
+function applyCardTheme(theme) {
+  document.documentElement.setAttribute("data-card-theme", theme);
+  saveCardTheme(theme);
+  
+  // Update active state in theme selector
+  document.querySelectorAll(".theme-option").forEach(opt => {
+    opt.classList.toggle("active", opt.dataset.theme === theme);
+  });
+}
+
+function setupThemeSelector() {
+  const selector = document.getElementById("themeSelector");
+  if (!selector) return;
+  
+  selector.addEventListener("click", (e) => {
+    const option = e.target.closest(".theme-option");
+    if (option && option.dataset.theme) {
+      applyCardTheme(option.dataset.theme);
+    }
+  });
+  
+  // Load saved theme
+  const savedTheme = loadCardTheme();
+  applyCardTheme(savedTheme);
+}
+
 // ============================================
 // LEADERBOARD SYSTEM (Global via Supabase)
 // ============================================
@@ -896,34 +941,40 @@ function render() {
 
 function renderWeapon() {
   const slot = document.getElementById("weaponSlot");
+  const infoBar = document.getElementById("weaponInfoBar");
   slot.innerHTML = "";
+  
   if (!state.weapon) {
     const empty = document.createElement("div");
     empty.className = "slot-drop";
     empty.textContent = "Drop diamonds to equip";
     slot.appendChild(empty);
+    infoBar.textContent = "";
+    infoBar.classList.remove("active");
     return;
   }
   const cardEl = createCardEl(state.weapon);
   cardEl.draggable = true;
   cardEl.dataset.from = "weapon";
+  
+  // Add tooltip showing weapon power
+  cardEl.dataset.tooltip = `Power: ${state.weapon.value}`;
+  
   slot.appendChild(cardEl);
 
-  const info = document.createElement("div");
-  info.className = "weapon-info";
-  
+  // Update weapon info bar above slots
   if (gameSettings.weaponDegradation === "none") {
-    info.textContent = "No degradation";
+    infoBar.textContent = "⚔️ No degradation";
   } else if (state.weaponDamage.length === 0) {
-    info.textContent = "Fresh weapon";
+    infoBar.textContent = "⚔️ Fresh weapon - can attack any monster";
   } else {
     const comparison = gameSettings.weaponDegradation === "strict" ? "<" : "≤";
     const maxVal = gameSettings.weaponDegradation === "strict" 
       ? Math.max(2, state.weaponMaxNext + 1)
       : Math.max(2, state.weaponMaxNext);
-    info.textContent = `Can attack monsters ${comparison} ${maxVal}`;
+    infoBar.textContent = `⚔️ Can attack monsters ${comparison} ${maxVal}`;
   }
-  slot.appendChild(info);
+  infoBar.classList.add("active");
 }
 
 function renderWeaponDamage() {
@@ -1026,9 +1077,24 @@ function renderRunButton() {
   }
 }
 
+// Monster graphics mapping
+const MONSTER_GRAPHICS = {
+  "A": "🐉", // Dragon
+  "K": "👹", // Cave Troll
+  "Q": "👻", // Banshee
+  "J": "🐺", // Dire Wolf
+};
+
 function createCardEl(card) {
   const el = document.createElement("div");
-  el.className = `card ${card.color} suit-${card.suit}`;
+  const isMonster = card.suit === "clubs" || card.suit === "spades";
+  const isRoyalMonster = isMonster && ["A", "K", "Q", "J"].includes(card.rank);
+  
+  el.className = `card ${card.color}`;
+  if (isRoyalMonster) {
+    el.classList.add("monster-royal");
+  }
+  
   el.setAttribute("data-suit", suitIcons[card.suit]);
   el.dataset.cardId = card.id;
   el.dataset.suit = card.suit;
@@ -1041,7 +1107,13 @@ function createCardEl(card) {
 
   const center = document.createElement("div");
   center.className = "suit";
-  center.textContent = suitIcons[card.suit];
+  
+  // Use monster graphic for royal monsters, otherwise use suit icon
+  if (isRoyalMonster && MONSTER_GRAPHICS[card.rank]) {
+    center.textContent = MONSTER_GRAPHICS[card.rank];
+  } else {
+    center.textContent = suitIcons[card.suit];
+  }
 
   const cornerBottom = document.createElement("div");
   cornerBottom.className = "corner bottom";
@@ -1997,6 +2069,7 @@ window.addEventListener("DOMContentLoaded", () => {
   setupButtons();
   setupTouchDragDrop();
   setupLeaderboard();
+  setupThemeSelector();
   initGame();
 });
 
