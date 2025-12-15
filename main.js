@@ -848,6 +848,12 @@ function hideWinModal() {
 function showLoseModal() {
   const modal = document.getElementById("loseModal");
   modal.classList.add("show");
+  
+  // Enable/disable redo button based on history
+  const redoBtn = document.getElementById("loseRedoBtn");
+  if (redoBtn) {
+    redoBtn.disabled = stateHistory.length === 0;
+  }
 }
 
 function hideLoseModal() {
@@ -1036,6 +1042,11 @@ function setupButtons() {
   document.getElementById("loseNewGameBtn").addEventListener("click", () => {
     hideLoseModal();
     initGame();
+  });
+
+  document.getElementById("loseRedoBtn").addEventListener("click", () => {
+    hideLoseModal();
+    restoreStateFromHistory();
   });
 
   document.getElementById("undoButton").addEventListener("click", () => {
