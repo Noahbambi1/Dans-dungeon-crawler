@@ -297,6 +297,10 @@ function renderWeapon() {
 function renderWeaponDamage() {
   const slot = document.getElementById("weaponDamageSlot");
   slot.innerHTML = "";
+  // Make it a drop target for monsters
+  slot.classList.add("drop-target");
+  slot.dataset.drop = "weaponDamage";
+  
   if (state.weaponDamage.length === 0) {
     const empty = document.createElement("div");
     empty.className = "slot-drop";
@@ -330,7 +334,6 @@ function renderDiscard() {
   if (state.discard.length === 0) {
     const empty = document.createElement("div");
     empty.className = "slot-drop";
-    empty.textContent = "Drop weapons here";
     slot.appendChild(empty);
     return;
   }
@@ -435,6 +438,7 @@ function onDrop(e) {
   const handlers = {
     heal: handleHealDrop,
     weapon: handleWeaponAreaDrop,
+    weaponDamage: handleWeaponAreaDrop, // Allow monsters to be dropped on weapon damage slot
     discard: handleDiscardDrop,
     health: handleHealthDamageDrop,
   };
