@@ -594,6 +594,9 @@ main {
 #weaponDamageSlot {
   min-height: calc(var(--card-height) + 20px);
   position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
 }
 
 /* Tooltip styling for equipped weapon */
@@ -642,6 +645,9 @@ main {
 #discardSlot {
   min-height: calc(var(--card-height) * 0.7);
   position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
 }
 
 /* ============================================
