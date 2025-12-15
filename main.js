@@ -119,10 +119,10 @@ async function fetchLeaderboard() {
 // Save/update player stats in Supabase
 async function savePlayerStats(username, stats) {
   try {
-    // Use upsert (insert or update)
-    await supabaseQuery('leaderboard', {
+    // Use upsert with on_conflict parameter for the username column
+    await supabaseQuery('leaderboard?on_conflict=username', {
       method: 'POST',
-      prefer: 'resolution=merge-duplicates',
+      prefer: 'return=minimal,resolution=merge-duplicates',
       body: {
         username: username,
         wins: stats.wins || 0,
