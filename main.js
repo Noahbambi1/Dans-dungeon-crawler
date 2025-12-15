@@ -38,9 +38,9 @@ function generateRandomName() {
   return `${adj}${noun}${num}`;
 }
 
-// State variables - initialized AFTER all dependencies are defined
+// State variables - initialized later in setupLeaderboard() to avoid temporal dead zone
 let leaderboard = {};
-let currentPlayerName = loadCurrentPlayer();
+let currentPlayerName = null;
 let isSyncing = false;
 let lastSyncTime = 0;
 
@@ -458,11 +458,8 @@ function setupLeaderboard() {
     });
   }
   
-  // Ensure player has a name
-  if (!currentPlayerName) {
-    currentPlayerName = generateRandomName();
-    saveCurrentPlayer();
-  }
+  // Initialize player name (from localStorage or generate new)
+  currentPlayerName = loadCurrentPlayer();
   
   updateCurrentPlayerDisplay();
   updateSyncStatus();
