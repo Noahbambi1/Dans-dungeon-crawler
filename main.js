@@ -15,6 +15,7 @@ const state = {
   runUsed: false,
   floorFresh: true, // true when no actions taken on current floor
   originalDeck: [], // Store original deck for restart
+  initialDeckOrder: [], // Store the exact deck order for restart (same shuffle)
 };
 
 const suitIcons = {
@@ -141,9 +142,18 @@ function shuffle(array) {
 function initGame() {
   const fullDeck = buildDeck();
   state.originalDeck = [...fullDeck];
-  state.deck = shuffle([...fullDeck]);
+  // Shuffle for new game
+  const shuffledDeck = shuffle([...fullDeck]);
+  state.deck = [...shuffledDeck];
+  // Store the exact deck order for restart
+  state.initialDeckOrder = [...shuffledDeck];
   state.discard = [];
+  // Initialize floor as array of 4 slots
   state.floor = drawCards(4);
+  // Ensure floor has exactly 4 slots
+  while (state.floor.length < 4) {
+    state.floor.push(null);
+  }
   state.weapon = null;
   state.weaponDamage = [];
   state.weaponMaxNext = Infinity;
@@ -159,10 +169,21 @@ function initGame() {
 }
 
 function restartGame() {
-  // Restart with the same deck order (reshuffle the original deck)
-  state.deck = shuffle([...state.originalDeck]);
+  // Restart with the exact same deck order (no shuffle)
+  if (state.initialDeckOrder.length > 0) {
+    state.deck = [...state.initialDeckOrder];
+  } else {
+    // Fallback if no initial order stored
+    state.deck = shuffle([...state.originalDeck]);
+    state.initialDeckOrder = [...state.deck];
+  }
   state.discard = [];
+  // Initialize floor as array of 4 slots
   state.floor = drawCards(4);
+  // Ensure floor has exactly 4 slots
+  while (state.floor.length < 4) {
+    state.floor.push(null);
+  }
   state.weapon = null;
   state.weaponDamage = [];
   state.weaponMaxNext = Infinity;
@@ -186,15 +207,34 @@ function drawCards(count) {
   return drawn;
 }
 
+function getFloorCardCount() {
+  // Count non-null cards in floor
+  return state.floor.filter(c => c !== null).length;
+}
+
+function fillFloorSlots() {
+  // Fill null slots in floor with cards from deck
+  for (let i = 0; i < 4; i++) {
+    if (state.floor[i] === null && state.deck.length > 0) {
+      state.floor[i] = state.deck.shift();
+    }
+  }
+}
+
 function render() {
   const floorRow = document.getElementById("floorRow");
   floorRow.innerHTML = "";
   
-  // Always maintain 4 placeholders
+  // Always maintain 4 placeholders - floor is now array of 4 slots
+  // Ensure floor has exactly 4 slots
+  while (state.floor.length < 4) {
+    state.floor.push(null);
+  }
+  
   for (let i = 0; i < 4; i++) {
-    if (i < state.floor.length) {
+    const card = state.floor[i];
+    if (card) {
       // Card exists at this position
-      const card = state.floor[i];
       const cardEl = createCardEl(card);
       cardEl.draggable = true;
       cardEl.dataset.from = "floor";
@@ -309,7 +349,7 @@ function renderDiscard() {
 
 function renderRunButton() {
   const btn = document.getElementById("runButton");
-  btn.disabled = state.runUsed || !state.floorFresh || state.floor.length === 0;
+  btn.disabled = state.runUsed || !state.floorFresh || getFloorCardCount() === 0;
   btn.textContent = state.runUsed ? "Run used" : "Run away (once)";
 }
 
@@ -399,16 +439,20 @@ function onDrop(e) {
 
 function findCardById(id, from) {
   const poolMap = {
-    floor: state.floor,
+    floor: state.floor.filter(c => c !== null), // Filter out nulls for floor
     weapon: state.weapon ? [state.weapon] : [],
   };
   const pool = poolMap[from] || [];
-  return pool.find((c) => c.id === id);
+  return pool.find((c) => c && c.id === id);
 }
 
 function removeFromPool(card, from) {
   if (from === "floor") {
-    state.floor = state.floor.filter((c) => c.id !== card.id);
+    // Find the card's slot and set it to null (preserve position)
+    const index = state.floor.findIndex((c) => c && c.id === card.id);
+    if (index !== -1) {
+      state.floor[index] = null;
+    }
   } else if (from === "weapon" && state.weapon && state.weapon.id === card.id) {
     state.weapon = null;
     state.weaponDamage = [];
@@ -526,11 +570,15 @@ function handleWeaponAreaDrop(card, from) {
   if (card.suit === "clubs" || card.suit === "spades") {
     // Get the card element before removing it
     const cardEl = document.querySelector(`[data-card-id="${card.id}"]`);
+    // Find the card's slot index before removing
+    const slotIndex = from === "floor" ? state.floor.findIndex((c) => c && c.id === card.id) : -1;
     removeFromPool(card, from);
     const ok = handleMonsterOnWeapon(card, cardEl);
     if (!ok) {
-      // Undo removal if not ok
-      if (from === "floor") state.floor.push(card);
+      // Undo removal if not ok - restore to original slot
+      if (from === "floor" && slotIndex !== -1) {
+        state.floor[slotIndex] = card;
+      }
     } else {
       postAction();
     }
@@ -547,13 +595,21 @@ function postAction() {
 }
 
 function refillIfNeeded() {
-  if (state.floor.length <= 1 && state.deck.length > 0) {
+  const floorCardCount = getFloorCardCount();
+  if (floorCardCount <= 1 && state.deck.length > 0) {
     const needed = Math.min(3, state.deck.length);
     const drawnCards = drawCards(needed);
-    const oldFloorLength = state.floor.length;
+    const oldFloorCardCount = floorCardCount;
     
-    // Add cards to floor first
-    state.floor.push(...drawnCards);
+    // Fill null slots in floor with new cards
+    let cardIndex = 0;
+    for (let i = 0; i < 4 && cardIndex < drawnCards.length; i++) {
+      if (state.floor[i] === null) {
+        state.floor[i] = drawnCards[cardIndex];
+        cardIndex++;
+      }
+    }
+    
     state.floorNumber += 1;
     state.floorFresh = true;
     
@@ -566,10 +622,9 @@ function refillIfNeeded() {
       const floorRow = document.getElementById("floorRow");
       if (deckBack && floorRow) {
         const deckRect = deckBack.getBoundingClientRect();
-        // Get only the actual card elements (not placeholders)
-        const newCards = Array.from(floorRow.children)
-          .filter(el => el.dataset.cardId)
-          .slice(oldFloorLength);
+        // Get only the actual card elements (not placeholders) that are new
+        const allCards = Array.from(floorRow.children).filter(el => el.dataset.cardId);
+        const newCards = allCards.slice(oldFloorCardCount);
         
         newCards.forEach((cardEl, index) => {
           const cardRect = cardEl.getBoundingClientRect();
@@ -622,7 +677,7 @@ function checkHealth() {
 }
 
 function checkWin() {
-  if (state.deck.length === 0 && state.floor.length === 0) {
+  if (state.deck.length === 0 && getFloorCardCount() === 0) {
     setStatus("You cleared the dungeon!");
     setTimeout(() => showWinModal(), 500);
   }
@@ -674,12 +729,19 @@ function setupButtons() {
       setStatus("You can only run at the start of a floor.");
       return;
     }
-    if (state.floor.length === 0) {
+    if (getFloorCardCount() === 0) {
       setStatus("No cards to run from.");
       return;
     }
-    state.deck.push(...state.floor);
-    state.floor = drawCards(4);
+    // Collect all non-null floor cards and add to deck
+    const floorCards = state.floor.filter(c => c !== null);
+    state.deck.push(...floorCards);
+    // Reset floor and draw new cards
+    state.floor = [null, null, null, null];
+    const newCards = drawCards(4);
+    for (let i = 0; i < newCards.length && i < 4; i++) {
+      state.floor[i] = newCards[i];
+    }
     state.runUsed = true;
     state.floorFresh = true;
     state.floorNumber += 1;
