@@ -63,21 +63,6 @@
     </div>
 
     <main>
-      <section class="action-row">
-        <div class="action-slot">
-          <div class="action-label">Take Damage</div>
-          <div class="health-drop drop-target" data-drop="health">Drop monsters here</div>
-        </div>
-        <div class="action-slot">
-          <div class="action-label">Heal</div>
-          <div class="heal-drop drop-target" data-drop="heal">Drop hearts here</div>
-        </div>
-        <div class="action-slot">
-          <button id="runButton" class="run-btn">Run away (once)</button>
-          <div class="run-hint">Use only at start of a floor.</div>
-        </div>
-      </section>
-
       <section class="play-area">
         <div class="pile">
           <div class="pile-title">Deck</div>
@@ -88,19 +73,37 @@
           <div class="floor-label">Dungeon Floor</div>
           <div class="floor-row" id="floorRow"></div>
         </div>
+        <div class="run-area">
+          <button id="runButton" class="run-btn">Run away (once)</button>
+          <div class="run-hint">Use only at start of a floor.</div>
+        </div>
       </section>
 
       <section class="equipment-area">
         <div id="weaponInfoBar" class="weapon-info-bar"></div>
         <div class="equipment-slots">
-          <div class="slot">
-            <div class="slot-title">Equipped weapon</div>
-            <div id="weaponSlot" class="drop-target" data-drop="weapon"></div>
-            <button id="discardWeaponBtn" class="small-btn">Discard weapon</button>
+          <div class="slot action-slot">
+            <div class="slot-title">Take Damage</div>
+            <div class="health-drop drop-target" data-drop="health">
+              <span class="drop-icon">💀</span>
+              <span class="drop-text">Drop monsters</span>
+            </div>
           </div>
           <div class="slot">
-            <div class="slot-title">Weapon damage</div>
+            <div class="slot-title">Equipped Weapon</div>
+            <div id="weaponSlot" class="drop-target" data-drop="weapon"></div>
+            <button id="discardWeaponBtn" class="small-btn">Discard</button>
+          </div>
+          <div class="slot">
+            <div class="slot-title">Weapon Damage</div>
             <div id="weaponDamageSlot"></div>
+          </div>
+          <div class="slot action-slot">
+            <div class="slot-title">Heal</div>
+            <div class="heal-drop drop-target" data-drop="heal">
+              <span class="drop-icon">❤️</span>
+              <span class="drop-text">Drop hearts</span>
+            </div>
           </div>
         </div>
       </section>

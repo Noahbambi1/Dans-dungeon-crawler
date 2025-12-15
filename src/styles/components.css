@@ -240,13 +240,32 @@
   text-align: center;
 }
 
+/* Slot Drop Text (empty weapon/damage slots) */
+.slot-drop {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: var(--card-width);
+  height: var(--card-height);
+  color: var(--text-muted);
+  font-size: 0.65rem;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: var(--spacing-sm);
+  background: rgba(0, 0, 0, 0.15);
+  border: 2px dashed var(--border-subtle);
+  border-radius: var(--card-radius);
+}
+
 /* ===========================================
    DROP TARGETS
    =========================================== */
 
 .drop-target {
-  width: var(--card-width);
-  height: var(--card-height);
+  min-width: var(--card-width);
+  min-height: var(--card-height);
   border: 2px dashed var(--border-subtle);
   border-radius: var(--card-radius);
   display: flex;

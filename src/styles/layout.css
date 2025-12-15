@@ -115,31 +115,12 @@ main {
   min-height: 0;
 }
 
-/* Action Row */
-.action-row {
-  display: flex;
-  justify-content: center;
-  gap: var(--spacing-lg);
-  flex-wrap: wrap;
-  flex-shrink: 0;
-  max-width: 600px;
-  margin: 0 auto;
-  width: 100%;
-}
-
-.action-slot {
+/* Run Area (in play area) */
+.run-area {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--spacing-sm);
-}
-
-.action-label {
-  font-size: 0.8rem;
-  color: var(--text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  font-weight: 600;
+  gap: var(--spacing-xs);
 }
 
 /* Play Area */
@@ -214,7 +195,7 @@ main {
   align-items: center;
   gap: var(--spacing-sm);
   flex-shrink: 0;
-  max-width: 600px;
+  max-width: 900px;
   margin: 0 auto;
   width: 100%;
 }
@@ -246,7 +227,8 @@ main {
 .equipment-slots {
   display: flex;
   justify-content: center;
-  gap: var(--spacing-lg);
+  align-items: stretch;
+  gap: var(--spacing-md);
   flex-wrap: wrap;
 }
 
@@ -260,6 +242,51 @@ main {
   border: 1px solid var(--border-subtle);
   border-radius: 12px;
   min-width: calc(var(--card-width) + 24px);
+}
+
+/* Action slots (Take Damage, Heal) */
+.slot.action-slot {
+  min-width: calc(var(--card-width) + 24px);
+}
+
+.slot.action-slot .drop-target {
+  width: var(--card-width);
+  height: var(--card-height);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  background: rgba(0, 0, 0, 0.2);
+  border: 2px dashed var(--border-subtle);
+  border-radius: var(--card-radius);
+  transition: all var(--transition-fast);
+}
+
+.slot.action-slot .drop-icon {
+  font-size: 1.8rem;
+  opacity: 0.7;
+}
+
+.slot.action-slot .drop-text {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.slot.action-slot .health-drop:hover,
+.slot.action-slot .health-drop.drag-over {
+  border-color: var(--accent-red);
+  background: rgba(220, 53, 69, 0.15);
+  box-shadow: 0 0 20px rgba(220, 53, 69, 0.3);
+}
+
+.slot.action-slot .heal-drop:hover,
+.slot.action-slot .heal-drop.drag-over {
+  border-color: var(--accent-green);
+  background: rgba(40, 167, 69, 0.15);
+  box-shadow: 0 0 20px rgba(40, 167, 69, 0.3);
 }
 
 /* Weapon slot container */
