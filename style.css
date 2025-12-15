@@ -414,6 +414,15 @@ body {
   padding: 10px;
 }
 
+#discardSlot {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  min-height: var(--card-height);
+  padding: 10px;
+  width: var(--card-width);
+}
+
 .card-stack {
   position: relative;
   width: var(--card-width);

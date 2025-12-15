@@ -214,6 +214,7 @@ function render() {
 
   renderWeapon();
   renderWeaponDamage();
+  renderDiscard();
   renderRunButton();
   attachDragListeners();
 }
@@ -264,6 +265,41 @@ function renderWeaponDamage() {
     el.style.transition = "transform 0.12s ease";
     stackContainer.appendChild(el);
   });
+  slot.appendChild(stackContainer);
+}
+
+function renderDiscard() {
+  const slot = document.getElementById("discardSlot");
+  slot.innerHTML = "";
+  
+  // Make it a drop target for weapons
+  slot.classList.add("drop-target");
+  slot.dataset.drop = "discard";
+  
+  if (state.discard.length === 0) {
+    const empty = document.createElement("div");
+    empty.className = "slot-drop";
+    empty.textContent = "Drop weapons here";
+    slot.appendChild(empty);
+    return;
+  }
+  
+  // Stack cards with offset so corners are visible
+  // Show only the last 10 cards to avoid too much stacking
+  const cardsToShow = state.discard.slice(-10);
+  const stackContainer = document.createElement("div");
+  stackContainer.className = "card-stack";
+  
+  cardsToShow.forEach((card, index) => {
+    const el = createCardEl(card);
+    el.classList.add("stacked");
+    el.style.position = "absolute";
+    el.style.zIndex = index + 1;
+    el.style.transform = `translate(${index * 10}px, ${index * 10}px)`;
+    el.style.transition = "transform 0.12s ease";
+    stackContainer.appendChild(el);
+  });
+  
   slot.appendChild(stackContainer);
 }
 
