@@ -2,18 +2,18 @@ const SUITS = ["hearts", "diamonds", "clubs", "spades"];
 const RANKS = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
 
 // ============================================
-// LEADERBOARD SYSTEM (Global Cloud Sync via Pantry)
+// LEADERBOARD SYSTEM (Global via Supabase)
 // ============================================
-const LEADERBOARD_KEY = "dungeonCrawlerLeaderboard";
 const CURRENT_PLAYER_KEY = "dungeonCrawlerCurrentPlayer";
-const PANTRY_API_URL = "https://getpantry.cloud/apiv1/pantry";
-
-// ⚠️ CREATE YOUR PANTRY: Go to https://getpantry.cloud, click "Create Pantry", 
-// enter your email, and paste your Pantry ID below:
-const PANTRY_ID = "YOUR_PANTRY_ID_HERE"; // Replace with your Pantry ID
-const LEADERBOARD_BASKET = "globalLeaderboard";
 const MAX_LEADERBOARD_SIZE = 100;
-const SYNC_COOLDOWN = 5000; // 5 seconds between syncs
+
+// ⚠️ SUPABASE SETUP: 
+// 1. Go to https://supabase.com and create a free account
+// 2. Create a new project
+// 3. Go to Settings > API and copy your URL and anon key below
+// 4. Run the SQL in the setup instructions to create the leaderboard table
+const SUPABASE_URL = "YOUR_SUPABASE_URL"; // e.g., "https://xxxxx.supabase.co"
+const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY"; // Your anon/public key
 
 // Random name generator for anonymous players
 // NOTE: These must be defined BEFORE loadCurrentPlayer() is called
@@ -66,143 +66,111 @@ function saveCurrentPlayer() {
   }
 }
 
-function saveLeaderboard() {
-  // Sync to cloud (which also updates local cache)
-  syncToCloud();
+function isSupabaseConfigured() {
+  return SUPABASE_URL && 
+         SUPABASE_URL !== "YOUR_SUPABASE_URL" && 
+         SUPABASE_ANON_KEY && 
+         SUPABASE_ANON_KEY !== "YOUR_SUPABASE_ANON_KEY";
 }
 
-function isPantryConfigured() {
-  return PANTRY_ID && PANTRY_ID !== "YOUR_PANTRY_ID_HERE" && PANTRY_ID.length > 10;
-}
-
-async function syncToCloud() {
-  if (!isPantryConfigured()) {
-    console.log("Pantry not configured - using local storage only");
-    return;
+// Supabase REST API helper
+async function supabaseQuery(endpoint, options = {}) {
+  const url = `${SUPABASE_URL}/rest/v1/${endpoint}`;
+  const headers = {
+    'apikey': SUPABASE_ANON_KEY,
+    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+    'Content-Type': 'application/json',
+    'Prefer': options.prefer || 'return=representation'
+  };
+  
+  const response = await fetch(url, {
+    method: options.method || 'GET',
+    headers,
+    body: options.body ? JSON.stringify(options.body) : undefined
+  });
+  
+  if (!response.ok) {
+    throw new Error(`Supabase error: ${response.status}`);
   }
   
-  // Prevent too frequent syncs
-  const now = Date.now();
-  if (isSyncing || (now - lastSyncTime < SYNC_COOLDOWN)) return;
-  
-  isSyncing = true;
-  lastSyncTime = now;
-  updateSyncStatus("syncing");
-  
-  try {
-    // Fetch current cloud data
-    const cloudData = await fetchCloudLeaderboard();
-    
-    // Merge with any local pending updates
-    if (currentPlayerName && leaderboard[currentPlayerName]) {
-      cloudData[currentPlayerName] = mergePlayerData(
-        leaderboard[currentPlayerName],
-        cloudData[currentPlayerName]
-      );
-    }
-    
-    // Trim to top 100 by wins
-    const trimmed = trimLeaderboard(cloudData);
-    
-    // Save back to cloud
-    await saveCloudLeaderboard(trimmed);
-    
-    // Update local cache
-    leaderboard = trimmed;
-    
-    updateSyncStatus("synced");
-    renderLeaderboard();
-  } catch (e) {
-    console.error("Cloud sync failed:", e);
-    updateSyncStatus("error");
-  } finally {
-    isSyncing = false;
-  }
+  const text = await response.text();
+  return text ? JSON.parse(text) : null;
 }
 
-async function fetchCloudLeaderboard() {
+// Fetch leaderboard from Supabase
+async function fetchLeaderboard() {
   try {
-    const response = await fetch(`${PANTRY_API_URL}/${PANTRY_ID}/basket/${LEADERBOARD_BASKET}`, {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' }
-    });
+    const data = await supabaseQuery(
+      `leaderboard?select=*&order=wins.desc,floors_traversed.desc&limit=${MAX_LEADERBOARD_SIZE}`
+    );
     
-    if (response.status === 404) {
-      return {};
+    // Convert array to object format for compatibility
+    const result = {};
+    for (const row of data || []) {
+      result[row.username] = {
+        wins: row.wins || 0,
+        floorsTraversed: row.floors_traversed || 0,
+        modeWins: row.mode_wins || { brutal: 0, hard: 0, normal: 0, easy: 0, casual: 0, custom: 0 }
+      };
     }
-    
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
-    }
-    
-    const data = await response.json();
-    return data.players || {};
+    return result;
   } catch (e) {
-    console.error("Failed to fetch cloud leaderboard:", e);
+    console.error("Failed to fetch leaderboard:", e);
     return {};
   }
 }
 
-async function saveCloudLeaderboard(data) {
-  const response = await fetch(`${PANTRY_API_URL}/${PANTRY_ID}/basket/${LEADERBOARD_BASKET}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ 
-      players: data, 
-      lastUpdated: new Date().toISOString(),
-      version: 1
-    })
-  });
-  
-  if (!response.ok) {
-    throw new Error(`HTTP ${response.status}`);
+// Save/update player stats in Supabase
+async function savePlayerStats(username, stats) {
+  try {
+    // Use upsert (insert or update)
+    await supabaseQuery('leaderboard', {
+      method: 'POST',
+      prefer: 'resolution=merge-duplicates',
+      body: {
+        username: username,
+        wins: stats.wins || 0,
+        floors_traversed: stats.floorsTraversed || 0,
+        mode_wins: stats.modeWins || { brutal: 0, hard: 0, normal: 0, easy: 0, casual: 0, custom: 0 },
+        updated_at: new Date().toISOString()
+      }
+    });
+    return true;
+  } catch (e) {
+    console.error("Failed to save player stats:", e);
+    return false;
   }
 }
 
-function mergePlayerData(local, cloud) {
-  if (!cloud) return local;
-  if (!local) return cloud;
-  
-  return {
-    wins: Math.max(local.wins || 0, cloud.wins || 0),
-    floorsTraversed: Math.max(local.floorsTraversed || 0, cloud.floorsTraversed || 0),
-    modeWins: {
-      brutal: Math.max(local.modeWins?.brutal || 0, cloud.modeWins?.brutal || 0),
-      hard: Math.max(local.modeWins?.hard || 0, cloud.modeWins?.hard || 0),
-      normal: Math.max(local.modeWins?.normal || 0, cloud.modeWins?.normal || 0),
-      easy: Math.max(local.modeWins?.easy || 0, cloud.modeWins?.easy || 0),
-      casual: Math.max(local.modeWins?.casual || 0, cloud.modeWins?.casual || 0),
-      custom: Math.max(local.modeWins?.custom || 0, cloud.modeWins?.custom || 0),
+// Get player stats from Supabase
+async function getPlayerStats(username) {
+  try {
+    const data = await supabaseQuery(
+      `leaderboard?username=eq.${encodeURIComponent(username)}&limit=1`
+    );
+    
+    if (data && data.length > 0) {
+      const row = data[0];
+      return {
+        wins: row.wins || 0,
+        floorsTraversed: row.floors_traversed || 0,
+        modeWins: row.mode_wins || { brutal: 0, hard: 0, normal: 0, easy: 0, casual: 0, custom: 0 }
+      };
     }
-  };
-}
-
-function trimLeaderboard(data) {
-  const entries = Object.entries(data);
-  if (entries.length <= MAX_LEADERBOARD_SIZE) return data;
-  
-  // Sort by wins (desc), then floors (desc)
-  entries.sort((a, b) => {
-    if (b[1].wins !== a[1].wins) return b[1].wins - a[1].wins;
-    return b[1].floorsTraversed - a[1].floorsTraversed;
-  });
-  
-  // Keep top 100
-  const trimmed = {};
-  entries.slice(0, MAX_LEADERBOARD_SIZE).forEach(([name, data]) => {
-    trimmed[name] = data;
-  });
-  
-  return trimmed;
+    return null;
+  } catch (e) {
+    console.error("Failed to get player stats:", e);
+    return null;
+  }
 }
 
 function updateSyncStatus(status) {
   const statusEl = document.getElementById("syncStatus");
   if (!statusEl) return;
   
-  if (!isPantryConfigured()) {
+  if (!isSupabaseConfigured()) {
     statusEl.innerHTML = '<span class="sync-local">📱 Local Mode</span>';
-    statusEl.title = "Leaderboard is stored locally. Configure Pantry ID for global leaderboard.";
+    statusEl.title = "Configure Supabase for global leaderboard.";
     return;
   }
   
@@ -216,12 +184,13 @@ function updateSyncStatus(status) {
 }
 
 async function loadGlobalLeaderboard() {
-  if (isPantryConfigured()) {
+  if (isSupabaseConfigured()) {
     updateSyncStatus("syncing");
     try {
-      leaderboard = await fetchCloudLeaderboard();
+      leaderboard = await fetchLeaderboard();
       updateSyncStatus("synced");
     } catch (e) {
+      console.error("Failed to load leaderboard:", e);
       updateSyncStatus("error");
     }
   }
@@ -246,7 +215,7 @@ function getCurrentDifficultyMode() {
   return "custom";
 }
 
-function recordWin() {
+async function recordWin() {
   if (!currentPlayerName) {
     currentPlayerName = generateRandomName();
     saveCurrentPlayer();
@@ -254,38 +223,73 @@ function recordWin() {
   
   const mode = getCurrentDifficultyMode();
   
-  if (!leaderboard[currentPlayerName]) {
-    leaderboard[currentPlayerName] = {
-      wins: 0,
-      floorsTraversed: 0,
-      modeWins: { brutal: 0, hard: 0, normal: 0, easy: 0, casual: 0, custom: 0 }
-    };
+  // Get current stats from server or local cache
+  let stats = leaderboard[currentPlayerName];
+  if (!stats) {
+    if (isSupabaseConfigured()) {
+      stats = await getPlayerStats(currentPlayerName);
+    }
+    if (!stats) {
+      stats = {
+        wins: 0,
+        floorsTraversed: 0,
+        modeWins: { brutal: 0, hard: 0, normal: 0, easy: 0, casual: 0, custom: 0 }
+      };
+    }
   }
   
-  leaderboard[currentPlayerName].wins += 1;
-  leaderboard[currentPlayerName].floorsTraversed += state.floorNumber;
-  leaderboard[currentPlayerName].modeWins[mode] = 
-    (leaderboard[currentPlayerName].modeWins[mode] || 0) + 1;
+  // Update stats
+  stats.wins = (stats.wins || 0) + 1;
+  stats.floorsTraversed = (stats.floorsTraversed || 0) + state.floorNumber;
+  if (!stats.modeWins) {
+    stats.modeWins = { brutal: 0, hard: 0, normal: 0, easy: 0, casual: 0, custom: 0 };
+  }
+  stats.modeWins[mode] = (stats.modeWins[mode] || 0) + 1;
   
-  saveLeaderboard();
+  // Update local cache
+  leaderboard[currentPlayerName] = stats;
+  
+  // Save to database
+  if (isSupabaseConfigured()) {
+    await savePlayerStats(currentPlayerName, stats);
+    // Refresh leaderboard
+    loadGlobalLeaderboard();
+  } else {
+    renderLeaderboard();
+  }
 }
 
-function recordFloors() {
+async function recordFloors() {
   if (!currentPlayerName) {
     currentPlayerName = generateRandomName();
     saveCurrentPlayer();
   }
   
-  if (!leaderboard[currentPlayerName]) {
-    leaderboard[currentPlayerName] = {
-      wins: 0,
-      floorsTraversed: 0,
-      modeWins: { brutal: 0, hard: 0, normal: 0, easy: 0, casual: 0, custom: 0 }
-    };
+  // Get current stats from server or local cache
+  let stats = leaderboard[currentPlayerName];
+  if (!stats) {
+    if (isSupabaseConfigured()) {
+      stats = await getPlayerStats(currentPlayerName);
+    }
+    if (!stats) {
+      stats = {
+        wins: 0,
+        floorsTraversed: 0,
+        modeWins: { brutal: 0, hard: 0, normal: 0, easy: 0, casual: 0, custom: 0 }
+      };
+    }
   }
   
-  leaderboard[currentPlayerName].floorsTraversed += state.floorNumber;
-  saveLeaderboard();
+  // Update stats
+  stats.floorsTraversed = (stats.floorsTraversed || 0) + state.floorNumber;
+  
+  // Update local cache
+  leaderboard[currentPlayerName] = stats;
+  
+  // Save to database
+  if (isSupabaseConfigured()) {
+    await savePlayerStats(currentPlayerName, stats);
+  }
 }
 
 function setCurrentPlayer(name) {
