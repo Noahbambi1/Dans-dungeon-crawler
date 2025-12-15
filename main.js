@@ -218,7 +218,9 @@ function onDrop(e) {
     health: handleHealthDamageDrop,
   };
   const handler = handlers[target];
-  if (handler) handler(card, payload.from);
+  if (handler) {
+    handler(card, payload.from);
+  }
 }
 
 function findCardById(id, from) {
@@ -273,20 +275,20 @@ function handleWeaponDrop(card, from) {
 }
 
 function handleDiscardDrop(card, from) {
+  // Only weapons can be discarded directly
   if (from === "weapon") {
     // Weapon discard (monsters already in discard from when they were defeated)
     state.discard.push(state.weapon);
     state.weapon = null;
     state.weaponDamage = [];
     state.weaponMaxNext = Infinity;
+    state.floorFresh = false;
     setStatus("Weapon discarded.");
+    postAction();
   } else {
-    removeFromPool(card, from);
-    state.discard.push(card);
-    setStatus("Card discarded.");
+    // Floor cards cannot be discarded directly
+    setStatus("You can only remove cards by equipping weapons, defeating monsters, or healing.");
   }
-  state.floorFresh = false;
-  postAction();
 }
 
 function handleHealthDamageDrop(card, from) {
@@ -412,7 +414,8 @@ function setupButtons() {
       setStatus("No weapon to discard.");
       return;
     }
-    state.discard.push(state.weapon, ...state.weaponDamage);
+    // Weapon discard (monsters already in discard from when they were defeated)
+    state.discard.push(state.weapon);
     state.weapon = null;
     state.weaponDamage = [];
     state.weaponMaxNext = Infinity;

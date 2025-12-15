@@ -391,6 +391,11 @@ body {
 
 .pile-drop {
   background: rgba(79, 70, 229, 0.08);
+  cursor: default;
+}
+
+.pile-drop.drop-target {
+  cursor: grab;
 }
 
 .slot-drop {
