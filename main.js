@@ -23,6 +23,84 @@ const suitIcons = {
   spades: "♠",
 };
 
+// Animation functions
+function showDamageAnimation(amount) {
+  const overlay = document.getElementById("animationOverlay");
+  const damageEl = document.createElement("div");
+  damageEl.className = "damage-animation";
+  damageEl.textContent = `-${amount}`;
+  overlay.appendChild(damageEl);
+  setTimeout(() => {
+    damageEl.classList.add("animate");
+    setTimeout(() => {
+      damageEl.remove();
+    }, 1000);
+  }, 10);
+}
+
+function showHealAnimation(amount) {
+  const overlay = document.getElementById("animationOverlay");
+  const healEl = document.createElement("div");
+  healEl.className = "heal-animation";
+  healEl.textContent = `+${amount}`;
+  overlay.appendChild(healEl);
+  setTimeout(() => {
+    healEl.classList.add("animate");
+    setTimeout(() => {
+      healEl.remove();
+    }, 1000);
+  }, 10);
+}
+
+function animateCardDraw(cardEl, fromRect, toRect) {
+  const clone = cardEl.cloneNode(true);
+  clone.style.position = "fixed";
+  clone.style.left = `${fromRect.left}px`;
+  clone.style.top = `${fromRect.top}px`;
+  clone.style.width = `${fromRect.width}px`;
+  clone.style.height = `${fromRect.height}px`;
+  clone.style.zIndex = "10000";
+  clone.style.pointerEvents = "none";
+  document.body.appendChild(clone);
+  
+  requestAnimationFrame(() => {
+    clone.style.transition = "all 0.5s cubic-bezier(0.4, 0, 0.2, 1)";
+    clone.style.left = `${toRect.left}px`;
+    clone.style.top = `${toRect.top}px`;
+    clone.style.width = `${toRect.width}px`;
+    clone.style.height = `${toRect.height}px`;
+    clone.style.transform = "rotate(0deg)";
+  });
+  
+  setTimeout(() => {
+    clone.remove();
+  }, 500);
+}
+
+function animateFight(weaponEl, monsterEl) {
+  if (!weaponEl || !monsterEl) return;
+  
+  const weaponRect = weaponEl.getBoundingClientRect();
+  const monsterRect = monsterEl.getBoundingClientRect();
+  
+  // Create fight effect
+  const fightEl = document.createElement("div");
+  fightEl.className = "fight-animation";
+  fightEl.style.position = "fixed";
+  fightEl.style.left = `${monsterRect.left + monsterRect.width / 2}px`;
+  fightEl.style.top = `${monsterRect.top + monsterRect.height / 2}px`;
+  fightEl.style.transform = "translate(-50%, -50%)";
+  fightEl.textContent = "⚔️";
+  document.body.appendChild(fightEl);
+  
+  setTimeout(() => {
+    fightEl.classList.add("animate");
+    setTimeout(() => {
+      fightEl.remove();
+    }, 600);
+  }, 10);
+}
+
 function buildDeck() {
   const cards = [];
   for (const suit of SUITS) {
@@ -72,6 +150,9 @@ function initGame() {
   state.floorFresh = true;
   setStatus("New game started. Drag cards to interact.");
   render();
+  // Initialize health bar
+  const healthPercent = (state.health / MAX_HEALTH) * 100;
+  document.getElementById("healthBar").style.width = `${healthPercent}%`;
 }
 
 function drawCards(count) {
@@ -85,13 +166,36 @@ function drawCards(count) {
 
 function render() {
   const floorRow = document.getElementById("floorRow");
-  floorRow.innerHTML = "";
-  state.floor.forEach((card) => {
-    const cardEl = createCardEl(card);
-    cardEl.draggable = true;
-    cardEl.dataset.from = "floor";
-    floorRow.appendChild(cardEl);
+  
+  // Preserve existing card positions by keeping cards with same IDs
+  const existingCards = Array.from(floorRow.children).filter(el => el.dataset.cardId);
+  const existingIds = new Set(existingCards.map(el => el.dataset.cardId));
+  const newIds = new Set(state.floor.map(c => c.id));
+  
+  // Remove cards that are no longer in floor
+  existingCards.forEach(cardEl => {
+    if (!newIds.has(cardEl.dataset.cardId)) {
+      cardEl.remove();
+    }
   });
+  
+  // Add new cards, preserving positions of existing ones
+  state.floor.forEach((card, index) => {
+    let cardEl = floorRow.querySelector(`[data-card-id="${card.id}"]`);
+    if (!cardEl) {
+      cardEl = createCardEl(card);
+      cardEl.draggable = true;
+      cardEl.dataset.from = "floor";
+      // Insert at correct position
+      const existingAtPosition = floorRow.children[index];
+      if (existingAtPosition) {
+        floorRow.insertBefore(cardEl, existingAtPosition);
+      } else {
+        floorRow.appendChild(cardEl);
+      }
+    }
+  });
+  
   if (state.floor.length === 0) {
     const empty = document.createElement("div");
     empty.className = "empty";
@@ -103,6 +207,10 @@ function render() {
   document.getElementById("discardCount").textContent = `${state.discard.length} cards`;
   document.getElementById("healthValue").textContent = `${state.health} / ${MAX_HEALTH}`;
   document.getElementById("floorValue").textContent = state.floorNumber;
+  
+  // Update health bar
+  const healthPercent = (state.health / MAX_HEALTH) * 100;
+  document.getElementById("healthBar").style.width = `${healthPercent}%`;
 
   renderWeapon();
   renderWeaponDamage();
@@ -275,10 +383,14 @@ function handleHealDrop(card, from) {
   }
   removeFromPool(card, from);
   const before = state.health;
+  const healed = Math.min(MAX_HEALTH, state.health + card.value) - state.health;
   state.health = Math.min(MAX_HEALTH, state.health + card.value);
   state.discard.push(card);
   state.floorFresh = false;
-  setStatus(`Healed ${state.health - before} health with ${card.rank} of hearts.`);
+  setStatus(`Healed ${healed} health with ${card.rank} of hearts.`);
+  if (healed > 0) {
+    showHealAnimation(healed);
+  }
   postAction();
 }
 
@@ -328,10 +440,11 @@ function handleHealthDamageDrop(card, from) {
   state.discard.push(card);
   state.floorFresh = false;
   setStatus(`Took ${damage} damage from ${card.rank} of ${card.suit}.`);
+  showDamageAnimation(damage);
   postAction();
 }
 
-function handleMonsterOnWeapon(monsterCard) {
+function handleMonsterOnWeapon(monsterCard, monsterEl) {
   if (!state.weapon) {
     setStatus("Equip a weapon (diamonds) before attacking monsters.");
     return false;
@@ -352,6 +465,16 @@ function handleMonsterOnWeapon(monsterCard) {
   setStatus(
     `Fought ${monsterCard.rank} ${monsterCard.suit} (power ${monsterValue}). Took ${damage} damage.`
   );
+  
+  // Show fight animation
+  const weaponEl = document.querySelector("#weaponSlot .card");
+  if (weaponEl && monsterEl) {
+    animateFight(weaponEl, monsterEl);
+  }
+  if (damage > 0) {
+    setTimeout(() => showDamageAnimation(damage), 300);
+  }
+  
   return true;
 }
 
@@ -361,8 +484,10 @@ function handleWeaponAreaDrop(card, from) {
     return;
   }
   if (card.suit === "clubs" || card.suit === "spades") {
+    // Get the card element before removing it
+    const cardEl = document.querySelector(`[data-card-id="${card.id}"]`);
     removeFromPool(card, from);
-    const ok = handleMonsterOnWeapon(card);
+    const ok = handleMonsterOnWeapon(card, cardEl);
     if (!ok) {
       // Undo removal if not ok
       if (from === "floor") state.floor.push(card);
@@ -384,9 +509,63 @@ function postAction() {
 function refillIfNeeded() {
   if (state.floor.length <= 1 && state.deck.length > 0) {
     const needed = Math.min(3, state.deck.length);
-    state.floor.push(...drawCards(needed));
+    const drawnCards = drawCards(needed);
+    const oldFloorLength = state.floor.length;
+    
+    // Add cards to floor first
+    state.floor.push(...drawnCards);
     state.floorNumber += 1;
     state.floorFresh = true;
+    
+    // Render to get the new card positions
+    render();
+    
+    // Animate card draws after render
+    setTimeout(() => {
+      const deckBack = document.getElementById("deckBack");
+      const floorRow = document.getElementById("floorRow");
+      if (deckBack && floorRow) {
+        const deckRect = deckBack.getBoundingClientRect();
+        const newCards = Array.from(floorRow.children).slice(oldFloorLength);
+        
+        newCards.forEach((cardEl, index) => {
+          const cardRect = cardEl.getBoundingClientRect();
+          const tempCard = document.createElement("div");
+          tempCard.className = "card back";
+          tempCard.style.position = "fixed";
+          tempCard.style.left = `${deckRect.left}px`;
+          tempCard.style.top = `${deckRect.top}px`;
+          tempCard.style.width = `${deckRect.width}px`;
+          tempCard.style.height = `${deckRect.height}px`;
+          tempCard.style.zIndex = "10000";
+          tempCard.style.pointerEvents = "none";
+          tempCard.style.opacity = "0";
+          document.body.appendChild(tempCard);
+          
+          // Hide the real card temporarily
+          cardEl.style.opacity = "0";
+          
+          setTimeout(() => {
+            requestAnimationFrame(() => {
+              tempCard.style.transition = "all 0.6s cubic-bezier(0.4, 0, 0.2, 1)";
+              tempCard.style.left = `${cardRect.left}px`;
+              tempCard.style.top = `${cardRect.top}px`;
+              tempCard.style.width = `${cardRect.width}px`;
+              tempCard.style.height = `${cardRect.height}px`;
+              tempCard.style.opacity = "1";
+            });
+            
+            setTimeout(() => {
+              tempCard.remove();
+              cardEl.style.opacity = "1";
+              cardEl.classList.add("drawing");
+              setTimeout(() => cardEl.classList.remove("drawing"), 600);
+            }, 600);
+          }, index * 150);
+        });
+      }
+    }, 50);
+    
     setStatus(`New dungeon floor ${state.floorNumber}. Drew ${needed} cards.`);
   }
 }

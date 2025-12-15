@@ -15,37 +15,45 @@
       </div>
       <div class="health-block">
         <div class="health-label">Health</div>
-        <div class="health-value" id="healthValue">20 / 20</div>
-        <div class="health-drop drop-target" data-drop="health">Drop monsters here to take damage</div>
-      </div>
-      <div class="heal-block">
-        <div class="heal-label">Heal slot</div>
-        <div class="heal-drop drop-target" data-drop="heal">Drop hearts to heal</div>
-      </div>
-      <div class="floor-block">
-        <div class="floor-label">Dungeon floor</div>
-        <div class="floor-value" id="floorValue">1</div>
-        <button id="runButton" class="run-btn">Run away (once)</button>
-        <div class="run-hint">Use only at start of a floor.</div>
+        <div class="health-bar-container">
+          <div class="health-bar" id="healthBar"></div>
+          <div class="health-value" id="healthValue">20 / 20</div>
+        </div>
+        <div class="floor-value">Floor <span id="floorValue">1</span></div>
       </div>
     </header>
 
     <main>
-      <section class="deck-area">
+      <section class="action-row">
+        <div class="action-slot">
+          <div class="action-label">Take Damage</div>
+          <div class="health-drop drop-target" data-drop="health">Drop monsters here</div>
+        </div>
+        <div class="action-slot">
+          <div class="action-label">Heal</div>
+          <div class="heal-drop drop-target" data-drop="heal">Drop hearts here</div>
+        </div>
+        <div class="action-slot">
+          <button id="runButton" class="run-btn">Run away (once)</button>
+          <div class="run-hint">Use only at start of a floor.</div>
+        </div>
+      </section>
+
+      <section class="play-area">
         <div class="pile">
           <div class="pile-title">Deck</div>
           <div class="card back" id="deckBack"></div>
           <div class="pile-count" id="deckCount">0</div>
         </div>
+        <div class="floor-area">
+          <div class="floor-label">Dungeon Floor</div>
+          <div class="floor-row" id="floorRow"></div>
+        </div>
         <div class="pile discard-pile">
           <div class="pile-title">Discard</div>
-          <div class="pile-drop drop-target" data-drop="discard">Drop weapons here</div>
+          <div class="pile-drop drop-target" data-drop="discard"></div>
           <div class="pile-count" id="discardCount">0</div>
         </div>
-      </section>
-
-      <section class="floor-area">
-        <div class="floor-row" id="floorRow"></div>
       </section>
 
       <section class="equipment-area">
@@ -64,6 +72,8 @@
     <footer class="status-bar">
       <div id="status"></div>
     </footer>
+
+    <div id="animationOverlay"></div>
   </div>
 
   <script type="module" src="main.js"></script>
