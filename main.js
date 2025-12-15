@@ -47,6 +47,53 @@ function setupThemeSelector() {
 }
 
 // ============================================
+// GAME THEME SYSTEM (Background/Visual Theme)
+// ============================================
+const GAME_THEME_KEY = "dungeonCrawlerGameTheme";
+
+function loadGameTheme() {
+  try {
+    return localStorage.getItem(GAME_THEME_KEY) || "dungeon";
+  } catch (e) {
+    return "dungeon";
+  }
+}
+
+function saveGameTheme(theme) {
+  try {
+    localStorage.setItem(GAME_THEME_KEY, theme);
+  } catch (e) {
+    console.error("Failed to save game theme:", e);
+  }
+}
+
+function applyGameTheme(theme) {
+  document.documentElement.setAttribute("data-game-theme", theme);
+  saveGameTheme(theme);
+  
+  // Update active state in game theme selector
+  document.querySelectorAll("#gameThemeSelector .theme-option").forEach(opt => {
+    opt.classList.toggle("active", opt.dataset.gameTheme === theme);
+  });
+}
+
+function setupGameThemeSelector() {
+  const selector = document.getElementById("gameThemeSelector");
+  if (!selector) return;
+  
+  selector.addEventListener("click", (e) => {
+    const option = e.target.closest(".theme-option");
+    if (option && option.dataset.gameTheme) {
+      applyGameTheme(option.dataset.gameTheme);
+    }
+  });
+  
+  // Load saved game theme
+  const savedTheme = loadGameTheme();
+  applyGameTheme(savedTheme);
+}
+
+// ============================================
 // LEADERBOARD SYSTEM (Global via Supabase)
 // ============================================
 const CURRENT_PLAYER_KEY = "dungeonCrawlerCurrentPlayer";
@@ -675,6 +722,79 @@ const state = {
 let stateHistory = [];
 const MAX_HISTORY = 10; // Keep last 10 moves
 
+// LocalStorage key for game state persistence
+const STORAGE_KEY = "dungeonCrawlerGameState";
+
+function saveGameState() {
+  const saveData = {
+    state: {
+      deck: state.deck,
+      discard: state.discard,
+      floor: state.floor,
+      weapon: state.weapon,
+      weaponDamage: state.weaponDamage,
+      weaponMaxNext: state.weaponMaxNext,
+      health: state.health,
+      floorNumber: state.floorNumber,
+      runsRemaining: state.runsRemaining,
+      floorFresh: state.floorFresh,
+      healUsed: state.healUsed,
+      originalDeck: state.originalDeck,
+      initialDeckOrder: state.initialDeckOrder,
+      firstFloorDealt: state.firstFloorDealt,
+    },
+    gameSettings: { ...gameSettings },
+    stateHistory: stateHistory,
+    savedAt: Date.now(),
+  };
+  
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(saveData));
+  } catch (e) {
+    console.warn("Failed to save game state:", e);
+  }
+}
+
+function loadGameState() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (!saved) return false;
+    
+    const saveData = JSON.parse(saved);
+    
+    // Restore state
+    Object.assign(state, saveData.state);
+    // Handle Infinity which doesn't serialize properly in JSON
+    if (state.weaponMaxNext === null) {
+      state.weaponMaxNext = Infinity;
+    }
+    
+    // Restore game settings
+    Object.assign(gameSettings, saveData.gameSettings);
+    
+    // Restore history and fix Infinity values
+    stateHistory = (saveData.stateHistory || []).map(historyEntry => {
+      if (historyEntry.weaponMaxNext === null) {
+        historyEntry.weaponMaxNext = Infinity;
+      }
+      return historyEntry;
+    });
+    
+    return true;
+  } catch (e) {
+    console.warn("Failed to load game state:", e);
+    return false;
+  }
+}
+
+function clearSavedGame() {
+  try {
+    localStorage.removeItem(STORAGE_KEY);
+  } catch (e) {
+    console.warn("Failed to clear saved game:", e);
+  }
+}
+
 const suitIcons = {
   hearts: "♥",
   diamonds: "♦",
@@ -839,6 +959,9 @@ function initGame() {
   // Initialize health bar
   const healthPercent = (state.health / gameSettings.maxHealth) * 100;
   document.getElementById("healthBar").style.width = `${healthPercent}%`;
+  
+  // Save the new game state
+  saveGameState();
 }
 
 function restartGame() {
@@ -872,6 +995,9 @@ function restartGame() {
   // Initialize health bar
   const healthPercent = (state.health / gameSettings.maxHealth) * 100;
   document.getElementById("healthBar").style.width = `${healthPercent}%`;
+  
+  // Save the restarted game state
+  saveGameState();
 }
 
 function drawCards(count) {
@@ -1430,6 +1556,7 @@ function postAction() {
   render();
   }
   checkWin();
+  saveGameState();
 }
 
 function refillIfNeeded() {
@@ -1555,6 +1682,9 @@ function showWinModal() {
   const modal = document.getElementById("winModal");
   modal.classList.add("show");
   
+  // Clear saved game state on win
+  clearSavedGame();
+  
   // Record the win for leaderboard
   recordWin();
   
@@ -1633,6 +1763,7 @@ function handleRunAway() {
     // Animate dealing new cards
     animateFloorDeal();
     setStatus("You ran away. New dungeon floor drawn.");
+    saveGameState();
   }, 800);
 }
 
@@ -2080,6 +2211,9 @@ function dealFirstFloor() {
   state.healUsed = false;
   setStatus("First floor dealt! Drag cards to interact.");
   
+  // Save game state after dealing first floor
+  saveGameState();
+  
   // Update deck count immediately
   renderDeck();
   
@@ -2164,6 +2298,28 @@ window.addEventListener("DOMContentLoaded", () => {
   setupTouchDragDrop();
   setupLeaderboard();
   setupThemeSelector();
-  initGame();
+  setupGameThemeSelector();
+  
+  // Try to load saved game state, otherwise start new game
+  const loaded = loadGameState();
+  if (loaded) {
+    // Restore the UI to match loaded state
+    updateSettingsUI();
+    render();
+    updateUndoButton();
+    // Initialize health bar to match loaded state
+    const healthPercent = (state.health / gameSettings.maxHealth) * 100;
+    document.getElementById("healthBar").style.width = `${healthPercent}%`;
+    
+    // Check for win/lose conditions in case game was saved in that state
+    if (state.health <= 0) {
+      checkHealth();
+    } else {
+      checkWin();
+      setStatus("Game restored. Continue your adventure!");
+    }
+  } else {
+    initGame();
+  }
 });
 

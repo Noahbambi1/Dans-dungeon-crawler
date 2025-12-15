@@ -11,31 +11,31 @@
 }
 
 :root {
-  /* Color Palette - Dark Fantasy Theme */
-  --bg-primary: #141420;
-  --bg-secondary: #1c1c2a;
-  --bg-card: #252535;
-  --bg-elevated: #2e2e40;
+  /* Color Palette - Bright Dungeon Stone Theme */
+  --bg-primary: #3d3a4a;
+  --bg-secondary: #4a4658;
+  --bg-card: #5a556b;
+  --bg-elevated: #6b6580;
   
-  --accent-gold: #d4a853;
-  --accent-gold-light: #f0d78c;
-  --accent-gold-dark: #8b6914;
+  --accent-gold: #e8b923;
+  --accent-gold-light: #ffd54f;
+  --accent-gold-dark: #c49a1a;
   
-  --accent-red: #dc3545;
-  --accent-red-glow: rgba(220, 53, 69, 0.4);
+  --accent-red: #e85454;
+  --accent-red-glow: rgba(232, 84, 84, 0.5);
   
-  --accent-green: #28a745;
-  --accent-green-glow: rgba(40, 167, 69, 0.4);
+  --accent-green: #4ade80;
+  --accent-green-glow: rgba(74, 222, 128, 0.5);
   
-  --accent-blue: #4a9eff;
-  --accent-purple: #8b5cf6;
+  --accent-blue: #60a5fa;
+  --accent-purple: #a78bfa;
   
-  --text-primary: #f0f0f5;
-  --text-secondary: #a0a0b0;
-  --text-muted: #606070;
+  --text-primary: #f8f8fc;
+  --text-secondary: #d0d0e0;
+  --text-muted: #9090a0;
   
-  --border-subtle: rgba(255, 255, 255, 0.08);
-  --border-gold: rgba(212, 168, 83, 0.3);
+  --border-subtle: rgba(255, 255, 255, 0.15);
+  --border-gold: rgba(232, 185, 35, 0.4);
   
   /* Card Dimensions */
   --card-width: 85px;
@@ -61,7 +61,8 @@
 
 body {
   font-family: 'Quicksand', sans-serif;
-  background: var(--bg-primary);
+  background: 
+    linear-gradient(135deg, #4a4560 0%, #3d3a4a 25%, #524d65 50%, #3d3a4a 75%, #4a4560 100%);
   color: var(--text-primary);
   height: 100vh;
   height: 100dvh; /* Dynamic viewport height for mobile */
@@ -69,7 +70,7 @@ body {
   position: relative;
 }
 
-/* Animated background */
+/* Dungeon stone wall texture */
 body::before {
   content: '';
   position: fixed;
@@ -78,14 +79,18 @@ body::before {
   right: 0;
   bottom: 0;
   background: 
-    radial-gradient(ellipse at 20% 20%, rgba(139, 92, 246, 0.12) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 80%, rgba(212, 168, 83, 0.10) 0%, transparent 50%),
-    radial-gradient(ellipse at 50% 50%, rgba(74, 158, 255, 0.08) 0%, transparent 70%);
+    /* Torch light glow effects */
+    radial-gradient(ellipse at 15% 30%, rgba(255, 180, 50, 0.2) 0%, transparent 40%),
+    radial-gradient(ellipse at 85% 70%, rgba(255, 180, 50, 0.15) 0%, transparent 40%),
+    radial-gradient(ellipse at 50% 10%, rgba(255, 200, 100, 0.1) 0%, transparent 50%),
+    /* Stone color variation */
+    radial-gradient(ellipse at 30% 60%, rgba(100, 90, 120, 0.3) 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 40%, rgba(80, 75, 100, 0.3) 0%, transparent 50%);
   pointer-events: none;
   z-index: 0;
 }
 
-/* Subtle grid pattern */
+/* Stone brick pattern */
 body::after {
   content: '';
   position: fixed;
@@ -94,10 +99,25 @@ body::after {
   right: 0;
   bottom: 0;
   background-image: 
-    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-  background-size: 50px 50px;
+    /* Horizontal mortar lines */
+    linear-gradient(0deg, rgba(30, 28, 40, 0.4) 2px, transparent 2px),
+    /* Vertical mortar lines - offset every other row */
+    linear-gradient(90deg, rgba(30, 28, 40, 0.3) 2px, transparent 2px),
+    /* Stone texture noise */
+    radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    radial-gradient(circle at 75% 75%, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+  background-size: 
+    100% 60px,
+    120px 60px,
+    8px 8px,
+    12px 12px;
+  background-position:
+    0 0,
+    0 0,
+    0 0,
+    4px 4px;
   pointer-events: none;
+  opacity: 0.7;
   z-index: 0;
 }
 
@@ -1052,9 +1072,9 @@ main {
 
 /* Card Back Themes - Vintage Style */
 [data-card-theme="classic"] {
-  --card-back-bg: linear-gradient(135deg, #252538 0%, #1c1c2a 100%);
-  --card-back-border: #3a3a4a;
-  --card-back-accent: rgba(180, 145, 75, 0.3);
+  --card-back-bg: linear-gradient(135deg, #5a556b 0%, #4a4658 100%);
+  --card-back-border: #6b6580;
+  --card-back-accent: rgba(232, 185, 35, 0.4);
   --card-back-symbol: '⚔️';
 }
 
@@ -1152,9 +1172,10 @@ main {
 .empty.floor-placeholder {
   width: var(--card-width);
   height: var(--card-height);
-  border: 2px dashed var(--border-subtle);
+  border: 2px dashed rgba(255, 255, 255, 0.25);
   border-radius: var(--card-radius);
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.03);
 }
 
 /* ============================================
@@ -3249,6 +3270,363 @@ main {
 
 .confirm-btn-ok.danger:hover {
   box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+}
+
+/* ============================================
+   GAME THEME PREVIEWS (Settings Modal)
+   ============================================ */
+
+.game-theme-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+}
+
+.game-theme-selector .theme-preview {
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.dungeon-preview {
+  background: linear-gradient(135deg, #4a4560 0%, #3d3a4a 100%);
+  border: 2px solid #6b6580;
+  box-shadow: inset 0 0 20px rgba(255, 180, 50, 0.2);
+}
+
+.dragon-lair-preview {
+  background: linear-gradient(135deg, #4a1a1a 0%, #2d0a0a 100%);
+  border: 2px solid #8b2020;
+  box-shadow: inset 0 0 20px rgba(255, 100, 50, 0.3);
+}
+
+.enchanted-forest-preview {
+  background: linear-gradient(135deg, #1a3d2e 0%, #0d261a 100%);
+  border: 2px solid #2d8b5a;
+  box-shadow: inset 0 0 20px rgba(100, 255, 150, 0.2);
+}
+
+.frozen-throne-preview {
+  background: linear-gradient(135deg, #2a3d4d 0%, #1a2a3a 100%);
+  border: 2px solid #5a8bab;
+  box-shadow: inset 0 0 20px rgba(150, 200, 255, 0.3);
+}
+
+.shadow-realm-preview {
+  background: linear-gradient(135deg, #1a1a2e 0%, #0a0a15 100%);
+  border: 2px solid #4a4a6a;
+  box-shadow: inset 0 0 20px rgba(100, 50, 200, 0.3);
+}
+
+.celestial-preview {
+  background: linear-gradient(135deg, #2a2a4a 0%, #1a1a35 100%);
+  border: 2px solid #8080c0;
+  box-shadow: inset 0 0 20px rgba(200, 200, 255, 0.3);
+}
+
+.volcanic-preview {
+  background: linear-gradient(135deg, #3a2a1a 0%, #2a1a0a 100%);
+  border: 2px solid #c05020;
+  box-shadow: inset 0 0 20px rgba(255, 100, 0, 0.4);
+}
+
+.ancient-ruins-preview {
+  background: linear-gradient(135deg, #3a3530 0%, #2a2520 100%);
+  border: 2px solid #8b8070;
+  box-shadow: inset 0 0 20px rgba(200, 180, 150, 0.2);
+}
+
+/* ============================================
+   GAME THEMES - Full Visual Overhaul
+   ============================================ */
+
+/* === DUNGEON THEME (Default) === */
+[data-game-theme="dungeon"] {
+  --bg-primary: #3d3a4a;
+  --bg-secondary: #4a4658;
+  --bg-card: #5a556b;
+  --bg-elevated: #6b6580;
+  --accent-gold: #e8b923;
+  --accent-gold-light: #ffd54f;
+  --border-subtle: rgba(255, 255, 255, 0.15);
+  --border-gold: rgba(232, 185, 35, 0.4);
+}
+
+[data-game-theme="dungeon"] body {
+  background: linear-gradient(135deg, #4a4560 0%, #3d3a4a 25%, #524d65 50%, #3d3a4a 75%, #4a4560 100%);
+}
+
+[data-game-theme="dungeon"] body::before {
+  background: 
+    radial-gradient(ellipse at 15% 30%, rgba(255, 180, 50, 0.2) 0%, transparent 40%),
+    radial-gradient(ellipse at 85% 70%, rgba(255, 180, 50, 0.15) 0%, transparent 40%),
+    radial-gradient(ellipse at 50% 10%, rgba(255, 200, 100, 0.1) 0%, transparent 50%);
+}
+
+/* === DRAGON LAIR THEME === */
+[data-game-theme="dragon-lair"] {
+  --bg-primary: #2d1515;
+  --bg-secondary: #3d2020;
+  --bg-card: #4d2a2a;
+  --bg-elevated: #5d3535;
+  --accent-gold: #ff6b35;
+  --accent-gold-light: #ff9f6b;
+  --accent-red: #ff4444;
+  --border-subtle: rgba(255, 100, 50, 0.2);
+  --border-gold: rgba(255, 107, 53, 0.4);
+}
+
+[data-game-theme="dragon-lair"] body {
+  background: 
+    linear-gradient(180deg, #1a0808 0%, #2d1515 30%, #3d1a1a 60%, #2d1010 100%);
+}
+
+[data-game-theme="dragon-lair"] body::before {
+  background: 
+    radial-gradient(ellipse at 30% 80%, rgba(255, 100, 0, 0.25) 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 20%, rgba(255, 50, 0, 0.2) 0%, transparent 40%),
+    radial-gradient(ellipse at 50% 100%, rgba(255, 150, 50, 0.15) 0%, transparent 60%),
+    radial-gradient(circle at 20% 60%, rgba(255, 80, 0, 0.1) 0%, transparent 30%);
+}
+
+[data-game-theme="dragon-lair"] body::after {
+  background-image: 
+    linear-gradient(0deg, rgba(50, 20, 20, 0.5) 2px, transparent 2px),
+    linear-gradient(90deg, rgba(50, 20, 20, 0.4) 2px, transparent 2px),
+    radial-gradient(circle at 50% 50%, rgba(255, 100, 0, 0.05) 1px, transparent 1px);
+  background-size: 100% 80px, 100px 80px, 20px 20px;
+}
+
+/* === ENCHANTED FOREST THEME === */
+[data-game-theme="enchanted-forest"] {
+  --bg-primary: #142820;
+  --bg-secondary: #1d3a2d;
+  --bg-card: #264d3a;
+  --bg-elevated: #2f6048;
+  --accent-gold: #7ddf64;
+  --accent-gold-light: #a8f090;
+  --accent-green: #50ff80;
+  --border-subtle: rgba(100, 255, 150, 0.15);
+  --border-gold: rgba(125, 223, 100, 0.4);
+}
+
+[data-game-theme="enchanted-forest"] body {
+  background: 
+    linear-gradient(160deg, #0d1f15 0%, #142820 30%, #1a332a 60%, #0f2018 100%);
+}
+
+[data-game-theme="enchanted-forest"] body::before {
+  background: 
+    radial-gradient(ellipse at 20% 30%, rgba(100, 255, 150, 0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 70%, rgba(50, 200, 100, 0.12) 0%, transparent 45%),
+    radial-gradient(ellipse at 50% 50%, rgba(150, 255, 180, 0.08) 0%, transparent 60%),
+    radial-gradient(circle at 10% 80%, rgba(200, 255, 100, 0.1) 0%, transparent 30%),
+    radial-gradient(circle at 90% 20%, rgba(100, 255, 200, 0.08) 0%, transparent 25%);
+}
+
+[data-game-theme="enchanted-forest"] body::after {
+  background-image: 
+    radial-gradient(circle at 30% 40%, rgba(150, 255, 150, 0.03) 2px, transparent 2px),
+    radial-gradient(circle at 70% 60%, rgba(100, 255, 200, 0.02) 3px, transparent 3px),
+    radial-gradient(circle at 50% 80%, rgba(200, 255, 150, 0.025) 2px, transparent 2px);
+  background-size: 100px 100px, 150px 150px, 80px 80px;
+  animation: forestSparkle 8s ease-in-out infinite;
+}
+
+@keyframes forestSparkle {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+/* === FROZEN THRONE THEME === */
+[data-game-theme="frozen-throne"] {
+  --bg-primary: #1a2a3a;
+  --bg-secondary: #243a4d;
+  --bg-card: #2e4a60;
+  --bg-elevated: #385a73;
+  --accent-gold: #60c0ff;
+  --accent-gold-light: #90d8ff;
+  --accent-blue: #40a0ff;
+  --border-subtle: rgba(150, 200, 255, 0.2);
+  --border-gold: rgba(96, 192, 255, 0.4);
+}
+
+[data-game-theme="frozen-throne"] body {
+  background: 
+    linear-gradient(180deg, #0f1a25 0%, #1a2a3a 30%, #203545 60%, #152530 100%);
+}
+
+[data-game-theme="frozen-throne"] body::before {
+  background: 
+    radial-gradient(ellipse at 30% 20%, rgba(150, 200, 255, 0.2) 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 80%, rgba(100, 180, 255, 0.15) 0%, transparent 45%),
+    radial-gradient(ellipse at 50% 40%, rgba(200, 230, 255, 0.1) 0%, transparent 55%),
+    linear-gradient(180deg, rgba(200, 230, 255, 0.05) 0%, transparent 30%);
+}
+
+[data-game-theme="frozen-throne"] body::after {
+  background-image: 
+    linear-gradient(60deg, rgba(200, 230, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(-60deg, rgba(200, 230, 255, 0.03) 1px, transparent 1px),
+    radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 30px 52px, 30px 52px, 10px 10px;
+}
+
+/* === SHADOW REALM THEME === */
+[data-game-theme="shadow-realm"] {
+  --bg-primary: #0f0f1a;
+  --bg-secondary: #181825;
+  --bg-card: #222230;
+  --bg-elevated: #2c2c3d;
+  --accent-gold: #9966ff;
+  --accent-gold-light: #bb99ff;
+  --accent-purple: #cc66ff;
+  --border-subtle: rgba(150, 100, 255, 0.15);
+  --border-gold: rgba(153, 102, 255, 0.4);
+}
+
+[data-game-theme="shadow-realm"] body {
+  background: 
+    linear-gradient(180deg, #080810 0%, #0f0f1a 30%, #151520 60%, #0a0a12 100%);
+}
+
+[data-game-theme="shadow-realm"] body::before {
+  background: 
+    radial-gradient(ellipse at 25% 25%, rgba(150, 50, 255, 0.2) 0%, transparent 50%),
+    radial-gradient(ellipse at 75% 75%, rgba(100, 50, 200, 0.15) 0%, transparent 45%),
+    radial-gradient(ellipse at 50% 50%, rgba(80, 40, 150, 0.1) 0%, transparent 60%),
+    radial-gradient(circle at 80% 20%, rgba(200, 100, 255, 0.08) 0%, transparent 30%);
+}
+
+[data-game-theme="shadow-realm"] body::after {
+  background-image: 
+    radial-gradient(circle at 50% 50%, rgba(150, 100, 255, 0.02) 1px, transparent 1px);
+  background-size: 40px 40px;
+  animation: shadowPulse 4s ease-in-out infinite;
+}
+
+@keyframes shadowPulse {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.02); }
+}
+
+/* === CELESTIAL THEME === */
+[data-game-theme="celestial"] {
+  --bg-primary: #1a1a35;
+  --bg-secondary: #252545;
+  --bg-card: #303055;
+  --bg-elevated: #3b3b65;
+  --accent-gold: #ffd700;
+  --accent-gold-light: #ffec80;
+  --accent-blue: #80c0ff;
+  --border-subtle: rgba(255, 215, 0, 0.15);
+  --border-gold: rgba(255, 215, 0, 0.4);
+}
+
+[data-game-theme="celestial"] body {
+  background: 
+    linear-gradient(180deg, #0d0d20 0%, #1a1a35 40%, #25254a 70%, #151530 100%);
+}
+
+[data-game-theme="celestial"] body::before {
+  background: 
+    radial-gradient(ellipse at 20% 20%, rgba(255, 215, 100, 0.15) 0%, transparent 40%),
+    radial-gradient(ellipse at 80% 30%, rgba(200, 200, 255, 0.12) 0%, transparent 35%),
+    radial-gradient(ellipse at 40% 80%, rgba(255, 230, 150, 0.1) 0%, transparent 45%),
+    radial-gradient(circle at 90% 90%, rgba(180, 180, 255, 0.08) 0%, transparent 30%);
+}
+
+[data-game-theme="celestial"] body::after {
+  background-image: 
+    radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.8) 1px, transparent 1px),
+    radial-gradient(circle at 30% 70%, rgba(255, 255, 200, 0.6) 1px, transparent 1px),
+    radial-gradient(circle at 70% 30%, rgba(200, 200, 255, 0.7) 2px, transparent 2px);
+  background-size: 200px 200px, 150px 150px, 300px 300px;
+  background-position: 0 0, 50px 50px, 100px 100px;
+  animation: starTwinkle 3s ease-in-out infinite alternate;
+}
+
+@keyframes starTwinkle {
+  0% { opacity: 0.4; }
+  100% { opacity: 0.8; }
+}
+
+/* === VOLCANIC THEME === */
+[data-game-theme="volcanic"] {
+  --bg-primary: #2a1a0a;
+  --bg-secondary: #3a2515;
+  --bg-card: #4a3020;
+  --bg-elevated: #5a3b2a;
+  --accent-gold: #ff6600;
+  --accent-gold-light: #ff9940;
+  --accent-red: #ff3300;
+  --border-subtle: rgba(255, 100, 0, 0.2);
+  --border-gold: rgba(255, 102, 0, 0.5);
+}
+
+[data-game-theme="volcanic"] body {
+  background: 
+    linear-gradient(180deg, #1a0f05 0%, #2a1a0a 30%, #352010 60%, #201005 100%);
+}
+
+[data-game-theme="volcanic"] body::before {
+  background: 
+    radial-gradient(ellipse at 50% 90%, rgba(255, 100, 0, 0.35) 0%, transparent 50%),
+    radial-gradient(ellipse at 30% 70%, rgba(255, 50, 0, 0.2) 0%, transparent 40%),
+    radial-gradient(ellipse at 70% 80%, rgba(255, 150, 0, 0.15) 0%, transparent 45%),
+    radial-gradient(circle at 50% 100%, rgba(255, 200, 50, 0.1) 0%, transparent 60%);
+}
+
+[data-game-theme="volcanic"] body::after {
+  background-image: 
+    linear-gradient(0deg, rgba(255, 100, 0, 0.05) 1px, transparent 1px),
+    radial-gradient(circle at 50% 50%, rgba(255, 50, 0, 0.03) 2px, transparent 2px);
+  background-size: 100% 100px, 50px 50px;
+  animation: lavaGlow 2s ease-in-out infinite;
+}
+
+@keyframes lavaGlow {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+/* === ANCIENT RUINS THEME === */
+[data-game-theme="ancient-ruins"] {
+  --bg-primary: #2a2520;
+  --bg-secondary: #3a3530;
+  --bg-card: #4a4540;
+  --bg-elevated: #5a5550;
+  --accent-gold: #c9a227;
+  --accent-gold-light: #e8c860;
+  --border-subtle: rgba(200, 180, 150, 0.2);
+  --border-gold: rgba(201, 162, 39, 0.4);
+}
+
+[data-game-theme="ancient-ruins"] body {
+  background: 
+    linear-gradient(135deg, #1f1a15 0%, #2a2520 30%, #353025 60%, #252015 100%);
+}
+
+[data-game-theme="ancient-ruins"] body::before {
+  background: 
+    radial-gradient(ellipse at 25% 40%, rgba(200, 180, 100, 0.12) 0%, transparent 45%),
+    radial-gradient(ellipse at 75% 60%, rgba(180, 160, 120, 0.1) 0%, transparent 40%),
+    radial-gradient(ellipse at 50% 20%, rgba(220, 200, 150, 0.08) 0%, transparent 50%),
+    linear-gradient(180deg, rgba(200, 180, 150, 0.03) 0%, transparent 50%);
+}
+
+[data-game-theme="ancient-ruins"] body::after {
+  background-image: 
+    linear-gradient(0deg, rgba(40, 35, 30, 0.5) 3px, transparent 3px),
+    linear-gradient(90deg, rgba(40, 35, 30, 0.4) 3px, transparent 3px),
+    url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 5L35 15H25L30 5zM15 30L5 25V35L15 30zM45 30L55 35V25L45 30zM30 55L25 45H35L30 55z' fill='rgba(200,180,100,0.03)'/%3E%3C/svg%3E");
+  background-size: 100% 100px, 150px 100px, 60px 60px;
 }
 
 /* ============================================
