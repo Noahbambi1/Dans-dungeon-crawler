@@ -30,15 +30,19 @@
           <button id="leaderboardButton" class="control-btn leaderboard-btn">🏆 Leaderboard</button>
           <div id="leaderboardPanel" class="leaderboard-panel">
             <div class="leaderboard-header">
-              <h3>🏆 Leaderboard</h3>
+              <div class="leaderboard-title-row">
+                <h3>🏆 Global Leaderboard</h3>
+                <span id="syncStatus" class="sync-status"></span>
+              </div>
               <div class="player-input">
-                <input type="text" id="playerNameInput" placeholder="Enter your name..." maxlength="20" />
+                <input type="text" id="playerNameInput" placeholder="Your name..." maxlength="20" />
                 <button id="setPlayerBtn" class="small-btn">Set</button>
+                <button id="refreshLeaderboardBtn" class="small-btn refresh-btn" title="Refresh">↻</button>
               </div>
               <div class="current-player" id="currentPlayerDisplay"></div>
             </div>
             <div class="leaderboard-list" id="leaderboardList">
-              <div class="no-players">No players yet</div>
+              <div class="no-players">Loading...</div>
             </div>
           </div>
         </div>

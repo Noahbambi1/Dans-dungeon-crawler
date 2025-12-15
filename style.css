@@ -1643,17 +1643,63 @@ main {
   border-bottom: 1px solid rgba(218, 165, 32, 0.3);
 }
 
+.leaderboard-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
 .leaderboard-header h3 {
-  margin: 0 0 12px 0;
+  margin: 0;
   font-size: 18px;
   color: #f0d68a;
-  text-align: center;
+}
+
+.sync-status {
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.sync-status .sync-ok {
+  color: #86efac;
+}
+
+.sync-status .sync-active {
+  color: #93c5fd;
+  animation: pulse 1s infinite;
+}
+
+.sync-status .sync-error {
+  color: #fca5a5;
+}
+
+.sync-status .sync-local {
+  color: #d4c4a8;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
 }
 
 .player-input {
   display: flex;
-  gap: 8px;
+  gap: 6px;
   margin-bottom: 10px;
+}
+
+.refresh-btn {
+  padding: 8px 10px !important;
+  font-size: 14px;
+  min-width: auto;
+}
+
+.refresh-btn:hover {
+  transform: rotate(180deg);
+  transition: transform 0.3s ease;
 }
 
 .player-input input {

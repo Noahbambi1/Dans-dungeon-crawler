@@ -2,29 +2,220 @@ const SUITS = ["hearts", "diamonds", "clubs", "spades"];
 const RANKS = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
 
 // ============================================
-// LEADERBOARD SYSTEM
+// LEADERBOARD SYSTEM (Global Cloud Sync via Pantry)
 // ============================================
 const LEADERBOARD_KEY = "dungeonCrawlerLeaderboard";
 const CURRENT_PLAYER_KEY = "dungeonCrawlerCurrentPlayer";
+const PANTRY_API_URL = "https://getpantry.cloud/apiv1/pantry";
 
-let leaderboard = loadLeaderboard();
+// ⚠️ CREATE YOUR PANTRY: Go to https://getpantry.cloud, click "Create Pantry", 
+// enter your email, and paste your Pantry ID below:
+const PANTRY_ID = "YOUR_PANTRY_ID_HERE"; // Replace with your Pantry ID
+const LEADERBOARD_BASKET = "globalLeaderboard";
+const MAX_LEADERBOARD_SIZE = 100;
+
+let leaderboard = {};
 let currentPlayerName = loadCurrentPlayer();
+let isSyncing = false;
+let lastSyncTime = 0;
+const SYNC_COOLDOWN = 5000; // 5 seconds between syncs
 
-function loadLeaderboard() {
+// Random name generator for anonymous players
+const NAME_ADJECTIVES = [
+  "Swift", "Brave", "Clever", "Dark", "Epic", "Fierce", "Ghostly", "Hidden",
+  "Iron", "Jade", "Keen", "Lucky", "Mystic", "Noble", "Proud", "Quick",
+  "Rogue", "Shadow", "Thunder", "Valor", "Wild", "Zealous", "Ancient", "Bold",
+  "Crimson", "Daring", "Elder", "Frosty", "Golden", "Humble", "Ivory", "Jolly"
+];
+
+const NAME_NOUNS = [
+  "Knight", "Mage", "Rogue", "Hunter", "Warrior", "Wizard", "Archer", "Druid",
+  "Paladin", "Ranger", "Monk", "Bard", "Cleric", "Thief", "Hero", "Legend",
+  "Phoenix", "Dragon", "Wolf", "Bear", "Hawk", "Serpent", "Tiger", "Lion",
+  "Slayer", "Seeker", "Walker", "Runner", "Blade", "Shield", "Storm", "Flame"
+];
+
+function generateRandomName() {
+  const adj = NAME_ADJECTIVES[Math.floor(Math.random() * NAME_ADJECTIVES.length)];
+  const noun = NAME_NOUNS[Math.floor(Math.random() * NAME_NOUNS.length)];
+  const num = Math.floor(Math.random() * 100);
+  return `${adj}${noun}${num}`;
+}
+
+function loadCurrentPlayer() {
   try {
-    const data = localStorage.getItem(LEADERBOARD_KEY);
-    return data ? JSON.parse(data) : {};
+    let name = localStorage.getItem(CURRENT_PLAYER_KEY);
+    if (!name) {
+      // Generate a random name for new players
+      name = generateRandomName();
+      localStorage.setItem(CURRENT_PLAYER_KEY, name);
+    }
+    return name;
   } catch (e) {
-    return {};
+    return generateRandomName();
   }
 }
 
 function saveLeaderboard() {
-  try {
-    localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(leaderboard));
-  } catch (e) {
-    console.error("Failed to save leaderboard:", e);
+  // Sync to cloud (which also updates local cache)
+  syncToCloud();
+}
+
+function isPantryConfigured() {
+  return PANTRY_ID && PANTRY_ID !== "YOUR_PANTRY_ID_HERE" && PANTRY_ID.length > 10;
+}
+
+async function syncToCloud() {
+  if (!isPantryConfigured()) {
+    console.log("Pantry not configured - using local storage only");
+    return;
   }
+  
+  // Prevent too frequent syncs
+  const now = Date.now();
+  if (isSyncing || (now - lastSyncTime < SYNC_COOLDOWN)) return;
+  
+  isSyncing = true;
+  lastSyncTime = now;
+  updateSyncStatus("syncing");
+  
+  try {
+    // Fetch current cloud data
+    const cloudData = await fetchCloudLeaderboard();
+    
+    // Merge with any local pending updates
+    if (currentPlayerName && leaderboard[currentPlayerName]) {
+      cloudData[currentPlayerName] = mergePlayerData(
+        leaderboard[currentPlayerName],
+        cloudData[currentPlayerName]
+      );
+    }
+    
+    // Trim to top 100 by wins
+    const trimmed = trimLeaderboard(cloudData);
+    
+    // Save back to cloud
+    await saveCloudLeaderboard(trimmed);
+    
+    // Update local cache
+    leaderboard = trimmed;
+    
+    updateSyncStatus("synced");
+    renderLeaderboard();
+  } catch (e) {
+    console.error("Cloud sync failed:", e);
+    updateSyncStatus("error");
+  } finally {
+    isSyncing = false;
+  }
+}
+
+async function fetchCloudLeaderboard() {
+  try {
+    const response = await fetch(`${PANTRY_API_URL}/${PANTRY_ID}/basket/${LEADERBOARD_BASKET}`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' }
+    });
+    
+    if (response.status === 404) {
+      return {};
+    }
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+    
+    const data = await response.json();
+    return data.players || {};
+  } catch (e) {
+    console.error("Failed to fetch cloud leaderboard:", e);
+    return {};
+  }
+}
+
+async function saveCloudLeaderboard(data) {
+  const response = await fetch(`${PANTRY_API_URL}/${PANTRY_ID}/basket/${LEADERBOARD_BASKET}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ 
+      players: data, 
+      lastUpdated: new Date().toISOString(),
+      version: 1
+    })
+  });
+  
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}`);
+  }
+}
+
+function mergePlayerData(local, cloud) {
+  if (!cloud) return local;
+  if (!local) return cloud;
+  
+  return {
+    wins: Math.max(local.wins || 0, cloud.wins || 0),
+    floorsTraversed: Math.max(local.floorsTraversed || 0, cloud.floorsTraversed || 0),
+    modeWins: {
+      brutal: Math.max(local.modeWins?.brutal || 0, cloud.modeWins?.brutal || 0),
+      hard: Math.max(local.modeWins?.hard || 0, cloud.modeWins?.hard || 0),
+      normal: Math.max(local.modeWins?.normal || 0, cloud.modeWins?.normal || 0),
+      easy: Math.max(local.modeWins?.easy || 0, cloud.modeWins?.easy || 0),
+      casual: Math.max(local.modeWins?.casual || 0, cloud.modeWins?.casual || 0),
+      custom: Math.max(local.modeWins?.custom || 0, cloud.modeWins?.custom || 0),
+    }
+  };
+}
+
+function trimLeaderboard(data) {
+  const entries = Object.entries(data);
+  if (entries.length <= MAX_LEADERBOARD_SIZE) return data;
+  
+  // Sort by wins (desc), then floors (desc)
+  entries.sort((a, b) => {
+    if (b[1].wins !== a[1].wins) return b[1].wins - a[1].wins;
+    return b[1].floorsTraversed - a[1].floorsTraversed;
+  });
+  
+  // Keep top 100
+  const trimmed = {};
+  entries.slice(0, MAX_LEADERBOARD_SIZE).forEach(([name, data]) => {
+    trimmed[name] = data;
+  });
+  
+  return trimmed;
+}
+
+function updateSyncStatus(status) {
+  const statusEl = document.getElementById("syncStatus");
+  if (!statusEl) return;
+  
+  if (!isPantryConfigured()) {
+    statusEl.innerHTML = '<span class="sync-local">📱 Local Mode</span>';
+    statusEl.title = "Leaderboard is stored locally. Configure Pantry ID for global leaderboard.";
+    return;
+  }
+  
+  if (status === "syncing") {
+    statusEl.innerHTML = '<span class="sync-active">☁️ Syncing...</span>';
+  } else if (status === "error") {
+    statusEl.innerHTML = '<span class="sync-error">⚠️ Offline</span>';
+  } else {
+    statusEl.innerHTML = '<span class="sync-ok">☁️ Global</span>';
+  }
+}
+
+async function loadGlobalLeaderboard() {
+  if (isPantryConfigured()) {
+    updateSyncStatus("syncing");
+    try {
+      leaderboard = await fetchCloudLeaderboard();
+      updateSyncStatus("synced");
+    } catch (e) {
+      updateSyncStatus("error");
+    }
+  }
+  renderLeaderboard();
 }
 
 function loadCurrentPlayer() {
@@ -62,7 +253,10 @@ function getCurrentDifficultyMode() {
 }
 
 function recordWin() {
-  if (!currentPlayerName) return;
+  if (!currentPlayerName) {
+    currentPlayerName = generateRandomName();
+    saveCurrentPlayer();
+  }
   
   const mode = getCurrentDifficultyMode();
   
@@ -80,12 +274,13 @@ function recordWin() {
     (leaderboard[currentPlayerName].modeWins[mode] || 0) + 1;
   
   saveLeaderboard();
-  renderLeaderboard();
 }
 
 function recordFloors() {
-  // Called on loss to record floors traversed
-  if (!currentPlayerName) return;
+  if (!currentPlayerName) {
+    currentPlayerName = generateRandomName();
+    saveCurrentPlayer();
+  }
   
   if (!leaderboard[currentPlayerName]) {
     leaderboard[currentPlayerName] = {
@@ -97,14 +292,26 @@ function recordFloors() {
   
   leaderboard[currentPlayerName].floorsTraversed += state.floorNumber;
   saveLeaderboard();
-  renderLeaderboard();
 }
 
 function setCurrentPlayer(name) {
-  currentPlayerName = name.trim();
+  const trimmed = name.trim();
+  if (!trimmed) {
+    currentPlayerName = generateRandomName();
+  } else {
+    currentPlayerName = trimmed;
+  }
   saveCurrentPlayer();
   updateCurrentPlayerDisplay();
   renderLeaderboard();
+}
+
+function saveCurrentPlayer() {
+  try {
+    localStorage.setItem(CURRENT_PLAYER_KEY, currentPlayerName);
+  } catch (e) {
+    console.error("Failed to save current player:", e);
+  }
 }
 
 function updateCurrentPlayerDisplay() {
@@ -228,13 +435,14 @@ function setupLeaderboard() {
   const panel = document.getElementById("leaderboardPanel");
   const setPlayerBtn = document.getElementById("setPlayerBtn");
   const playerInput = document.getElementById("playerNameInput");
+  const refreshBtn = document.getElementById("refreshLeaderboardBtn");
   
   if (btn && panel) {
     btn.addEventListener("click", (e) => {
       e.stopPropagation();
       panel.classList.toggle("show");
       if (panel.classList.contains("show")) {
-        renderLeaderboard();
+        loadGlobalLeaderboard();
       }
     });
     
@@ -258,8 +466,23 @@ function setupLeaderboard() {
     });
   }
   
+  if (refreshBtn) {
+    refreshBtn.addEventListener("click", () => {
+      loadGlobalLeaderboard();
+    });
+  }
+  
+  // Ensure player has a name
+  if (!currentPlayerName) {
+    currentPlayerName = generateRandomName();
+    saveCurrentPlayer();
+  }
+  
   updateCurrentPlayerDisplay();
-  renderLeaderboard();
+  updateSyncStatus();
+  
+  // Load global leaderboard on startup
+  loadGlobalLeaderboard();
 }
 
 // ============================================
