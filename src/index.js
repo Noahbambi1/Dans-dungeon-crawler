@@ -386,8 +386,11 @@ class App {
   animateFloorRefill(refillResult) {
     const { cards, floorNumber } = refillResult;
 
-    // Render backs first
-    const backCards = uiManager.renderFloorBacks(gameService.state);
+    // Get the slot indices that were just filled with new cards
+    const slotsToAnimate = cards.map(({ slotIndex }) => slotIndex);
+
+    // Render backs only for the new card slots (preserves existing cards)
+    const backCards = uiManager.renderFloorBacks(gameService.state, slotsToAnimate);
 
     // Prepare animation targets
     const targets = cards.map(({ slotIndex }) => {
@@ -422,8 +425,11 @@ class App {
     const result = gameService.dealFirstFloor();
     if (!result) return;
 
-    // Render backs first
-    const backCards = uiManager.renderFloorBacks(gameService.state);
+    // Get slot indices for all dealt cards
+    const slotsToAnimate = result.cards.map(({ slotIndex }) => slotIndex);
+
+    // Render backs for animation
+    const backCards = uiManager.renderFloorBacks(gameService.state, slotsToAnimate);
 
     // Prepare animation targets
     const targets = result.cards.map(({ card, slotIndex }) => {
@@ -462,8 +468,11 @@ class App {
     // Draw new cards
     const newCards = gameService.drawNewFloorAfterRun();
 
+    // Get slot indices for animation
+    const slotsToAnimate = newCards.cards.map(({ slotIndex }) => slotIndex);
+
     // Animate new floor
-    const backCards = uiManager.renderFloorBacks(gameService.state);
+    const backCards = uiManager.renderFloorBacks(gameService.state, slotsToAnimate);
     const targets = newCards.cards.map(({ card, slotIndex }) => {
       const backCard = backCards.find(bc => bc.slotIndex === slotIndex);
       return {

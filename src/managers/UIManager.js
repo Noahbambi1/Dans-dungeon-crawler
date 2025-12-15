@@ -72,27 +72,34 @@ class UIManager {
   }
 
   /**
-   * Render floor with card backs (for animation)
+   * Render floor with card backs for new cards only (for animation)
+   * First renders normally, then replaces only the new card slots with backs
    * @param {Object} state - Game state
+   * @param {number[]} slotsToAnimate - Specific slot indices to animate (optional)
    * @returns {Object[]} Array of {element, slotIndex}
    */
-  renderFloorBacks(state) {
+  renderFloorBacks(state, slotsToAnimate = null) {
     const floorRow = this.elements.floorRow;
     if (!floorRow) return [];
 
-    floorRow.innerHTML = '';
+    // First, render the floor normally (this preserves existing cards)
+    this.renderFloor(state);
+    
     const backCards = [];
-
-    for (let i = 0; i < 4; i++) {
-      if (state.floor[i]) {
-        const backCard = CardComponent.createBack({ slotIndex: i });
+    
+    // If specific slots provided, use those; otherwise animate all slots with cards
+    const slots = slotsToAnimate || [0, 1, 2, 3].filter(i => state.floor[i] !== null);
+    
+    // Now replace only the specified slots with back cards
+    slots.forEach(slotIndex => {
+      const existingEl = floorRow.children[slotIndex];
+      if (existingEl && existingEl.classList.contains('card') && !existingEl.classList.contains('back')) {
+        const backCard = CardComponent.createBack({ slotIndex });
         backCard.style.opacity = '0';
-        floorRow.appendChild(backCard);
-        backCards.push({ element: backCard, slotIndex: i });
-      } else {
-        floorRow.appendChild(CardComponent.createEmptySlot());
+        existingEl.replaceWith(backCard);
+        backCards.push({ element: backCard, slotIndex });
       }
-    }
+    });
 
     return backCards;
   }
