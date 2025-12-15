@@ -56,6 +56,14 @@ function loadCurrentPlayer() {
   }
 }
 
+function saveCurrentPlayer() {
+  try {
+    localStorage.setItem(CURRENT_PLAYER_KEY, currentPlayerName);
+  } catch (e) {
+    console.error("Failed to save current player:", e);
+  }
+}
+
 function saveLeaderboard() {
   // Sync to cloud (which also updates local cache)
   syncToCloud();
@@ -218,22 +226,6 @@ async function loadGlobalLeaderboard() {
   renderLeaderboard();
 }
 
-function loadCurrentPlayer() {
-  try {
-    return localStorage.getItem(CURRENT_PLAYER_KEY) || "";
-  } catch (e) {
-    return "";
-  }
-}
-
-function saveCurrentPlayer() {
-  try {
-    localStorage.setItem(CURRENT_PLAYER_KEY, currentPlayerName);
-  } catch (e) {
-    console.error("Failed to save current player:", e);
-  }
-}
-
 function getCurrentDifficultyMode() {
   // Determine current difficulty based on settings
   for (const [name, preset] of Object.entries(DIFFICULTY_PRESETS)) {
@@ -304,14 +296,6 @@ function setCurrentPlayer(name) {
   saveCurrentPlayer();
   updateCurrentPlayerDisplay();
   renderLeaderboard();
-}
-
-function saveCurrentPlayer() {
-  try {
-    localStorage.setItem(CURRENT_PLAYER_KEY, currentPlayerName);
-  } catch (e) {
-    console.error("Failed to save current player:", e);
-  }
 }
 
 function updateCurrentPlayerDisplay() {
