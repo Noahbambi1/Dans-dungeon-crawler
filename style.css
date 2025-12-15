@@ -505,7 +505,7 @@ main {
 }
 
 #weaponSlot {
-  min-height: calc(var(--card-height) + 40px);
+  min-height: var(--card-height);
 }
 
 #weaponDamageSlot {
@@ -1990,7 +1990,7 @@ main {
   }
   
   #weaponSlot {
-    min-height: calc(var(--card-height) + 30px);
+    min-height: var(--card-height);
   }
   
   .status-bar {
