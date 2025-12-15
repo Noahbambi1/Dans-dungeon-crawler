@@ -25,6 +25,7 @@
         <button id="undoButton" class="control-btn undo-btn">Undo</button>
         <button id="restartButton" class="control-btn restart-btn">Restart Game</button>
         <button id="newGameButton" class="control-btn new-game-btn">New Game</button>
+        <button id="settingsButton" class="control-btn settings-btn">⚙️ Settings</button>
       </div>
     </header>
 
@@ -122,6 +123,94 @@
       <div class="popup-content">
         <h3>🏃 Running Away!</h3>
         <p>New floor incoming...</p>
+      </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="game-modal">
+      <div class="modal-content settings-content">
+        <h2 class="modal-title">⚙️ Game Settings</h2>
+        
+        <div class="settings-section">
+          <h3>Quick Difficulty</h3>
+          <div class="preset-buttons">
+            <button data-preset="brutal" class="preset-btn brutal">Brutal (0.25%)</button>
+            <button data-preset="hard" class="preset-btn hard">Hard (~2%)</button>
+            <button data-preset="normal" class="preset-btn normal">Normal (~10%)</button>
+            <button data-preset="easy" class="preset-btn easy">Easy (~40%)</button>
+            <button data-preset="casual" class="preset-btn casual">Casual (~80%)</button>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <h3>Custom Settings</h3>
+          
+          <div class="setting-row">
+            <label for="settingMaxHealth">Starting Health:</label>
+            <select id="settingMaxHealth">
+              <option value="15">15 (Very Hard)</option>
+              <option value="20">20 (Default)</option>
+              <option value="25">25</option>
+              <option value="30">30</option>
+              <option value="35">35</option>
+              <option value="40">40 (Easy)</option>
+            </select>
+          </div>
+
+          <div class="setting-row">
+            <label for="settingWeaponDegradation">Weapon Degradation:</label>
+            <select id="settingWeaponDegradation">
+              <option value="strict">Strict (must be less than last)</option>
+              <option value="equal">Equal (can be equal or less)</option>
+              <option value="none">None (no degradation)</option>
+            </select>
+          </div>
+
+          <div class="setting-row">
+            <label for="settingMaxRuns">Run Away Uses:</label>
+            <select id="settingMaxRuns">
+              <option value="0">0 (No running)</option>
+              <option value="1">1 (Default)</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="999">Unlimited</option>
+            </select>
+          </div>
+
+          <div class="setting-row">
+            <label for="settingHealingMode">Healing Per Floor:</label>
+            <select id="settingHealingMode">
+              <option value="once">Once (Default)</option>
+              <option value="unlimited">Unlimited</option>
+            </select>
+          </div>
+
+          <div class="setting-row checkbox-row">
+            <label>
+              <input type="checkbox" id="settingDiamondRoyals">
+              Add Diamond J/Q/K as weapons (11-13 power)
+            </label>
+          </div>
+
+          <div class="setting-row checkbox-row">
+            <label>
+              <input type="checkbox" id="settingHeartRoyals">
+              Add Heart J/Q/K as healing (11-13 heal)
+            </label>
+          </div>
+
+          <div class="setting-row checkbox-row">
+            <label>
+              <input type="checkbox" id="settingRemoveAces">
+              Remove Ace monsters (no 14-power monsters)
+            </label>
+          </div>
+        </div>
+
+        <div class="modal-buttons">
+          <button id="closeSettingsBtn" class="control-btn">Cancel</button>
+          <button id="applySettingsBtn" class="control-btn new-game-btn">Apply & New Game</button>
+        </div>
       </div>
     </div>
   </div>
