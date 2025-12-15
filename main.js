@@ -747,6 +747,124 @@ function hideLoseModal() {
   modal.classList.remove("show");
 }
 
+function showRunAwayPopup() {
+  const popup = document.getElementById("runAwayPopup");
+  popup.classList.add("show");
+  setTimeout(() => {
+    popup.classList.remove("show");
+  }, 1500);
+}
+
+function handleRunAway() {
+  // Collect all non-null floor cards and add to deck
+  const floorCards = state.floor.filter(c => c !== null);
+  state.deck.push(...floorCards);
+  
+  // Reset floor
+  state.floor = [null, null, null, null];
+  
+  state.runUsed = true;
+  state.floorFresh = true;
+  state.floorNumber += 1;
+  
+  // Show popup animation
+  showRunAwayPopup();
+  
+  // Render empty floor
+  render();
+  
+  // After popup, deal new cards with animation
+  setTimeout(() => {
+    const newCards = drawCards(4);
+    for (let i = 0; i < newCards.length && i < 4; i++) {
+      state.floor[i] = newCards[i];
+    }
+    
+    // Animate dealing new cards
+    animateFloorDeal();
+    setStatus("You ran away. New dungeon floor drawn.");
+  }, 800);
+}
+
+function animateFloorDeal() {
+  const deckBack = document.getElementById("deckBack");
+  const floorRow = document.getElementById("floorRow");
+  
+  if (!deckBack || !floorRow) return;
+  
+  const deckRect = deckBack.getBoundingClientRect();
+  
+  // Render floor with back cards initially
+  floorRow.innerHTML = "";
+  for (let i = 0; i < 4; i++) {
+    if (state.floor[i]) {
+      const backCard = document.createElement("div");
+      backCard.className = "card back";
+      backCard.dataset.slotIndex = i;
+      backCard.style.opacity = "0";
+      floorRow.appendChild(backCard);
+    } else {
+      const empty = document.createElement("div");
+      empty.className = "empty floor-placeholder";
+      floorRow.appendChild(empty);
+    }
+  }
+  
+  // Animate cards being dealt
+  setTimeout(() => {
+    const backCards = Array.from(floorRow.children).filter(el => el.classList.contains("back"));
+    
+    backCards.forEach((backCardEl, index) => {
+      const slotIndex = parseInt(backCardEl.dataset.slotIndex);
+      const cardRect = backCardEl.getBoundingClientRect();
+      
+      // Create animated card
+      const tempCard = document.createElement("div");
+      tempCard.className = "card back";
+      tempCard.style.position = "fixed";
+      tempCard.style.left = `${deckRect.left}px`;
+      tempCard.style.top = `${deckRect.top}px`;
+      tempCard.style.width = `${deckRect.width}px`;
+      tempCard.style.height = `${deckRect.height}px`;
+      tempCard.style.zIndex = "10000";
+      tempCard.style.pointerEvents = "none";
+      tempCard.style.opacity = "0";
+      tempCard.style.transform = "rotate(0deg)";
+      document.body.appendChild(tempCard);
+      
+      setTimeout(() => {
+        requestAnimationFrame(() => {
+          tempCard.style.transition = "all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)";
+          tempCard.style.left = `${cardRect.left}px`;
+          tempCard.style.top = `${cardRect.top}px`;
+          tempCard.style.width = `${cardRect.width}px`;
+          tempCard.style.height = `${cardRect.height}px`;
+          tempCard.style.opacity = "1";
+          tempCard.style.transform = "rotate(360deg)";
+          backCardEl.style.opacity = "1";
+        });
+        
+        setTimeout(() => {
+          tempCard.remove();
+          // Reveal the actual card face
+          const card = state.floor[slotIndex];
+          if (card) {
+            const cardEl = createCardEl(card);
+            cardEl.draggable = true;
+            cardEl.dataset.from = "floor";
+            cardEl.classList.add("drawing");
+            backCardEl.replaceWith(cardEl);
+            setTimeout(() => {
+              cardEl.classList.remove("drawing");
+              attachDragListeners();
+            }, 200);
+          }
+        }, 800);
+      }, index * 200); // Stagger the animations
+    });
+  }, 50);
+}
+
 function safeParse(str) {
   try {
     return JSON.parse(str);
@@ -766,20 +884,7 @@ function setupButtons() {
       setStatus("No cards to run from.");
       return;
     }
-    // Collect all non-null floor cards and add to deck
-    const floorCards = state.floor.filter(c => c !== null);
-    state.deck.push(...floorCards);
-    // Reset floor and draw new cards
-    state.floor = [null, null, null, null];
-    const newCards = drawCards(4);
-    for (let i = 0; i < newCards.length && i < 4; i++) {
-      state.floor[i] = newCards[i];
-    }
-    state.runUsed = true;
-    state.floorFresh = true;
-    state.floorNumber += 1;
-    setStatus("You ran away. New dungeon floor drawn.");
-    render();
+    handleRunAway();
   });
 
   document.getElementById("discardWeaponBtn").addEventListener("click", () => {
