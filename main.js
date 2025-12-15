@@ -245,7 +245,6 @@ function render() {
     }
   }
 
-  document.getElementById("deckCount").textContent = `${state.deck.length} cards`;
   document.getElementById("discardCount").textContent = `${state.discard.length} cards`;
   document.getElementById("healthValue").textContent = `${state.health} / ${MAX_HEALTH}`;
   document.getElementById("floorValue").textContent = state.floorNumber;
@@ -254,18 +253,7 @@ function render() {
   const healthPercent = (state.health / MAX_HEALTH) * 100;
   document.getElementById("healthBar").style.width = `${healthPercent}%`;
 
-  // Make deck clickable if first floor not dealt
-  const deckBack = document.getElementById("deckBack");
-  if (deckBack) {
-    if (!state.firstFloorDealt && state.deck.length > 0) {
-      deckBack.classList.add("clickable");
-      deckBack.title = "Click to deal your first floor";
-    } else {
-      deckBack.classList.remove("clickable");
-      deckBack.title = "";
-    }
-  }
-
+  renderDeck();
   renderWeapon();
   renderWeaponDamage();
   renderDiscard();
@@ -323,6 +311,56 @@ function renderWeaponDamage() {
     el.style.transition = "transform 0.12s ease";
     stackContainer.appendChild(el);
   });
+  slot.appendChild(stackContainer);
+}
+
+function renderDeck() {
+  const slot = document.getElementById("deckBack");
+  if (!slot) return;
+  
+  slot.innerHTML = "";
+  
+  // Update deck count
+  const deckCount = document.getElementById("deckCount");
+  if (deckCount) {
+    deckCount.textContent = `${state.deck.length} cards`;
+  }
+  
+  if (state.deck.length === 0) {
+    const empty = document.createElement("div");
+    empty.className = "slot-drop";
+    slot.appendChild(empty);
+    slot.classList.remove("clickable");
+    slot.title = "";
+    return;
+  }
+  
+  // Make deck clickable if first floor not dealt
+  if (!state.firstFloorDealt && state.deck.length > 0) {
+    slot.classList.add("clickable");
+    slot.title = "Click to deal your first floor";
+  } else {
+    slot.classList.remove("clickable");
+    slot.title = "";
+  }
+  
+  // Stack card backs with offset so corners are visible
+  // Show up to 10 card backs to represent the deck
+  const cardsToShow = Math.min(10, state.deck.length);
+  const stackContainer = document.createElement("div");
+  stackContainer.className = "card-stack";
+  
+  for (let i = 0; i < cardsToShow; i++) {
+    const backCard = document.createElement("div");
+    backCard.className = "card back";
+    backCard.classList.add("stacked");
+    backCard.style.position = "absolute";
+    backCard.style.zIndex = i + 1;
+    backCard.style.transform = `translate(${i * 10}px, ${i * 10}px)`;
+    backCard.style.transition = "transform 0.12s ease";
+    stackContainer.appendChild(backCard);
+  }
+  
   slot.appendChild(stackContainer);
 }
 
@@ -646,12 +684,16 @@ function refillIfNeeded() {
     
     // Now set up animation for new cards
     setTimeout(() => {
-      const deckBack = document.getElementById("deckBack");
+      const deckSlot = document.getElementById("deckBack");
       const floorRow = document.getElementById("floorRow");
       
-      if (!deckBack || !floorRow) return;
+      if (!deckSlot || !floorRow) return;
       
-      const deckRect = deckBack.getBoundingClientRect();
+      // Get the top card back from the stack for animation reference
+      const stackContainer = deckSlot.querySelector(".card-stack");
+      const deckRect = stackContainer 
+        ? stackContainer.getBoundingClientRect()
+        : deckSlot.getBoundingClientRect();
       
       // Replace new card slots with back cards for animation
       slotsToFill.forEach(slotIndex => {
@@ -811,12 +853,16 @@ function handleRunAway() {
 }
 
 function animateFloorDeal() {
-  const deckBack = document.getElementById("deckBack");
+  const deckSlot = document.getElementById("deckBack");
   const floorRow = document.getElementById("floorRow");
   
-  if (!deckBack || !floorRow) return;
+  if (!deckSlot || !floorRow) return;
   
-  const deckRect = deckBack.getBoundingClientRect();
+  // Get the top card back from the stack for animation reference
+  const stackContainer = deckSlot.querySelector(".card-stack");
+  const deckRect = stackContainer 
+    ? stackContainer.getBoundingClientRect()
+    : deckSlot.getBoundingClientRect();
   
   // Render floor with back cards initially
   floorRow.innerHTML = "";
@@ -964,14 +1010,19 @@ function setupButtons() {
 function dealFirstFloor() {
   if (state.firstFloorDealt) return;
   
-  const deckBack = document.getElementById("deckBack");
+  const deckSlot = document.getElementById("deckBack");
   const floorRow = document.getElementById("floorRow");
   
-  if (!deckBack || !floorRow) return;
+  if (!deckSlot || !floorRow) return;
   
   // Draw 4 cards
   const drawnCards = drawCards(4);
-  const deckRect = deckBack.getBoundingClientRect();
+  
+  // Get the top card back from the stack for animation reference
+  const stackContainer = deckSlot.querySelector(".card-stack");
+  const deckRect = stackContainer 
+    ? stackContainer.getBoundingClientRect()
+    : deckSlot.getBoundingClientRect();
   
   // Fill floor slots
   for (let i = 0; i < 4 && i < drawnCards.length; i++) {
