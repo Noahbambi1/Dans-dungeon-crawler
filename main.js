@@ -14,6 +14,7 @@ const state = {
   floorNumber: 1,
   runUsed: false,
   floorFresh: true, // true when no actions taken on current floor
+  originalDeck: [], // Store original deck for restart
 };
 
 const suitIcons = {
@@ -138,7 +139,9 @@ function shuffle(array) {
 }
 
 function initGame() {
-  state.deck = shuffle(buildDeck());
+  const fullDeck = buildDeck();
+  state.originalDeck = [...fullDeck];
+  state.deck = shuffle([...fullDeck]);
   state.discard = [];
   state.floor = drawCards(4);
   state.weapon = null;
@@ -149,6 +152,25 @@ function initGame() {
   state.runUsed = false;
   state.floorFresh = true;
   setStatus("New game started. Drag cards to interact.");
+  render();
+  // Initialize health bar
+  const healthPercent = (state.health / MAX_HEALTH) * 100;
+  document.getElementById("healthBar").style.width = `${healthPercent}%`;
+}
+
+function restartGame() {
+  // Restart with the same deck order (reshuffle the original deck)
+  state.deck = shuffle([...state.originalDeck]);
+  state.discard = [];
+  state.floor = drawCards(4);
+  state.weapon = null;
+  state.weaponDamage = [];
+  state.weaponMaxNext = Infinity;
+  state.health = MAX_HEALTH;
+  state.floorNumber = 1;
+  state.runUsed = false;
+  state.floorFresh = true;
+  setStatus("Game restarted. Drag cards to interact.");
   render();
   // Initialize health bar
   const healthPercent = (state.health / MAX_HEALTH) * 100;
@@ -662,6 +684,18 @@ function setupButtons() {
     state.floorFresh = false;
     setStatus("Weapon discarded.");
     postAction();
+  });
+
+  document.getElementById("newGameButton").addEventListener("click", () => {
+    if (confirm("Start a new game? This will shuffle a fresh deck.")) {
+      initGame();
+    }
+  });
+
+  document.getElementById("restartButton").addEventListener("click", () => {
+    if (confirm("Restart this game? This will reshuffle the current deck.")) {
+      restartGame();
+    }
   });
 }
 
