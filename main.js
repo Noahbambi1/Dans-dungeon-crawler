@@ -2,6 +2,267 @@ const SUITS = ["hearts", "diamonds", "clubs", "spades"];
 const RANKS = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
 
 // ============================================
+// LEADERBOARD SYSTEM
+// ============================================
+const LEADERBOARD_KEY = "dungeonCrawlerLeaderboard";
+const CURRENT_PLAYER_KEY = "dungeonCrawlerCurrentPlayer";
+
+let leaderboard = loadLeaderboard();
+let currentPlayerName = loadCurrentPlayer();
+
+function loadLeaderboard() {
+  try {
+    const data = localStorage.getItem(LEADERBOARD_KEY);
+    return data ? JSON.parse(data) : {};
+  } catch (e) {
+    return {};
+  }
+}
+
+function saveLeaderboard() {
+  try {
+    localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(leaderboard));
+  } catch (e) {
+    console.error("Failed to save leaderboard:", e);
+  }
+}
+
+function loadCurrentPlayer() {
+  try {
+    return localStorage.getItem(CURRENT_PLAYER_KEY) || "";
+  } catch (e) {
+    return "";
+  }
+}
+
+function saveCurrentPlayer() {
+  try {
+    localStorage.setItem(CURRENT_PLAYER_KEY, currentPlayerName);
+  } catch (e) {
+    console.error("Failed to save current player:", e);
+  }
+}
+
+function getCurrentDifficultyMode() {
+  // Determine current difficulty based on settings
+  for (const [name, preset] of Object.entries(DIFFICULTY_PRESETS)) {
+    if (
+      preset.maxHealth === gameSettings.maxHealth &&
+      preset.weaponDegradation === gameSettings.weaponDegradation &&
+      preset.maxRuns === gameSettings.maxRuns &&
+      preset.healingMode === gameSettings.healingMode &&
+      preset.includeDiamondRoyals === gameSettings.includeDiamondRoyals &&
+      preset.includeHeartRoyals === gameSettings.includeHeartRoyals &&
+      preset.removeAceMonsters === gameSettings.removeAceMonsters
+    ) {
+      return name;
+    }
+  }
+  return "custom";
+}
+
+function recordWin() {
+  if (!currentPlayerName) return;
+  
+  const mode = getCurrentDifficultyMode();
+  
+  if (!leaderboard[currentPlayerName]) {
+    leaderboard[currentPlayerName] = {
+      wins: 0,
+      floorsTraversed: 0,
+      modeWins: { brutal: 0, hard: 0, normal: 0, easy: 0, casual: 0, custom: 0 }
+    };
+  }
+  
+  leaderboard[currentPlayerName].wins += 1;
+  leaderboard[currentPlayerName].floorsTraversed += state.floorNumber;
+  leaderboard[currentPlayerName].modeWins[mode] = 
+    (leaderboard[currentPlayerName].modeWins[mode] || 0) + 1;
+  
+  saveLeaderboard();
+  renderLeaderboard();
+}
+
+function recordFloors() {
+  // Called on loss to record floors traversed
+  if (!currentPlayerName) return;
+  
+  if (!leaderboard[currentPlayerName]) {
+    leaderboard[currentPlayerName] = {
+      wins: 0,
+      floorsTraversed: 0,
+      modeWins: { brutal: 0, hard: 0, normal: 0, easy: 0, casual: 0, custom: 0 }
+    };
+  }
+  
+  leaderboard[currentPlayerName].floorsTraversed += state.floorNumber;
+  saveLeaderboard();
+  renderLeaderboard();
+}
+
+function setCurrentPlayer(name) {
+  currentPlayerName = name.trim();
+  saveCurrentPlayer();
+  updateCurrentPlayerDisplay();
+  renderLeaderboard();
+}
+
+function updateCurrentPlayerDisplay() {
+  const display = document.getElementById("currentPlayerDisplay");
+  if (display) {
+    if (currentPlayerName) {
+      display.textContent = `Playing as: ${currentPlayerName}`;
+      display.style.display = "block";
+    } else {
+      display.style.display = "none";
+    }
+  }
+  
+  const input = document.getElementById("playerNameInput");
+  if (input) {
+    input.value = currentPlayerName;
+  }
+}
+
+function renderLeaderboard() {
+  const list = document.getElementById("leaderboardList");
+  if (!list) return;
+  
+  // Sort players by wins, then by floors
+  const players = Object.entries(leaderboard)
+    .map(([name, data]) => ({ name, ...data }))
+    .sort((a, b) => {
+      if (b.wins !== a.wins) return b.wins - a.wins;
+      return b.floorsTraversed - a.floorsTraversed;
+    });
+  
+  if (players.length === 0) {
+    list.innerHTML = '<div class="no-players">No players yet</div>';
+    return;
+  }
+  
+  list.innerHTML = players.map((player, index) => {
+    const rankClass = index === 0 ? "gold" : index === 1 ? "silver" : index === 2 ? "bronze" : "";
+    const isCurrent = player.name === currentPlayerName;
+    
+    return `
+      <div class="player-entry ${isCurrent ? 'current' : ''}" data-player="${player.name}">
+        <div class="player-summary">
+          <span class="player-rank ${rankClass}">#${index + 1}</span>
+          <span class="player-name">${escapeHtml(player.name)}</span>
+          <div class="player-stats-summary">
+            <div class="stat-item">
+              <span class="stat-value">${player.wins}</span>
+              <span class="stat-label">Wins</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-value">${player.floorsTraversed}</span>
+              <span class="stat-label">Floors</span>
+            </div>
+          </div>
+          <span class="expand-icon">▼</span>
+        </div>
+        <div class="player-details">
+          <div class="mode-wins-title">Wins by Mode</div>
+          <div class="mode-wins-grid">
+            <div class="mode-win-item brutal">
+              <span class="mode-count">${player.modeWins?.brutal || 0}</span>
+              <span class="mode-name">Brutal</span>
+            </div>
+            <div class="mode-win-item hard">
+              <span class="mode-count">${player.modeWins?.hard || 0}</span>
+              <span class="mode-name">Hard</span>
+            </div>
+            <div class="mode-win-item normal">
+              <span class="mode-count">${player.modeWins?.normal || 0}</span>
+              <span class="mode-name">Normal</span>
+            </div>
+            <div class="mode-win-item easy">
+              <span class="mode-count">${player.modeWins?.easy || 0}</span>
+              <span class="mode-name">Easy</span>
+            </div>
+            <div class="mode-win-item casual">
+              <span class="mode-count">${player.modeWins?.casual || 0}</span>
+              <span class="mode-name">Casual</span>
+            </div>
+            <div class="mode-win-item custom">
+              <span class="mode-count">${player.modeWins?.custom || 0}</span>
+              <span class="mode-name">Custom</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+  
+  // Add click handlers for expanding player details
+  list.querySelectorAll('.player-summary').forEach(summary => {
+    summary.addEventListener('click', () => {
+      const entry = summary.closest('.player-entry');
+      const details = entry.querySelector('.player-details');
+      const wasExpanded = entry.classList.contains('expanded');
+      
+      // Close all other entries
+      list.querySelectorAll('.player-entry').forEach(e => {
+        e.classList.remove('expanded');
+        e.querySelector('.player-details').classList.remove('show');
+      });
+      
+      // Toggle this entry
+      if (!wasExpanded) {
+        entry.classList.add('expanded');
+        details.classList.add('show');
+      }
+    });
+  });
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+function setupLeaderboard() {
+  const btn = document.getElementById("leaderboardButton");
+  const panel = document.getElementById("leaderboardPanel");
+  const setPlayerBtn = document.getElementById("setPlayerBtn");
+  const playerInput = document.getElementById("playerNameInput");
+  
+  if (btn && panel) {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      panel.classList.toggle("show");
+      if (panel.classList.contains("show")) {
+        renderLeaderboard();
+      }
+    });
+    
+    // Close on outside click
+    document.addEventListener("click", (e) => {
+      if (!panel.contains(e.target) && e.target !== btn) {
+        panel.classList.remove("show");
+      }
+    });
+  }
+  
+  if (setPlayerBtn && playerInput) {
+    setPlayerBtn.addEventListener("click", () => {
+      setCurrentPlayer(playerInput.value);
+    });
+    
+    playerInput.addEventListener("keypress", (e) => {
+      if (e.key === "Enter") {
+        setCurrentPlayer(playerInput.value);
+      }
+    });
+  }
+  
+  updateCurrentPlayerDisplay();
+  renderLeaderboard();
+}
+
+// ============================================
 // GAME BALANCE SETTINGS
 // ============================================
 // These settings can be adjusted to change difficulty
@@ -399,22 +660,22 @@ function render() {
     const card = state.floor[i];
     if (card) {
       // Card exists at this position
-      const cardEl = createCardEl(card);
-      cardEl.draggable = true;
-      cardEl.dataset.from = "floor";
-      floorRow.appendChild(cardEl);
+    const cardEl = createCardEl(card);
+    cardEl.draggable = true;
+    cardEl.dataset.from = "floor";
+    floorRow.appendChild(cardEl);
     } else {
       // Empty placeholder
-      const empty = document.createElement("div");
+    const empty = document.createElement("div");
       empty.className = "empty floor-placeholder";
-      floorRow.appendChild(empty);
+    floorRow.appendChild(empty);
     }
   }
 
   document.getElementById("discardCount").textContent = `${state.discard.length} cards`;
   document.getElementById("healthValue").textContent = `${state.health} / ${gameSettings.maxHealth}`;
   document.getElementById("floorValue").textContent = state.floorNumber;
-  
+
   // Update health bar
   const healthPercent = (state.health / gameSettings.maxHealth) * 100;
   document.getElementById("healthBar").style.width = `${healthPercent}%`;
@@ -724,9 +985,9 @@ function handleDiscardDrop(card, from) {
     state.weapon = null;
     state.weaponDamage = [];
     state.weaponMaxNext = Infinity;
-    state.floorFresh = false;
+  state.floorFresh = false;
     setStatus("Weapon discarded.");
-    postAction();
+  postAction();
   } else {
     // Floor cards cannot be discarded directly
     setStatus("You can only remove cards by equipping weapons, defeating monsters, or healing.");
@@ -771,7 +1032,7 @@ function handleMonsterOnWeapon(monsterCard, monsterEl) {
   
   // Apply weapon degradation based on mode
   if (gameSettings.weaponDegradation === "strict") {
-    state.weaponMaxNext = Math.min(state.weaponMaxNext, monsterValue - 1);
+  state.weaponMaxNext = Math.min(state.weaponMaxNext, monsterValue - 1);
   } else if (gameSettings.weaponDegradation === "equal") {
     state.weaponMaxNext = Math.min(state.weaponMaxNext, monsterValue);
   }
@@ -881,7 +1142,7 @@ function postAction() {
   checkHealth();
   const needsRefill = refillIfNeeded();
   if (!needsRefill) {
-    render();
+  render();
   }
   checkWin();
 }
@@ -1008,6 +1269,10 @@ function checkWin() {
 function showWinModal() {
   const modal = document.getElementById("winModal");
   modal.classList.add("show");
+  
+  // Record the win for leaderboard
+  recordWin();
+  
   // Trigger streamer animation
   setTimeout(() => {
     document.querySelectorAll(".streamer").forEach((streamer, index) => {
@@ -1029,6 +1294,9 @@ function hideWinModal() {
 function showLoseModal() {
   const modal = document.getElementById("loseModal");
   modal.classList.add("show");
+  
+  // Record floors for leaderboard (on loss)
+  recordFloors();
   
   // Enable/disable redo button based on history
   const redoBtn = document.getElementById("loseRedoBtn");
@@ -1522,6 +1790,7 @@ function dealFirstFloor() {
 window.addEventListener("DOMContentLoaded", () => {
   setupButtons();
   setupTouchDragDrop();
+  setupLeaderboard();
   initGame();
 });
 
