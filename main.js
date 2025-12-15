@@ -941,34 +941,40 @@ function render() {
 
 function renderWeapon() {
   const slot = document.getElementById("weaponSlot");
+  const infoBar = document.getElementById("weaponInfoBar");
   slot.innerHTML = "";
+  
   if (!state.weapon) {
     const empty = document.createElement("div");
     empty.className = "slot-drop";
     empty.textContent = "Drop diamonds to equip";
     slot.appendChild(empty);
+    infoBar.textContent = "";
+    infoBar.classList.remove("active");
     return;
   }
   const cardEl = createCardEl(state.weapon);
   cardEl.draggable = true;
   cardEl.dataset.from = "weapon";
+  
+  // Add tooltip showing weapon power
+  cardEl.dataset.tooltip = `Power: ${state.weapon.value}`;
+  
   slot.appendChild(cardEl);
 
-  const info = document.createElement("div");
-  info.className = "weapon-info";
-  
+  // Update weapon info bar above slots
   if (gameSettings.weaponDegradation === "none") {
-    info.textContent = "No degradation";
+    infoBar.textContent = "⚔️ No degradation";
   } else if (state.weaponDamage.length === 0) {
-    info.textContent = "Fresh weapon";
+    infoBar.textContent = "⚔️ Fresh weapon - can attack any monster";
   } else {
     const comparison = gameSettings.weaponDegradation === "strict" ? "<" : "≤";
     const maxVal = gameSettings.weaponDegradation === "strict" 
       ? Math.max(2, state.weaponMaxNext + 1)
       : Math.max(2, state.weaponMaxNext);
-    info.textContent = `Can attack monsters ${comparison} ${maxVal}`;
+    infoBar.textContent = `⚔️ Can attack monsters ${comparison} ${maxVal}`;
   }
-  slot.appendChild(info);
+  infoBar.classList.add("active");
 }
 
 function renderWeaponDamage() {

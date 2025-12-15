@@ -486,10 +486,41 @@ main {
 /* Equipment Area */
 .equipment-area {
   display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-sm);
+  flex-shrink: 0;
+}
+
+.weapon-info-bar {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--accent-gold);
+  text-align: center;
+  padding: 8px 16px;
+  background: linear-gradient(135deg, rgba(45, 35, 25, 0.9) 0%, rgba(35, 28, 20, 0.95) 100%);
+  border: 1px solid rgba(212, 168, 83, 0.4);
+  border-radius: 8px;
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  min-height: 20px;
+  opacity: 0;
+  transform: translateY(-5px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.weapon-info-bar.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.equipment-slots {
+  display: flex;
   justify-content: center;
   gap: var(--spacing-lg);
   flex-wrap: wrap;
-  flex-shrink: 0;
 }
 
 .slot {
@@ -513,10 +544,34 @@ main {
   position: relative;
 }
 
-.weapon-info {
+/* Tooltip styling for equipped weapon */
+#weaponSlot .card {
+  position: relative;
+}
+
+#weaponSlot .card::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) scale(0.9);
+  background: linear-gradient(135deg, rgba(30, 25, 20, 0.95) 0%, rgba(20, 18, 15, 0.98) 100%);
+  color: var(--text-primary);
+  padding: 6px 12px;
+  border-radius: 6px;
   font-size: 0.7rem;
-  color: var(--text-muted);
-  text-align: center;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  border: 1px solid rgba(212, 168, 83, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  z-index: 100;
+}
+
+#weaponSlot .card:hover::after {
+  opacity: 1;
+  transform: translateX(-50%) scale(1);
 }
 
 /* Discard Corner */
@@ -1826,7 +1881,16 @@ main {
   }
   
   .equipment-area {
+    gap: var(--spacing-sm);
+  }
+  
+  .equipment-slots {
     gap: var(--spacing-md);
+  }
+  
+  .weapon-info-bar {
+    font-size: 0.75rem;
+    padding: 6px 12px;
   }
   
   .status-bar {
@@ -2026,8 +2090,17 @@ main {
   
   .equipment-area {
     flex-direction: column;
-    gap: var(--spacing-sm);
+    gap: var(--spacing-xs);
     flex: 0 0 auto;
+  }
+  
+  .equipment-slots {
+    gap: var(--spacing-sm);
+  }
+  
+  .weapon-info-bar {
+    font-size: 0.65rem;
+    padding: 4px 8px;
   }
   
   .slot {
