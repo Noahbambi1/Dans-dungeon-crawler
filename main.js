@@ -105,7 +105,6 @@ function render() {
   document.getElementById("floorValue").textContent = state.floorNumber;
 
   renderWeapon();
-  renderWeaponDamage();
   renderRunButton();
   attachDragListeners();
 }
@@ -113,8 +112,6 @@ function render() {
 function renderWeapon() {
   const slot = document.getElementById("weaponSlot");
   slot.innerHTML = "";
-  slot.classList.add("drop-target");
-  slot.dataset.drop = "weapon";
   if (!state.weapon) {
     const empty = document.createElement("div");
     empty.className = "slot-drop";
@@ -134,23 +131,6 @@ function renderWeapon() {
       ? "Fresh weapon"
       : `Can attack monsters ≤ ${Math.max(2, state.weaponMaxNext)}`;
   slot.appendChild(info);
-}
-
-function renderWeaponDamage() {
-  const slot = document.getElementById("weaponDamageSlot");
-  slot.innerHTML = "";
-  if (state.weaponDamage.length === 0) {
-    const empty = document.createElement("div");
-    empty.className = "slot-drop";
-    empty.textContent = "Monsters defeated";
-    slot.appendChild(empty);
-    return;
-  }
-  state.weaponDamage.forEach((card) => {
-    const el = createCardEl(card);
-    el.classList.add("small");
-    slot.appendChild(el);
-  });
 }
 
 function renderRunButton() {
@@ -234,7 +214,6 @@ function onDrop(e) {
   const handlers = {
     heal: handleHealDrop,
     weapon: handleWeaponAreaDrop,
-    weaponDamage: () => setStatus("Drop monsters here after fighting (auto-handled)"),
     discard: handleDiscardDrop,
     health: handleHealthDamageDrop,
   };
@@ -281,9 +260,9 @@ function handleWeaponDrop(card, from) {
     return;
   }
   removeFromPool(card, from);
-  // Discard existing weapon and its history when replacing.
+  // Discard existing weapon when replacing (monsters already in discard)
   if (state.weapon) {
-    state.discard.push(state.weapon, ...state.weaponDamage);
+    state.discard.push(state.weapon);
   }
   state.weapon = card;
   state.weaponDamage = [];
@@ -295,12 +274,12 @@ function handleWeaponDrop(card, from) {
 
 function handleDiscardDrop(card, from) {
   if (from === "weapon") {
-    // Weapon discard also dumps damage pile.
-    state.discard.push(state.weapon, ...state.weaponDamage);
+    // Weapon discard (monsters already in discard from when they were defeated)
+    state.discard.push(state.weapon);
     state.weapon = null;
     state.weaponDamage = [];
     state.weaponMaxNext = Infinity;
-    setStatus("Weapon discarded along with its defeated monsters.");
+    setStatus("Weapon discarded.");
   } else {
     removeFromPool(card, from);
     state.discard.push(card);
@@ -338,7 +317,9 @@ function handleMonsterOnWeapon(monsterCard) {
   }
   const damage = Math.max(0, monsterValue - state.weapon.value);
   state.health -= damage;
+  // Track defeated monster for weapon degradation, then discard
   state.weaponDamage.push(monsterCard);
+  state.discard.push(monsterCard);
   state.weaponMaxNext = Math.min(state.weaponMaxNext, monsterValue - 1);
   state.floorFresh = false;
   setStatus(

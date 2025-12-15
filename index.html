@@ -37,7 +37,7 @@
           <div class="card back" id="deckBack"></div>
           <div class="pile-count" id="deckCount">0</div>
         </div>
-        <div class="pile">
+        <div class="pile discard-pile">
           <div class="pile-title">Discard</div>
           <div class="pile-drop drop-target" data-drop="discard">Drop to discard</div>
           <div class="pile-count" id="discardCount">0</div>
@@ -51,14 +51,8 @@
       <section class="equipment-area">
         <div class="slot">
           <div class="slot-title">Equipped weapon</div>
-          <div class="slot-drop drop-target" data-drop="weapon">Drop diamonds to equip</div>
-          <div id="weaponSlot"></div>
+          <div id="weaponSlot" class="drop-target" data-drop="weapon"></div>
           <button id="discardWeaponBtn" class="small-btn">Discard weapon</button>
-        </div>
-        <div class="slot">
-          <div class="slot-title">Weapon damage</div>
-          <div class="slot-drop drop-target" data-drop="weaponDamage">Monsters beaten with this weapon</div>
-          <div id="weaponDamageSlot"></div>
         </div>
       </section>
     </main>
