@@ -1612,11 +1612,11 @@ main {
   right: 0;
   width: 320px;
   max-height: 400px;
-  background: linear-gradient(135deg, rgba(45, 30, 20, 0.98) 0%, rgba(30, 20, 15, 0.98) 100%);
+  background: linear-gradient(135deg, rgba(45, 30, 20, 1) 0%, rgba(30, 20, 15, 1) 100%);
   border: 2px solid rgba(218, 165, 32, 0.5);
   border-radius: 12px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  z-index: 1000;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  z-index: 10000;
   display: none;
   overflow: hidden;
 }
