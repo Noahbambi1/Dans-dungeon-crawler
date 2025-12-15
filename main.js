@@ -662,11 +662,7 @@ function refillIfNeeded() {
       
       if (!deckSlot || !floorRow) return;
       
-      // Get the top card back from the stack for animation reference
-      const stackContainer = deckSlot.querySelector(".card-stack");
-      const deckRect = stackContainer 
-        ? stackContainer.getBoundingClientRect()
-        : deckSlot.getBoundingClientRect();
+      const deckRect = deckSlot.getBoundingClientRect();
       
       // Replace new card slots with back cards for animation
       slotsToFill.forEach(slotIndex => {
