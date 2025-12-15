@@ -12,10 +12,10 @@
 
 :root {
   /* Color Palette - Dark Fantasy Theme */
-  --bg-primary: #0a0a0f;
-  --bg-secondary: #12121a;
-  --bg-card: #1a1a24;
-  --bg-elevated: #222230;
+  --bg-primary: #141420;
+  --bg-secondary: #1c1c2a;
+  --bg-card: #252535;
+  --bg-elevated: #2e2e40;
   
   --accent-gold: #d4a853;
   --accent-gold-light: #f0d78c;
@@ -38,9 +38,9 @@
   --border-gold: rgba(212, 168, 83, 0.3);
   
   /* Card Dimensions */
-  --card-width: 100px;
-  --card-height: 140px;
-  --card-radius: 10px;
+  --card-width: 85px;
+  --card-height: 119px;
+  --card-radius: 8px;
   
   /* Spacing */
   --spacing-xs: 4px;
@@ -63,8 +63,9 @@ body {
   font-family: 'Quicksand', sans-serif;
   background: var(--bg-primary);
   color: var(--text-primary);
-  min-height: 100vh;
-  overflow-x: hidden;
+  height: 100vh;
+  height: 100dvh; /* Dynamic viewport height for mobile */
+  overflow: hidden;
   position: relative;
 }
 
@@ -77,9 +78,9 @@ body::before {
   right: 0;
   bottom: 0;
   background: 
-    radial-gradient(ellipse at 20% 20%, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 80%, rgba(212, 168, 83, 0.06) 0%, transparent 50%),
-    radial-gradient(ellipse at 50% 50%, rgba(74, 158, 255, 0.04) 0%, transparent 70%);
+    radial-gradient(ellipse at 20% 20%, rgba(139, 92, 246, 0.12) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 80%, rgba(212, 168, 83, 0.10) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, rgba(74, 158, 255, 0.08) 0%, transparent 70%);
   pointer-events: none;
   z-index: 0;
 }
@@ -93,8 +94,8 @@ body::after {
   right: 0;
   bottom: 0;
   background-image: 
-    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
   background-size: 50px 50px;
   pointer-events: none;
   z-index: 0;
@@ -103,13 +104,14 @@ body::after {
 #app {
   position: relative;
   z-index: 1;
-  min-height: 100vh;
+  height: 100%;
   display: grid;
   grid-template-rows: auto 1fr auto;
-  gap: var(--spacing-md);
-  padding: var(--spacing-md);
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm);
   max-width: 1600px;
   margin: 0 auto;
+  overflow: hidden;
 }
 
 /* ============================================
@@ -120,12 +122,13 @@ body::after {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--spacing-md);
-  padding: var(--spacing-md) var(--spacing-lg);
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
   background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-card) 100%);
   border: 1px solid var(--border-subtle);
-  border-radius: 16px;
+  border-radius: 12px;
   flex-wrap: wrap;
+  flex-shrink: 0;
 }
 
 .logo {
@@ -169,9 +172,9 @@ body::after {
 
 .health-bar-container {
   width: 100%;
-  height: 24px;
+  height: 20px;
   background: var(--bg-primary);
-  border-radius: 12px;
+  border-radius: 10px;
   position: relative;
   overflow: hidden;
   border: 1px solid var(--border-subtle);
@@ -345,19 +348,21 @@ body::after {
    ============================================ */
 
 main {
-  display: grid;
-  grid-template-columns: 1fr;
-  grid-template-rows: auto 1fr auto;
-  gap: var(--spacing-lg);
-  padding: var(--spacing-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm);
+  overflow: hidden;
+  min-height: 0; /* Important for flexbox overflow */
 }
 
 /* Action Row */
 .action-row {
   display: flex;
   justify-content: center;
-  gap: var(--spacing-xl);
+  gap: var(--spacing-md);
   flex-wrap: wrap;
+  flex-shrink: 0;
 }
 
 .action-slot {
@@ -417,9 +422,12 @@ main {
 .play-area {
   display: flex;
   justify-content: center;
-  align-items: flex-start;
-  gap: var(--spacing-xl);
+  align-items: center;
+  gap: var(--spacing-lg);
   flex-wrap: wrap;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
 }
 
 /* Pile Containers */
@@ -427,12 +435,12 @@ main {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--spacing-sm);
-  padding: var(--spacing-md);
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm);
   background: var(--bg-secondary);
   border: 1px solid var(--border-subtle);
   border-radius: 12px;
-  min-width: calc(var(--card-width) + 40px);
+  min-width: calc(var(--card-width) + 24px);
 }
 
 .pile-title,
@@ -454,9 +462,10 @@ main {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--spacing-md);
+  gap: var(--spacing-sm);
   flex: 1;
-  min-width: 300px;
+  min-width: 280px;
+  min-height: 0;
 }
 
 .floor-label {
@@ -478,28 +487,29 @@ main {
 .equipment-area {
   display: flex;
   justify-content: center;
-  gap: var(--spacing-xl);
+  gap: var(--spacing-lg);
   flex-wrap: wrap;
+  flex-shrink: 0;
 }
 
 .slot {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--spacing-sm);
-  padding: var(--spacing-md);
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm);
   background: var(--bg-secondary);
   border: 1px solid var(--border-subtle);
   border-radius: 12px;
-  min-width: calc(var(--card-width) + 40px);
+  min-width: calc(var(--card-width) + 24px);
 }
 
 #weaponSlot {
-  min-height: calc(var(--card-height) + 60px);
+  min-height: calc(var(--card-height) + 40px);
 }
 
 #weaponDamageSlot {
-  min-height: calc(var(--card-height) + 40px);
+  min-height: calc(var(--card-height) + 20px);
   position: relative;
 }
 
@@ -547,65 +557,91 @@ main {
   z-index: 10;
 }
 
+/* Vintage inner border and vignette for face cards */
+.card.red::before,
+.card.black::before {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border: 1px solid rgba(140, 125, 100, 0.25);
+  border-radius: 4px;
+  background: 
+    radial-gradient(ellipse at center, transparent 60%, rgba(100, 85, 65, 0.08) 100%);
+  pointer-events: none;
+}
+
 .card:active {
   cursor: grabbing;
 }
 
-/* Card Faces */
+/* Card Faces - Vintage/Aged Look */
 .card.red,
 .card.black {
-  background: linear-gradient(145deg, #fefefe 0%, #f0f0f0 100%);
-  border: 1px solid #d0d0d0;
+  background: 
+    /* Paper texture overlay */
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E"),
+    /* Aged paper gradient */
+    linear-gradient(145deg, #e8e4dc 0%, #d9d4c8 50%, #cec8ba 100%);
+  border: 1px solid #a89f8f;
   box-shadow: 
-    0 4px 12px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    0 4px 12px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.05);
+  /* Subtle worn edges effect */
+  filter: contrast(0.95);
 }
 
 .card.red {
-  color: #c41e3a;
+  color: #8b2942;
 }
 
 .card.black {
-  color: #1a1a2e;
+  color: #2a2a35;
 }
 
 .card .corner {
   position: absolute;
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 700;
   line-height: 1.1;
   text-align: center;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.3);
 }
 
 .card .corner:first-of-type {
-  top: 6px;
-  left: 6px;
+  top: 5px;
+  left: 5px;
 }
 
 .card .corner.bottom {
-  bottom: 6px;
-  right: 6px;
+  bottom: 5px;
+  right: 5px;
   transform: rotate(180deg);
 }
 
 .card .suit {
-  font-size: 1.8rem;
+  font-size: 1.6rem;
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  opacity: 0.9;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.1));
 }
 
 /* Royal Monster Graphics */
 .card.monster-royal .suit {
-  font-size: 2.5rem;
+  font-size: 2.2rem;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.2)) saturate(0.85);
 }
 
 .card.monster-royal::after {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, transparent 30%, rgba(0, 0, 0, 0.1) 100%);
+  background: 
+    linear-gradient(180deg, transparent 40%, rgba(101, 85, 60, 0.12) 100%),
+    radial-gradient(ellipse at 50% 0%, rgba(255, 250, 240, 0.15) 0%, transparent 60%);
   border-radius: var(--card-radius);
   pointer-events: none;
 }
@@ -674,26 +710,32 @@ main {
   opacity: 0.15;
 }
 
-/* Card Back Styles */
+/* Card Back Styles - Vintage */
 .card.back {
-  background: var(--card-back-bg, linear-gradient(135deg, #1a1a2e 0%, #16213e 100%));
-  border: 2px solid var(--card-back-border, #2d3748);
+  background: 
+    /* Subtle texture */
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.06'/%3E%3C/svg%3E"),
+    var(--card-back-bg, linear-gradient(135deg, #1f1f30 0%, #181828 100%));
+  border: 2px solid var(--card-back-border, #3a3a4a);
   cursor: default;
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
 .card.back::before {
   content: '';
   position: absolute;
-  inset: 6px;
-  border: 1px solid var(--card-back-accent, rgba(212, 168, 83, 0.3));
-  border-radius: 6px;
+  inset: 5px;
+  border: 1px solid var(--card-back-accent, rgba(212, 168, 83, 0.25));
+  border-radius: 5px;
   background: var(--card-back-pattern, 
     repeating-linear-gradient(
       45deg,
       transparent,
-      transparent 10px,
-      rgba(212, 168, 83, 0.1) 10px,
-      rgba(212, 168, 83, 0.1) 20px
+      transparent 8px,
+      rgba(212, 168, 83, 0.08) 8px,
+      rgba(212, 168, 83, 0.08) 16px
     )
   );
 }
@@ -704,8 +746,9 @@ main {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-size: 2rem;
-  opacity: 0.6;
+  font-size: 1.8rem;
+  opacity: 0.5;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
 
 .card.back.clickable {
@@ -727,73 +770,73 @@ main {
   }
 }
 
-/* Card Back Themes */
+/* Card Back Themes - Vintage Style */
 [data-card-theme="classic"] {
-  --card-back-bg: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-  --card-back-border: #2d3748;
-  --card-back-accent: rgba(212, 168, 83, 0.3);
+  --card-back-bg: linear-gradient(135deg, #252538 0%, #1c1c2a 100%);
+  --card-back-border: #3a3a4a;
+  --card-back-accent: rgba(180, 145, 75, 0.3);
   --card-back-symbol: '⚔️';
 }
 
 [data-card-theme="dragon"] {
-  --card-back-bg: linear-gradient(135deg, #2d1b1b 0%, #1a0a0a 100%);
-  --card-back-border: #5c2323;
-  --card-back-accent: rgba(220, 53, 69, 0.4);
+  --card-back-bg: linear-gradient(135deg, #352020 0%, #201010 100%);
+  --card-back-border: #4a2828;
+  --card-back-accent: rgba(180, 60, 60, 0.35);
   --card-back-symbol: '🐉';
   --card-back-pattern: 
     repeating-linear-gradient(
       45deg,
       transparent,
-      transparent 10px,
-      rgba(220, 53, 69, 0.1) 10px,
-      rgba(220, 53, 69, 0.1) 20px
+      transparent 8px,
+      rgba(180, 60, 60, 0.08) 8px,
+      rgba(180, 60, 60, 0.08) 16px
     );
 }
 
 [data-card-theme="mystic"] {
-  --card-back-bg: linear-gradient(135deg, #1a1a3e 0%, #0a0a1e 100%);
-  --card-back-border: #3d3d8c;
-  --card-back-accent: rgba(139, 92, 246, 0.4);
+  --card-back-bg: linear-gradient(135deg, #252540 0%, #151525 100%);
+  --card-back-border: #3a3a6a;
+  --card-back-accent: rgba(120, 80, 200, 0.35);
   --card-back-symbol: '🔮';
   --card-back-pattern: 
-    radial-gradient(circle at 30% 30%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
-    radial-gradient(circle at 70% 70%, rgba(139, 92, 246, 0.15) 0%, transparent 50%);
+    radial-gradient(circle at 30% 30%, rgba(120, 80, 200, 0.12) 0%, transparent 50%),
+    radial-gradient(circle at 70% 70%, rgba(120, 80, 200, 0.12) 0%, transparent 50%);
 }
 
 [data-card-theme="nature"] {
-  --card-back-bg: linear-gradient(135deg, #1a2e1a 0%, #0a1e0a 100%);
-  --card-back-border: #2d5c2d;
-  --card-back-accent: rgba(40, 167, 69, 0.4);
+  --card-back-bg: linear-gradient(135deg, #1e3020 0%, #121a12 100%);
+  --card-back-border: #2a4a2a;
+  --card-back-accent: rgba(60, 140, 60, 0.35);
   --card-back-symbol: '🌿';
   --card-back-pattern: 
     repeating-linear-gradient(
       60deg,
       transparent,
       transparent 8px,
-      rgba(40, 167, 69, 0.08) 8px,
-      rgba(40, 167, 69, 0.08) 16px
+      rgba(60, 140, 60, 0.06) 8px,
+      rgba(60, 140, 60, 0.06) 16px
     );
 }
 
 [data-card-theme="royal"] {
-  --card-back-bg: linear-gradient(135deg, #2e2a1a 0%, #1e1a0a 100%);
-  --card-back-border: #8b7355;
-  --card-back-accent: rgba(212, 168, 83, 0.5);
+  --card-back-bg: linear-gradient(135deg, #352e1e 0%, #201a10 100%);
+  --card-back-border: #6a5a40;
+  --card-back-accent: rgba(180, 145, 75, 0.4);
   --card-back-symbol: '👑';
   --card-back-pattern: 
     repeating-linear-gradient(
       90deg,
       transparent,
-      transparent 15px,
-      rgba(212, 168, 83, 0.1) 15px,
-      rgba(212, 168, 83, 0.1) 30px
+      transparent 12px,
+      rgba(180, 145, 75, 0.08) 12px,
+      rgba(180, 145, 75, 0.08) 24px
     );
 }
 
 [data-card-theme="skull"] {
-  --card-back-bg: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
-  --card-back-border: #404040;
-  --card-back-accent: rgba(255, 255, 255, 0.2);
+  --card-back-bg: linear-gradient(135deg, #202020 0%, #101010 100%);
+  --card-back-border: #3a3a3a;
+  --card-back-accent: rgba(200, 200, 200, 0.15);
   --card-back-symbol: '💀';
   --card-back-pattern: none;
 }
@@ -839,13 +882,14 @@ main {
    ============================================ */
 
 .status-bar {
-  padding: var(--spacing-md) var(--spacing-lg);
+  padding: var(--spacing-sm) var(--spacing-md);
   background: var(--bg-secondary);
   border: 1px solid var(--border-subtle);
-  border-radius: 12px;
+  border-radius: 8px;
   text-align: center;
   color: var(--text-secondary);
-  font-size: 0.9rem;
+  font-size: 0.85rem;
+  flex-shrink: 0;
 }
 
 /* ============================================
@@ -1557,13 +1601,13 @@ main {
 }
 
 /* ============================================
-   RESPONSIVE - DESKTOP
+   RESPONSIVE - DESKTOP (Large)
    ============================================ */
 
-@media (min-width: 1200px) {
+@media (min-width: 1200px) and (min-height: 800px) {
   :root {
-    --card-width: 110px;
-    --card-height: 154px;
+    --card-width: 100px;
+    --card-height: 140px;
   }
   
   .play-area {
@@ -1572,6 +1616,23 @@ main {
   
   .floor-row {
     gap: var(--spacing-lg);
+  }
+}
+
+/* Smaller desktop screens */
+@media (min-width: 1024px) and (max-height: 799px) {
+  :root {
+    --card-width: 75px;
+    --card-height: 105px;
+  }
+  
+  .top-bar {
+    padding: var(--spacing-xs) var(--spacing-sm);
+  }
+  
+  .control-btn {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: 0.8rem;
   }
 }
 
