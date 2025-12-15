@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dungeon Floor Card Crawler</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app">
+    <header class="top-bar">
+      <div class="logo">
+        <span class="title">Dungeon Floor</span>
+        <span class="subtitle">Card Crawler</span>
+      </div>
+      <div class="health-block">
+        <div class="health-label">Health</div>
+        <div class="health-value" id="healthValue">20 / 20</div>
+        <div class="health-drop drop-target" data-drop="health">Drop monsters here to take damage</div>
+      </div>
+      <div class="heal-block">
+        <div class="heal-label">Heal slot</div>
+        <div class="heal-drop drop-target" data-drop="heal">Drop hearts to heal</div>
+      </div>
+      <div class="floor-block">
+        <div class="floor-label">Dungeon floor</div>
+        <div class="floor-value" id="floorValue">1</div>
+        <button id="runButton" class="run-btn">Run away (once)</button>
+        <div class="run-hint">Use only at start of a floor.</div>
+      </div>
+    </header>
+
+    <main>
+      <section class="deck-area">
+        <div class="pile">
+          <div class="pile-title">Deck</div>
+          <div class="card back" id="deckBack"></div>
+          <div class="pile-count" id="deckCount">0</div>
+        </div>
+        <div class="pile">
+          <div class="pile-title">Discard</div>
+          <div class="pile-drop drop-target" data-drop="discard">Discard pile</div>
+          <div class="pile-count" id="discardCount">0</div>
+        </div>
+      </section>
+
+      <section class="floor-area">
+        <div class="floor-row" id="floorRow"></div>
+      </section>
+
+      <section class="equipment-area">
+        <div class="slot">
+          <div class="slot-title">Equipped weapon</div>
+          <div class="slot-drop drop-target" data-drop="weapon">Drop diamonds to equip</div>
+          <div id="weaponSlot"></div>
+          <button id="discardWeaponBtn" class="small-btn">Discard weapon</button>
+        </div>
+        <div class="slot">
+          <div class="slot-title">Weapon damage</div>
+          <div class="slot-drop drop-target" data-drop="weaponDamage">Monsters beaten with this weapon</div>
+          <div id="weaponDamageSlot"></div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="status-bar">
+      <div id="status"></div>
+    </footer>
+  </div>
+
+  <script type="module" src="main.js"></script>
+</body>
+</html>
+

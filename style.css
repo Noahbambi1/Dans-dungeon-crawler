@@ -1,0 +1,336 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: "Inter", "Cardo", system-ui, -apple-system, sans-serif;
+}
+
+:root {
+  --panel: rgba(255, 255, 255, 0.06);
+  --panel-border: rgba(255, 255, 255, 0.1);
+  --glow: rgba(14, 165, 233, 0.45);
+}
+
+body {
+  background:
+    radial-gradient(circle at 15% 15%, rgba(14, 165, 233, 0.1), transparent 25%),
+    radial-gradient(circle at 80% 10%, rgba(244, 114, 182, 0.12), transparent 28%),
+    radial-gradient(circle at 60% 70%, rgba(94, 234, 212, 0.12), transparent 32%),
+    #0b1221;
+  color: #e5e7eb;
+  min-height: 100vh;
+  padding: 16px;
+}
+
+#app {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.top-bar {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.logo .title {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.logo .subtitle {
+  display: block;
+  color: #9ca3af;
+  font-size: 12px;
+}
+
+.health-block,
+.heal-block,
+.floor-block {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.health-value,
+.floor-value {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.health-drop,
+.heal-drop,
+.slot-drop,
+.pile-drop {
+  border: 1px dashed rgba(255, 255, 255, 0.3);
+  padding: 8px;
+  border-radius: 8px;
+  min-height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #cbd5e1;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
+}
+
+.drop-target:hover {
+  border-color: rgba(14, 165, 233, 0.6);
+  transform: translateY(-1px);
+}
+
+.deck-area,
+.equipment-area {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px;
+}
+
+.pile,
+.slot {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pile-title,
+.slot-title,
+.floor-label {
+  color: #cbd5e1;
+  font-weight: 600;
+}
+
+.pile-count {
+  font-size: 14px;
+  color: #94a3b8;
+}
+
+.floor-area {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.floor-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+}
+
+.card {
+  width: 100%;
+  aspect-ratio: 3 / 4.2;
+  border-radius: 12px;
+  background: linear-gradient(145deg, #fdfefe, #eef2f7);
+  color: #0f172a;
+  border: 1px solid #d6dbe5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  box-shadow:
+    0 14px 30px rgba(0, 0, 0, 0.3),
+    0 1px 0 #ffffff inset,
+    0 -2px 8px rgba(0, 0, 0, 0.05) inset;
+  user-select: none;
+  overflow: hidden;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.card::after {
+  content: attr(data-suit);
+  position: absolute;
+  inset: 12px;
+  opacity: 0.05;
+  font-size: 92px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 18px 36px rgba(0, 0, 0, 0.32),
+    0 1px 0 #ffffff inset,
+    0 -2px 8px rgba(0, 0, 0, 0.05) inset;
+}
+
+.card.small {
+  width: 90%;
+  aspect-ratio: 3 / 4.2;
+  box-shadow: none;
+  border-width: 1px;
+}
+
+.card .corner {
+  position: absolute;
+  top: 8px;
+  left: 10px;
+  text-align: left;
+  line-height: 1.15;
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.card .corner.bottom {
+  top: auto;
+  left: auto;
+  bottom: 8px;
+  right: 10px;
+  transform: rotate(180deg);
+}
+
+.card .suit {
+  font-size: 40px;
+}
+
+.card.red {
+  color: #b91c1c;
+}
+
+.card.black {
+  color: #0f172a;
+}
+
+.card.suit-hearts::after,
+.card.suit-diamonds::after {
+  color: #ef4444;
+}
+
+.card.suit-clubs::after,
+.card.suit-spades::after {
+  color: #0f172a;
+}
+
+.card.suit-hearts {
+  background: radial-gradient(circle at 25% 20%, rgba(239, 68, 68, 0.12), transparent 35%),
+    linear-gradient(145deg, #fff7f7, #f1f5f9);
+  border-color: #fecdd3;
+}
+
+.card.suit-diamonds {
+  background: radial-gradient(circle at 75% 80%, rgba(248, 113, 113, 0.12), transparent 35%),
+    linear-gradient(145deg, #fff7f7, #f1f5f9);
+  border-color: #fecdd3;
+}
+
+.card.suit-clubs {
+  background: radial-gradient(circle at 20% 75%, rgba(30, 41, 59, 0.1), transparent 32%),
+    linear-gradient(145deg, #f8fafc, #e5e7eb);
+  border-color: #cbd5e1;
+}
+
+.card.suit-spades {
+  background: radial-gradient(circle at 80% 25%, rgba(15, 23, 42, 0.1), transparent 32%),
+    linear-gradient(145deg, #f8fafc, #e5e7eb);
+  border-color: #cbd5e1;
+}
+
+.card.back {
+  background:
+    radial-gradient(circle at 30% 30%, rgba(14, 165, 233, 0.2), transparent 45%),
+    radial-gradient(circle at 70% 70%, rgba(94, 234, 212, 0.18), transparent 45%),
+    repeating-linear-gradient(45deg, #0f172a 0, #0f172a 8px, #111827 8px, #111827 16px);
+  border: 2px solid #0ea5e9;
+  color: #e0f2fe;
+}
+
+.drop-target.highlight {
+  border-color: #0ea5e9;
+  box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.4);
+}
+
+.equipment-area #weaponSlot,
+.equipment-area #weaponDamageSlot {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 6px;
+}
+
+.run-btn,
+.small-btn {
+  padding: 8px 10px;
+  border: none;
+  border-radius: 8px;
+  background: #0ea5e9;
+  color: #0b1020;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.1s ease, opacity 0.2s ease;
+}
+
+.run-btn:disabled,
+.small-btn:disabled {
+  background: #475569;
+  color: #cbd5e1;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.run-hint {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.status-bar {
+  background: rgba(0, 0, 0, 0.35);
+  border-radius: 10px;
+  padding: 10px 12px;
+  min-height: 32px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  color: #e2e8f0;
+  font-size: 14px;
+}
+
+.health-drop {
+  background: rgba(220, 38, 38, 0.15);
+}
+
+.heal-drop {
+  background: rgba(16, 185, 129, 0.1);
+}
+
+.pile-drop {
+  background: rgba(79, 70, 229, 0.08);
+}
+
+.slot-drop {
+  background: rgba(14, 165, 233, 0.08);
+}
+
+.top-bar .health-block .health-drop {
+  min-height: 72px;
+}
+
+.floor-row .empty {
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  min-height: 60px;
+}
+
+.weapon-info {
+  font-size: 12px;
+  color: #e2e8f0;
+}
+
+.pile,
+.slot,
+.floor-area,
+.top-bar {
+  backdrop-filter: blur(4px);
+}
+
