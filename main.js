@@ -994,6 +994,9 @@ function dealFirstFloor() {
   state.healUsed = false;
   setStatus("First floor dealt! Drag cards to interact.");
   
+  // Update deck count immediately
+  renderDeck();
+  
   // Render cards as backs initially
   floorRow.innerHTML = "";
   for (let i = 0; i < 4; i++) {
