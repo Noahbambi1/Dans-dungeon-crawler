@@ -2123,28 +2123,15 @@ main {
     font-size: 1.6rem;
   }
   
-  /* Discard next to deck on mobile - uses calc to position beside center */
   .discard-corner {
     position: fixed;
-    bottom: auto;
-    right: auto;
-    top: 50%;
-    left: calc(50% + var(--card-width) / 2 + var(--spacing-lg));
-    transform: translateY(-50%);
-    z-index: 50;
+    bottom: var(--spacing-sm);
+    right: var(--spacing-sm);
   }
   
   .discard-corner .pile {
     padding: var(--spacing-xs);
     min-width: auto;
-  }
-  
-  .discard-corner .pile-title {
-    font-size: 0.6rem;
-  }
-  
-  .discard-corner .pile-count {
-    font-size: 0.6rem;
   }
   
   .leaderboard-panel {
