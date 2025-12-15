@@ -318,21 +318,10 @@ function renderDeck() {
   const slot = document.getElementById("deckBack");
   if (!slot) return;
   
-  slot.innerHTML = "";
-  
   // Update deck count
   const deckCount = document.getElementById("deckCount");
   if (deckCount) {
     deckCount.textContent = `${state.deck.length} cards`;
-  }
-  
-  if (state.deck.length === 0) {
-    const empty = document.createElement("div");
-    empty.className = "slot-drop";
-    slot.appendChild(empty);
-    slot.classList.remove("clickable");
-    slot.title = "";
-    return;
   }
   
   // Make deck clickable if first floor not dealt
@@ -344,24 +333,8 @@ function renderDeck() {
     slot.title = "";
   }
   
-  // Stack card backs with offset so corners are visible
-  // Show up to 10 card backs to represent the deck
-  const cardsToShow = Math.min(10, state.deck.length);
-  const stackContainer = document.createElement("div");
-  stackContainer.className = "card-stack";
-  
-  for (let i = 0; i < cardsToShow; i++) {
-    const backCard = document.createElement("div");
-    backCard.className = "card back";
-    backCard.classList.add("stacked");
-    backCard.style.position = "absolute";
-    backCard.style.zIndex = i + 1;
-    backCard.style.transform = `translate(${i * 10}px, ${i * 10}px)`;
-    backCard.style.transition = "transform 0.12s ease";
-    stackContainer.appendChild(backCard);
-  }
-  
-  slot.appendChild(stackContainer);
+  // Deck is just a single card back (no stack)
+  // The card back element already exists in HTML, we just update its state
 }
 
 function renderDiscard() {
@@ -858,11 +831,7 @@ function animateFloorDeal() {
   
   if (!deckSlot || !floorRow) return;
   
-  // Get the top card back from the stack for animation reference
-  const stackContainer = deckSlot.querySelector(".card-stack");
-  const deckRect = stackContainer 
-    ? stackContainer.getBoundingClientRect()
-    : deckSlot.getBoundingClientRect();
+  const deckRect = deckSlot.getBoundingClientRect();
   
   // Render floor with back cards initially
   floorRow.innerHTML = "";
@@ -1017,12 +986,7 @@ function dealFirstFloor() {
   
   // Draw 4 cards
   const drawnCards = drawCards(4);
-  
-  // Get the top card back from the stack for animation reference
-  const stackContainer = deckSlot.querySelector(".card-stack");
-  const deckRect = stackContainer 
-    ? stackContainer.getBoundingClientRect()
-    : deckSlot.getBoundingClientRect();
+  const deckRect = deckSlot.getBoundingClientRect();
   
   // Fill floor slots
   for (let i = 0; i < 4 && i < drawnCards.length; i++) {
