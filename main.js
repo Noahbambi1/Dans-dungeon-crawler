@@ -14,6 +14,7 @@ const state = {
   floorNumber: 1,
   runUsed: false,
   floorFresh: true, // true when no actions taken on current floor
+  healUsed: false, // true if heal has been used on current floor
   originalDeck: [], // Store original deck for restart
   initialDeckOrder: [], // Store the exact deck order for restart (same shuffle)
   firstFloorDealt: false, // Track if first floor has been dealt
@@ -158,6 +159,7 @@ function initGame() {
   state.floorNumber = 1;
   state.runUsed = false;
   state.floorFresh = true;
+  state.healUsed = false;
   state.firstFloorDealt = false;
   setStatus("Click the deck to deal your first floor!");
   render();
@@ -185,6 +187,7 @@ function restartGame() {
   state.floorNumber = 1;
   state.runUsed = false;
   state.floorFresh = true;
+  state.healUsed = false;
   state.firstFloorDealt = false;
   setStatus("Click the deck to deal your first floor!");
   render();
@@ -477,11 +480,21 @@ function handleHealDrop(card, from) {
     return;
   }
   removeFromPool(card, from);
+  state.discard.push(card);
+  state.floorFresh = false;
+  
+  // Heal only works once per floor
+  if (state.healUsed) {
+    setStatus(`Used ${card.rank} of hearts, but healing only works once per floor.`);
+    postAction();
+    return;
+  }
+  
+  // First heal on this floor - apply healing
+  state.healUsed = true;
   const before = state.health;
   const healed = Math.min(MAX_HEALTH, state.health + card.value) - state.health;
   state.health = Math.min(MAX_HEALTH, state.health + card.value);
-  state.discard.push(card);
-  state.floorFresh = false;
   setStatus(`Healed ${healed} health with ${card.rank} of hearts.`);
   if (healed > 0) {
     showHealAnimation(healed);
@@ -625,6 +638,7 @@ function refillIfNeeded() {
     
     state.floorNumber += 1;
     state.floorFresh = true;
+    state.healUsed = false;
     
     // Render to get positions, but show new cards as backs initially
     const floorRow = document.getElementById("floorRow");
@@ -765,6 +779,7 @@ function handleRunAway() {
   
   state.runUsed = true;
   state.floorFresh = true;
+  state.healUsed = false;
   state.floorNumber += 1;
   
   // Show popup animation
@@ -956,6 +971,7 @@ function dealFirstFloor() {
   
   state.firstFloorDealt = true;
   state.floorFresh = true;
+  state.healUsed = false;
   setStatus("First floor dealt! Drag cards to interact.");
   
   // Render cards as backs initially
