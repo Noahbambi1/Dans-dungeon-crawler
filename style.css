@@ -681,9 +681,10 @@ main {
 }
 
 .discard-corner {
-  position: absolute;
-  top: 15px;
-  right: 15px;
+  position: fixed;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
   z-index: 100;
 }
 
