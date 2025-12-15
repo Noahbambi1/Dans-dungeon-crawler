@@ -38,7 +38,7 @@
   }
   
   .card .corner {
-    font-size: 0.85rem;
+    font-size: 1rem;
   }
   
   .card .corner:first-of-type {
@@ -52,11 +52,11 @@
   }
   
   .card .suit {
-    font-size: 2rem;
+    font-size: 2.4rem;
   }
   
   .card.monster-royal .suit {
-    font-size: 3.2rem;
+    font-size: 3.6rem;
   }
   
   .card.back::after {
@@ -113,15 +113,15 @@
   }
   
   .card .corner {
-    font-size: 1rem;
+    font-size: 1.15rem;
   }
   
   .card .suit {
-    font-size: 2.4rem;
+    font-size: 2.8rem;
   }
   
   .card.monster-royal .suit {
-    font-size: 3.8rem;
+    font-size: 4.2rem;
   }
   
   .play-area {
@@ -173,15 +173,15 @@
   }
   
   .card .corner {
-    font-size: 1.15rem;
+    font-size: 1.3rem;
   }
   
   .card .suit {
-    font-size: 2.8rem;
+    font-size: 3.2rem;
   }
   
   .card.monster-royal .suit {
-    font-size: 4.4rem;
+    font-size: 4.8rem;
   }
   
   .play-area {
@@ -429,7 +429,7 @@
   }
   
   .card .corner {
-    font-size: 0.6rem;
+    font-size: 0.75rem;
   }
   
   .card .corner:first-of-type {
@@ -443,7 +443,7 @@
   }
   
   .card .suit {
-    font-size: 1.4rem;
+    font-size: 1.8rem;
   }
   
   .discard-corner {
