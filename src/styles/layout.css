@@ -244,6 +244,13 @@ main {
   min-width: calc(var(--card-width) + 24px);
 }
 
+/* Remove double border from weapon and damage slots */
+.slot.weapon-slot,
+.slot.weapon-damage-slot {
+  border: none;
+  background: transparent;
+}
+
 /* Action slots (Take Damage, Heal) */
 .slot.action-slot {
   min-width: calc(var(--card-width) + 24px);
@@ -257,47 +264,87 @@ main {
   align-items: center;
   justify-content: center;
   gap: var(--spacing-xs);
-  background: rgba(0, 0, 0, 0.2);
-  border: 2px dashed var(--border-subtle);
   border-radius: var(--card-radius);
   transition: all var(--transition-fast);
+  padding: var(--spacing-xs);
 }
 
 .slot.action-slot .drop-icon {
   font-size: 1.8rem;
-  opacity: 0.7;
+  opacity: 0.9;
 }
 
 .slot.action-slot .drop-text {
-  font-size: 0.65rem;
-  color: var(--text-muted);
+  font-size: 0.55rem;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.3px;
+  text-align: center;
+  line-height: 1.3;
+  padding: 0 2px;
 }
 
-.slot.action-slot .health-drop:hover,
-.slot.action-slot .health-drop.drag-over {
-  border-color: var(--accent-red);
+/* Damage slot - Red theme */
+.slot.damage-slot {
+  border-color: rgba(220, 53, 69, 0.4);
+  background: rgba(220, 53, 69, 0.08);
+}
+
+.slot.damage-slot .slot-title {
+  color: #ff6b7a;
+}
+
+.slot.damage-slot .health-drop {
   background: rgba(220, 53, 69, 0.15);
-  box-shadow: 0 0 20px rgba(220, 53, 69, 0.3);
+  border: 2px dashed rgba(220, 53, 69, 0.5);
 }
 
-.slot.action-slot .heal-drop:hover,
-.slot.action-slot .heal-drop.drag-over {
-  border-color: var(--accent-green);
+.slot.damage-slot .drop-text {
+  color: #ff8a96;
+}
+
+.slot.damage-slot .health-drop:hover,
+.slot.damage-slot .health-drop.drag-over {
+  border-color: var(--accent-red);
+  background: rgba(220, 53, 69, 0.25);
+  box-shadow: 0 0 20px rgba(220, 53, 69, 0.4);
+}
+
+/* Heal slot - Green theme */
+.slot.heal-slot {
+  border-color: rgba(40, 167, 69, 0.4);
+  background: rgba(40, 167, 69, 0.08);
+}
+
+.slot.heal-slot .slot-title {
+  color: #5ced8a;
+}
+
+.slot.heal-slot .heal-drop {
   background: rgba(40, 167, 69, 0.15);
-  box-shadow: 0 0 20px rgba(40, 167, 69, 0.3);
+  border: 2px dashed rgba(40, 167, 69, 0.5);
+}
+
+.slot.heal-slot .drop-text {
+  color: #7af5a5;
+}
+
+.slot.heal-slot .heal-drop:hover,
+.slot.heal-slot .heal-drop.drag-over {
+  border-color: var(--accent-green);
+  background: rgba(40, 167, 69, 0.25);
+  box-shadow: 0 0 20px rgba(40, 167, 69, 0.4);
 }
 
 /* Weapon slot container */
-.slot:has(#weaponSlot) {
+.slot.weapon-slot {
   position: relative;
   padding-bottom: 38px;
   overflow: hidden;
 }
 
 #weaponSlot {
-  min-height: var(--card-height);
+  width: var(--card-width);
+  height: var(--card-height);
   position: relative;
   z-index: 10;
   display: flex;
@@ -319,7 +366,8 @@ main {
 }
 
 #weaponDamageSlot {
-  min-height: calc(var(--card-height) + 20px);
+  width: var(--card-width);
+  min-height: var(--card-height);
   position: relative;
   display: flex;
   justify-content: center;
