@@ -1783,6 +1783,57 @@ main {
 }
 
 /* ============================================
+   BURGER MENU (Hidden on desktop, visible on mobile)
+   ============================================ */
+
+.burger-menu-btn {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  width: 40px;
+  height: 40px;
+  padding: 8px;
+  background: linear-gradient(135deg, #475569 0%, #334155 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 1000;
+}
+
+.burger-menu-btn:hover {
+  background: linear-gradient(135deg, #64748b 0%, #475569 100%);
+  transform: scale(1.05);
+}
+
+.burger-line {
+  width: 20px;
+  height: 2px;
+  background: white;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+.burger-menu-btn.active .burger-line:nth-child(1) {
+  transform: rotate(45deg) translate(5px, 5px);
+}
+
+.burger-menu-btn.active .burger-line:nth-child(2) {
+  opacity: 0;
+}
+
+.burger-menu-btn.active .burger-line:nth-child(3) {
+  transform: rotate(-45deg) translate(5px, -5px);
+}
+
+/* Mobile Menu Overlay (unused but kept for potential future use) */
+.mobile-menu-overlay {
+  display: none;
+}
+
+/* ============================================
    RESPONSIVE - DESKTOP (Large)
    ============================================ */
 
@@ -2392,121 +2443,7 @@ main {
   }
 }
 
-/* ============================================
-   BURGER MENU (Mobile)
-   ============================================ */
-
-.burger-menu-btn {
-  display: none;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 5px;
-  width: 40px;
-  height: 40px;
-  padding: 8px;
-  background: linear-gradient(135deg, #475569 0%, #334155 100%);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  z-index: 1000;
-}
-
-.burger-menu-btn:hover {
-  background: linear-gradient(135deg, #64748b 0%, #475569 100%);
-  transform: scale(1.05);
-}
-
-.burger-line {
-  width: 20px;
-  height: 2px;
-  background: white;
-  border-radius: 2px;
-  transition: all 0.3s ease;
-}
-
-.burger-menu-btn.active .burger-line:nth-child(1) {
-  transform: rotate(45deg) translate(5px, 5px);
-}
-
-.burger-menu-btn.active .burger-line:nth-child(2) {
-  opacity: 0;
-}
-
-.burger-menu-btn.active .burger-line:nth-child(3) {
-  transform: rotate(-45deg) translate(5px, -5px);
-}
-
-/* Mobile Menu Overlay */
-.mobile-menu-overlay {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 9999;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s ease;
-}
-
-.mobile-menu-overlay.show {
-  opacity: 1;
-  pointer-events: all;
-}
-
-.mobile-menu-overlay::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-}
-
-.mobile-menu {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 280px;
-  max-width: 85%;
-  height: 100%;
-  background: linear-gradient(180deg, #1c1c2a 0%, #141420 100%);
-  border-right: 1px solid rgba(212, 168, 83, 0.3);
-  padding: 20px;
-  transform: translateX(-100%);
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.mobile-menu-overlay.show .mobile-menu {
-  transform: translateX(0);
-}
-
-.close-mobile-menu {
-  align-self: flex-end;
-  width: 36px;
-  height: 36px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 50%;
-  color: white;
-  font-size: 1.2rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.close-mobile-menu:hover {
-  background: rgba(255, 255, 255, 0.2);
-  transform: rotate(90deg);
-}
+/* Burger menu and mobile overlay styles are in the responsive section */
 
 .mobile-menu-nav {
   display: flex;
