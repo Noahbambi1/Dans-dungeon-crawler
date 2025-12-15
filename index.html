@@ -10,6 +10,13 @@
 <body>
   <div id="app">
     <header class="top-bar">
+      <!-- Mobile burger menu button -->
+      <button id="burgerMenuBtn" class="burger-menu-btn" aria-label="Open menu">
+        <span class="burger-line"></span>
+        <span class="burger-line"></span>
+        <span class="burger-line"></span>
+      </button>
+      
       <div class="logo">
         <span class="title">Dungeon Floor</span>
         <span class="subtitle">Card Crawler</span>
@@ -22,7 +29,7 @@
         </div>
         <div class="floor-value">Floor <span id="floorValue">1</span></div>
       </div>
-      <div class="game-controls">
+      <div class="game-controls" id="gameControls">
         <button id="undoButton" class="control-btn undo-btn"><span class="btn-icon">↩️</span><span class="btn-text">Undo</span></button>
         <button id="restartButton" class="control-btn restart-btn"><span class="btn-icon">🔄</span><span class="btn-text">Restart</span></button>
         <button id="newGameButton" class="control-btn new-game-btn"><span class="btn-icon">🎲</span><span class="btn-text">New</span></button>
@@ -32,6 +39,20 @@
         </div>
       </div>
     </header>
+    
+    <!-- Mobile menu overlay -->
+    <div id="mobileMenuOverlay" class="mobile-menu-overlay">
+      <div class="mobile-menu">
+        <button id="closeMobileMenu" class="close-mobile-menu" aria-label="Close menu">✕</button>
+        <nav class="mobile-menu-nav">
+          <button id="mobileUndoBtn" class="mobile-menu-item"><span class="menu-icon">↩️</span>Undo</button>
+          <button id="mobileRestartBtn" class="mobile-menu-item"><span class="menu-icon">🔄</span>Restart Game</button>
+          <button id="mobileNewGameBtn" class="mobile-menu-item"><span class="menu-icon">🎲</span>New Game</button>
+          <button id="mobileSettingsBtn" class="mobile-menu-item"><span class="menu-icon">⚙️</span>Settings</button>
+          <button id="mobileLeaderboardBtn" class="mobile-menu-item"><span class="menu-icon">🏆</span>Leaderboard</button>
+        </nav>
+      </div>
+    </div>
 
     <div class="discard-corner">
       <div class="pile discard-pile">
@@ -248,6 +269,20 @@
           <button id="closeSettingsBtn" class="control-btn">Cancel</button>
           <button id="applySettingsBtn" class="control-btn new-game-btn">Apply & New Game</button>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirmation Modal -->
+  <div id="confirmModal" class="confirm-modal">
+    <div class="confirm-modal-backdrop"></div>
+    <div class="confirm-modal-content">
+      <div class="confirm-modal-icon" id="confirmModalIcon">⚠️</div>
+      <h3 class="confirm-modal-title" id="confirmModalTitle">Are you sure?</h3>
+      <p class="confirm-modal-message" id="confirmModalMessage">This action cannot be undone.</p>
+      <div class="confirm-modal-buttons">
+        <button id="confirmCancelBtn" class="confirm-btn confirm-btn-cancel">Cancel</button>
+        <button id="confirmOkBtn" class="confirm-btn confirm-btn-ok">Confirm</button>
       </div>
     </div>
   </div>

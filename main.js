@@ -1715,6 +1715,115 @@ function safeParse(str) {
   }
 }
 
+// Custom confirmation modal
+function showConfirmModal(options) {
+  const modal = document.getElementById("confirmModal");
+  const icon = document.getElementById("confirmModalIcon");
+  const title = document.getElementById("confirmModalTitle");
+  const message = document.getElementById("confirmModalMessage");
+  const okBtn = document.getElementById("confirmOkBtn");
+  const cancelBtn = document.getElementById("confirmCancelBtn");
+  
+  icon.textContent = options.icon || "⚠️";
+  title.textContent = options.title || "Are you sure?";
+  message.textContent = options.message || "This action cannot be undone.";
+  okBtn.textContent = options.okText || "Confirm";
+  
+  // Apply danger style if specified
+  if (options.danger) {
+    okBtn.classList.add("danger");
+  } else {
+    okBtn.classList.remove("danger");
+  }
+  
+  modal.classList.add("show");
+  
+  return new Promise((resolve) => {
+    const cleanup = () => {
+      modal.classList.remove("show");
+      okBtn.removeEventListener("click", onOk);
+      cancelBtn.removeEventListener("click", onCancel);
+      modal.querySelector(".confirm-modal-backdrop").removeEventListener("click", onCancel);
+    };
+    
+    const onOk = () => {
+      cleanup();
+      resolve(true);
+    };
+    
+    const onCancel = () => {
+      cleanup();
+      resolve(false);
+    };
+    
+    okBtn.addEventListener("click", onOk);
+    cancelBtn.addEventListener("click", onCancel);
+    modal.querySelector(".confirm-modal-backdrop").addEventListener("click", onCancel);
+  });
+}
+
+// Mobile burger menu setup
+function setupMobileMenu() {
+  const burgerBtn = document.getElementById("burgerMenuBtn");
+  const overlay = document.getElementById("mobileMenuOverlay");
+  const closeBtn = document.getElementById("closeMobileMenu");
+  
+  if (!burgerBtn || !overlay) return;
+  
+  const toggleMenu = (show) => {
+    overlay.classList.toggle("show", show);
+    burgerBtn.classList.toggle("active", show);
+  };
+  
+  burgerBtn.addEventListener("click", () => toggleMenu(true));
+  closeBtn.addEventListener("click", () => toggleMenu(false));
+  overlay.addEventListener("click", (e) => {
+    if (e.target === overlay || e.target.classList.contains("confirm-modal-backdrop")) {
+      toggleMenu(false);
+    }
+  });
+  
+  // Mobile menu button handlers
+  document.getElementById("mobileUndoBtn").addEventListener("click", () => {
+    toggleMenu(false);
+    document.getElementById("undoButton").click();
+  });
+  
+  document.getElementById("mobileRestartBtn").addEventListener("click", async () => {
+    toggleMenu(false);
+    const confirmed = await showConfirmModal({
+      icon: "🔄",
+      title: "Restart Game?",
+      message: "This will restart with the same deck shuffle. Your current progress will be lost.",
+      okText: "Restart",
+      danger: false
+    });
+    if (confirmed) restartGame();
+  });
+  
+  document.getElementById("mobileNewGameBtn").addEventListener("click", async () => {
+    toggleMenu(false);
+    const confirmed = await showConfirmModal({
+      icon: "🎲",
+      title: "New Game?",
+      message: "This will shuffle a completely new deck. Ready for a fresh adventure?",
+      okText: "New Game",
+      danger: false
+    });
+    if (confirmed) initGame();
+  });
+  
+  document.getElementById("mobileSettingsBtn").addEventListener("click", () => {
+    toggleMenu(false);
+    document.getElementById("settingsButton").click();
+  });
+  
+  document.getElementById("mobileLeaderboardBtn").addEventListener("click", () => {
+    toggleMenu(false);
+    document.getElementById("leaderboardButton").click();
+  });
+}
+
 function setupButtons() {
   document.getElementById("runButton").addEventListener("click", () => {
     if (state.runsRemaining <= 0) return;
@@ -1744,16 +1853,26 @@ function setupButtons() {
     postAction();
   });
 
-  document.getElementById("newGameButton").addEventListener("click", () => {
-    if (confirm("Start a new game? This will shuffle a fresh deck.")) {
-      initGame();
-    }
+  document.getElementById("newGameButton").addEventListener("click", async () => {
+    const confirmed = await showConfirmModal({
+      icon: "🎲",
+      title: "New Game?",
+      message: "This will shuffle a completely new deck. Ready for a fresh adventure?",
+      okText: "New Game",
+      danger: false
+    });
+    if (confirmed) initGame();
   });
 
-  document.getElementById("restartButton").addEventListener("click", () => {
-    if (confirm("Restart this game? This will reshuffle the current deck.")) {
-      restartGame();
-    }
+  document.getElementById("restartButton").addEventListener("click", async () => {
+    const confirmed = await showConfirmModal({
+      icon: "🔄",
+      title: "Restart Game?",
+      message: "This will restart with the same deck shuffle. Your current progress will be lost.",
+      okText: "Restart",
+      danger: false
+    });
+    if (confirmed) restartGame();
   });
 
   document.getElementById("winNewGameBtn").addEventListener("click", () => {
@@ -2067,6 +2186,7 @@ function dealFirstFloor() {
 
 window.addEventListener("DOMContentLoaded", () => {
   setupButtons();
+  setupMobileMenu();
   setupTouchDragDrop();
   setupLeaderboard();
   setupThemeSelector();
