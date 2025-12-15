@@ -188,41 +188,23 @@ function drawCards(count) {
 
 function render() {
   const floorRow = document.getElementById("floorRow");
+  floorRow.innerHTML = "";
   
-  // Preserve existing card positions by keeping cards with same IDs
-  const existingCards = Array.from(floorRow.children).filter(el => el.dataset.cardId);
-  const existingIds = new Set(existingCards.map(el => el.dataset.cardId));
-  const newIds = new Set(state.floor.map(c => c.id));
-  
-  // Remove cards that are no longer in floor
-  existingCards.forEach(cardEl => {
-    if (!newIds.has(cardEl.dataset.cardId)) {
-      cardEl.remove();
-    }
-  });
-  
-  // Add new cards, preserving positions of existing ones
-  state.floor.forEach((card, index) => {
-    let cardEl = floorRow.querySelector(`[data-card-id="${card.id}"]`);
-    if (!cardEl) {
-      cardEl = createCardEl(card);
+  // Always maintain 4 placeholders
+  for (let i = 0; i < 4; i++) {
+    if (i < state.floor.length) {
+      // Card exists at this position
+      const card = state.floor[i];
+      const cardEl = createCardEl(card);
       cardEl.draggable = true;
       cardEl.dataset.from = "floor";
-      // Insert at correct position
-      const existingAtPosition = floorRow.children[index];
-      if (existingAtPosition) {
-        floorRow.insertBefore(cardEl, existingAtPosition);
-      } else {
-        floorRow.appendChild(cardEl);
-      }
+      floorRow.appendChild(cardEl);
+    } else {
+      // Empty placeholder
+      const empty = document.createElement("div");
+      empty.className = "empty floor-placeholder";
+      floorRow.appendChild(empty);
     }
-  });
-  
-  if (state.floor.length === 0) {
-    const empty = document.createElement("div");
-    empty.className = "empty";
-    empty.textContent = "Dungeon floor empty";
-    floorRow.appendChild(empty);
   }
 
   document.getElementById("deckCount").textContent = `${state.deck.length} cards`;
@@ -584,7 +566,10 @@ function refillIfNeeded() {
       const floorRow = document.getElementById("floorRow");
       if (deckBack && floorRow) {
         const deckRect = deckBack.getBoundingClientRect();
-        const newCards = Array.from(floorRow.children).slice(oldFloorLength);
+        // Get only the actual card elements (not placeholders)
+        const newCards = Array.from(floorRow.children)
+          .filter(el => el.dataset.cardId)
+          .slice(oldFloorLength);
         
         newCards.forEach((cardEl, index) => {
           const cardRect = cardEl.getBoundingClientRect();
