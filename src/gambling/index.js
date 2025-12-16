@@ -1,23 +1,33 @@
 /**
  * Dan's Dungeon Crawler - Gambling Module
- * Main entry point for the gambling system
+ * Integrates casino-style betting with the existing card game
  */
 
-export { WalletSystem } from './WalletSystem.js';
-export { GamblingEngine, GAMBLING_CONFIG, WIN_RATE_PRESETS, CertifiedRNG, AuditLogger } from './GamblingEngine.js';
-export { GamblingUI } from './GamblingUI.js';
+import { GamblingUI } from './GamblingUI.js';
+import { WalletSystem } from './WalletSystem.js';
 
-// Initialize gambling mode when module is imported
 let gamblingUI = null;
 
+/**
+ * Initialize gambling mode
+ * This adds the betting interface around the existing card game
+ */
 export function initGamblingMode() {
-  if (!gamblingUI) {
-    gamblingUI = new (require('./GamblingUI.js').GamblingUI)();
+  console.log('🎰 Initializing Gambling Mode...');
+  
+  // Add gambling mode class to body
+  document.body.classList.add('gambling-mode');
+  
+  // Initialize the gambling UI (adds header bar, modals, etc.)
+  gamblingUI = new GamblingUI();
+  
+  // Expose to window for debugging
+  if (typeof window !== 'undefined') {
+    window.gamblingUI = gamblingUI;
+    window.gamblingWallet = gamblingUI.wallet;
   }
-  return gamblingUI;
+  
+  console.log('🎰 Gambling Mode initialized. Place your bets!');
 }
 
-export function getGamblingUI() {
-  return gamblingUI;
-}
-
+export { GamblingUI, WalletSystem };
