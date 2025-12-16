@@ -392,10 +392,10 @@ main {
   transform: translateX(-50%) scale(1);
 }
 
-/* Discard Corner */
+/* Discard Corner - positioned above footer */
 .discard-corner {
   position: fixed;
-  bottom: var(--spacing-lg);
+  bottom: 60px; /* Above the footer/status bar */
   right: var(--spacing-lg);
   z-index: 100;
 }

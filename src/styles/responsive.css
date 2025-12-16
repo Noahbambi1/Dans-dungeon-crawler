@@ -505,7 +505,7 @@
   
   .discard-corner {
     position: fixed;
-    bottom: var(--spacing-sm);
+    bottom: 50px; /* Above footer on mobile */
     right: var(--spacing-sm);
   }
   
