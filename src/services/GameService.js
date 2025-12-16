@@ -329,6 +329,9 @@ class GameService {
     this.state.floorFresh = true;
     this.state.healUsed = false;
 
+    // Save state after dealing new cards to floor
+    this.saveState();
+
     return {
       cards: drawnCards,
       floorNumber: this.state.floorNumber,

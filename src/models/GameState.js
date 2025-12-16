@@ -196,10 +196,31 @@ export class GameState {
    */
   fromJSON(data) {
     Object.assign(this, data);
+    
     // Handle Infinity serialization
     if (this.weaponMaxNext === null) {
       this.weaponMaxNext = Infinity;
     }
+    
+    // Ensure floor is always an array of 4 slots
+    if (!Array.isArray(this.floor)) {
+      this.floor = [null, null, null, null];
+    } else {
+      // Ensure floor has exactly 4 slots
+      while (this.floor.length < 4) {
+        this.floor.push(null);
+      }
+      if (this.floor.length > 4) {
+        this.floor = this.floor.slice(0, 4);
+      }
+    }
+    
+    // Ensure other arrays exist
+    if (!Array.isArray(this.deck)) this.deck = [];
+    if (!Array.isArray(this.discard)) this.discard = [];
+    if (!Array.isArray(this.weaponDamage)) this.weaponDamage = [];
+    if (!Array.isArray(this.originalDeck)) this.originalDeck = [];
+    if (!Array.isArray(this.initialDeckOrder)) this.initialDeckOrder = [];
   }
 }
 

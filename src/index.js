@@ -67,6 +67,9 @@ class App {
       ModalComponent.updateSettingsUI(gameService.settings);
       uiManager.render(gameService.state, gameService.settings);
       uiManager.updateUndoButton(gameService.canUndo());
+      
+      // Attach drag and drop listeners after rendering restored state
+      dragDropManager.reattach();
 
       // Check for win/lose conditions
       if (gameService.state.health <= 0) {

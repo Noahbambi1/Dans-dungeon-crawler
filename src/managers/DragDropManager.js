@@ -17,6 +17,11 @@ class DragDropManager {
       startY: 0,
       from: null,
     };
+    
+    // Bind event handlers once so we can properly remove them
+    this.boundHandleDragOver = this.handleDragOver.bind(this);
+    this.boundHandleDragLeave = this.handleDragLeave.bind(this);
+    this.boundHandleDrop = this.handleDrop.bind(this);
   }
 
   /**
@@ -34,14 +39,46 @@ class DragDropManager {
     document.querySelectorAll('.card').forEach(cardEl => {
       if (!cardEl.draggable) return;
 
-      cardEl.addEventListener('dragstart', e => {
+      // Remove existing handler if present
+      if (cardEl._dragStartHandler) {
+        cardEl.removeEventListener('dragstart', cardEl._dragStartHandler);
+      }
+      
+      // Create and store the handler
+      cardEl._dragStartHandler = e => {
         const payload = {
           id: cardEl.dataset.cardId,
           from: cardEl.dataset.from || 'floor',
         };
         e.dataTransfer.setData('application/json', JSON.stringify(payload));
         e.dataTransfer.effectAllowed = 'move';
-      });
+        
+        // Create a custom drag image
+        const dragImage = cardEl.cloneNode(true);
+        dragImage.style.position = 'absolute';
+        dragImage.style.top = '-9999px';
+        dragImage.style.left = '-9999px';
+        dragImage.style.opacity = '1';
+        dragImage.style.transform = 'rotate(5deg) scale(1.05)';
+        dragImage.style.boxShadow = '0 10px 30px rgba(0,0,0,0.5)';
+        document.body.appendChild(dragImage);
+        
+        const rect = cardEl.getBoundingClientRect();
+        e.dataTransfer.setDragImage(dragImage, rect.width / 2, rect.height / 2);
+        
+        cardEl.classList.add('dragging');
+        
+        setTimeout(() => dragImage.remove(), 0);
+      };
+      
+      cardEl.addEventListener('dragstart', cardEl._dragStartHandler);
+      
+      // Handle drag end
+      if (cardEl._dragEndHandler) {
+        cardEl.removeEventListener('dragend', cardEl._dragEndHandler);
+      }
+      cardEl._dragEndHandler = () => cardEl.classList.remove('dragging');
+      cardEl.addEventListener('dragend', cardEl._dragEndHandler);
     });
   }
 
@@ -50,13 +87,14 @@ class DragDropManager {
    */
   attachDropTargets() {
     document.querySelectorAll('.drop-target').forEach(target => {
-      target.removeEventListener('dragover', this.handleDragOver);
-      target.removeEventListener('dragleave', this.handleDragLeave);
-      target.removeEventListener('drop', this.handleDrop);
+      // Use the bound handlers so remove works correctly
+      target.removeEventListener('dragover', this.boundHandleDragOver);
+      target.removeEventListener('dragleave', this.boundHandleDragLeave);
+      target.removeEventListener('drop', this.boundHandleDrop);
 
-      target.addEventListener('dragover', this.handleDragOver.bind(this));
-      target.addEventListener('dragleave', this.handleDragLeave.bind(this));
-      target.addEventListener('drop', this.handleDrop.bind(this));
+      target.addEventListener('dragover', this.boundHandleDragOver);
+      target.addEventListener('dragleave', this.boundHandleDragLeave);
+      target.addEventListener('drop', this.boundHandleDrop);
     });
   }
 

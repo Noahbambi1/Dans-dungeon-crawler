@@ -762,12 +762,34 @@ function loadGameState() {
     
     const saveData = JSON.parse(saved);
     
+    // Validate saved data has required fields
+    if (!saveData.state || !saveData.gameSettings) {
+      console.warn("Invalid save data structure");
+      return false;
+    }
+    
     // Restore state
     Object.assign(state, saveData.state);
+    
     // Handle Infinity which doesn't serialize properly in JSON
     if (state.weaponMaxNext === null) {
       state.weaponMaxNext = Infinity;
     }
+    
+    // Ensure floor is always an array of 4 slots
+    if (!Array.isArray(state.floor)) {
+      state.floor = [null, null, null, null];
+    }
+    while (state.floor.length < 4) {
+      state.floor.push(null);
+    }
+    
+    // Ensure arrays exist
+    if (!Array.isArray(state.deck)) state.deck = [];
+    if (!Array.isArray(state.discard)) state.discard = [];
+    if (!Array.isArray(state.weaponDamage)) state.weaponDamage = [];
+    if (!Array.isArray(state.originalDeck)) state.originalDeck = [];
+    if (!Array.isArray(state.initialDeckOrder)) state.initialDeckOrder = [];
     
     // Restore game settings
     Object.assign(gameSettings, saveData.gameSettings);
@@ -1266,14 +1288,51 @@ function attachDragListeners() {
   });
 
   document.querySelectorAll(".card").forEach((cardEl) => {
-    cardEl.addEventListener("dragstart", (e) => {
+    // Remove existing listener to prevent duplicates
+    cardEl.removeEventListener("dragstart", cardEl._dragStartHandler);
+    
+    cardEl._dragStartHandler = (e) => {
       const payload = {
         id: cardEl.dataset.cardId,
         from: cardEl.dataset.from || "floor",
       };
       e.dataTransfer.setData("application/json", JSON.stringify(payload));
       e.dataTransfer.effectAllowed = "move";
-    });
+      
+      // Create a custom drag image using the card itself
+      const dragImage = cardEl.cloneNode(true);
+      dragImage.style.position = "absolute";
+      dragImage.style.top = "-9999px";
+      dragImage.style.left = "-9999px";
+      dragImage.style.opacity = "1";
+      dragImage.style.transform = "rotate(5deg) scale(1.05)";
+      dragImage.style.boxShadow = "0 10px 30px rgba(0,0,0,0.5)";
+      dragImage.style.zIndex = "9999";
+      document.body.appendChild(dragImage);
+      
+      // Set the custom drag image
+      const rect = cardEl.getBoundingClientRect();
+      e.dataTransfer.setDragImage(dragImage, rect.width / 2, rect.height / 2);
+      
+      // Add dragging class for visual feedback on original card
+      cardEl.classList.add("dragging");
+      
+      // Clean up the drag image element after drag ends
+      setTimeout(() => {
+        if (dragImage.parentNode) {
+          dragImage.remove();
+        }
+      }, 0);
+    };
+    
+    cardEl.addEventListener("dragstart", cardEl._dragStartHandler);
+    
+    // Remove dragging class when drag ends
+    cardEl.removeEventListener("dragend", cardEl._dragEndHandler);
+    cardEl._dragEndHandler = () => {
+      cardEl.classList.remove("dragging");
+    };
+    cardEl.addEventListener("dragend", cardEl._dragEndHandler);
   });
 }
 
