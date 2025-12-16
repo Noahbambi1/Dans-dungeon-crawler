@@ -66,10 +66,21 @@ export class GamblingUI {
     this.hookIntoGame();
     this.updateDisplay();
     
-    // Check and offer welcome bonus
-    if (this.wallet.isWelcomeBonusAvailable()) {
-      setTimeout(() => this.showWelcomeBonusModal(), 500);
-    }
+    // Check initial state
+    setTimeout(() => {
+      if (this.wallet.isWelcomeBonusAvailable()) {
+        // New player - show welcome bonus
+        this.showWelcomeBonusModal();
+      } else if (this.wallet.getBalance() > 0) {
+        // Returning player with balance - show betting panel
+        this.showBettingPanel();
+        this.updateStatus('Welcome back! Place your bet to start a new game.');
+      } else {
+        // Returning player with no balance - prompt deposit
+        this.showModal('depositModal');
+        this.updateStatus('Deposit credits to continue playing.');
+      }
+    }, 500);
   }
   
   /**
@@ -668,12 +679,20 @@ export class GamblingUI {
   
   claimWelcomeBonus() {
     const result = this.wallet.claimWelcomeBonus();
+    this.hideModal('welcomeBonusModal');
+    
     if (result.success) {
-      this.hideModal('welcomeBonusModal');
       this.updateDisplay();
       this.showNotification('🎉 €1,000 Welcome Bonus claimed!', 'success');
       this.updateStatus('Welcome bonus claimed! Place your bet to start playing.');
+    } else {
+      // Bonus was already claimed, just show the betting panel
+      this.updateDisplay();
+      this.showNotification('Bonus already claimed. Place your bet!', 'info');
     }
+    
+    // Show the betting panel after claiming
+    setTimeout(() => this.showBettingPanel(), 500);
   }
   
   deposit(amount) {
