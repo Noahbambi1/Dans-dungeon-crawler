@@ -364,6 +364,7 @@ main {
   display: flex;
   justify-content: center;
   align-items: flex-start;
+  box-sizing: border-box;
 }
 
 /* Weapon tooltip */
@@ -411,6 +412,12 @@ main {
   display: flex;
   justify-content: center;
   align-items: flex-start;
+}
+
+/* Remove double border from discardSlot inside discard-pile */
+.discard-pile #discardSlot.drop-target {
+  border: none;
+  background: transparent;
 }
 
 /* ===========================================
