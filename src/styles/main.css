@@ -26,6 +26,9 @@
 /* 7. Game themes (overrides variables) */
 @import './themes.css';
 
-/* 8. Responsive (must be last for media queries) */
+/* 8. Gambling mode styles */
+@import './gambling.css';
+
+/* 9. Responsive (must be last for media queries) */
 @import './responsive.css';
 

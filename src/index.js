@@ -26,6 +26,9 @@ import { generateRandomName, delay } from './utils/helpers.js';
 // Config
 import { DIFFICULTY_PRESETS, ANIMATION_DURATIONS } from './config/constants.js';
 
+// Gambling Mode
+import { GamblingUI } from './gambling/GamblingUI.js';
+
 /**
  * Application Controller
  * Orchestrates all game functionality
@@ -33,12 +36,18 @@ import { DIFFICULTY_PRESETS, ANIMATION_DURATIONS } from './config/constants.js';
 class App {
   constructor() {
     this.currentPlayerName = null;
+    this.gamblingUI = null;
+    this.gamblingMode = false;
   }
 
   /**
    * Initialize the application
    */
   async init() {
+    // Check if gambling mode should be enabled
+    const urlParams = new URLSearchParams(window.location.search);
+    this.gamblingMode = urlParams.get('mode') === 'gambling' || localStorage.getItem('gamblingMode') === 'true';
+    
     // Initialize managers
     uiManager.init();
     animationManager.init();
@@ -60,6 +69,14 @@ class App {
 
     // Setup leaderboard
     this.setupLeaderboard();
+    
+    // Initialize gambling mode if enabled
+    if (this.gamblingMode) {
+      this.initGamblingMode();
+    }
+    
+    // Add gambling mode toggle
+    this.setupGamblingModeToggle();
 
     // Try to load saved game or start new
     const loaded = gameService.loadState();
@@ -631,6 +648,69 @@ class App {
 
     // Refresh leaderboard
     this.loadLeaderboard();
+  }
+
+  /**
+   * Initialize gambling mode
+   */
+  initGamblingMode() {
+    try {
+      this.gamblingUI = new GamblingUI();
+      document.body.classList.add('gambling-mode-active');
+      console.log('Gambling mode initialized');
+    } catch (error) {
+      console.error('Failed to initialize gambling mode:', error);
+    }
+  }
+
+  /**
+   * Setup gambling mode toggle
+   */
+  setupGamblingModeToggle() {
+    // Add a toggle button to the settings modal
+    const settingsContent = document.querySelector('.settings-content');
+    if (settingsContent) {
+      const gamblingSection = document.createElement('div');
+      gamblingSection.className = 'settings-section gambling-toggle-section';
+      gamblingSection.innerHTML = `
+        <h3>🎰 Gambling Mode</h3>
+        <div class="setting-row checkbox-row">
+          <label>
+            <input type="checkbox" id="gamblingModeToggle" ${this.gamblingMode ? 'checked' : ''}>
+            Enable Casino Mode (€1000 Demo Credits, 96% RTP)
+          </label>
+        </div>
+        <p class="gambling-disclaimer">Demo mode only. No real money. For entertainment purposes.</p>
+      `;
+      
+      // Insert before the modal buttons
+      const modalButtons = settingsContent.querySelector('.modal-buttons');
+      if (modalButtons) {
+        settingsContent.insertBefore(gamblingSection, modalButtons);
+      }
+      
+      // Add toggle listener
+      const toggle = document.getElementById('gamblingModeToggle');
+      if (toggle) {
+        toggle.addEventListener('change', (e) => {
+          this.toggleGamblingMode(e.target.checked);
+        });
+      }
+    }
+  }
+
+  /**
+   * Toggle gambling mode
+   */
+  toggleGamblingMode(enabled) {
+    localStorage.setItem('gamblingMode', enabled.toString());
+    if (enabled && !this.gamblingUI) {
+      this.gamblingMode = true;
+      this.initGamblingMode();
+    } else if (!enabled && this.gamblingUI) {
+      // Reload page to disable gambling mode
+      window.location.reload();
+    }
   }
 }
 
