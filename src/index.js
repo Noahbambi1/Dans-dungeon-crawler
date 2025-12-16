@@ -152,6 +152,33 @@ class App {
       this.loadLeaderboard();
     });
 
+    // Rules buttons
+    this.addClickListener('rulesButton', () => this.showRules());
+    this.addClickListener('mobileRulesBtn', () => {
+      this.closeMobileMenu();
+      this.showRules();
+    });
+    this.addClickListener('settingsRulesBtn', () => {
+      ModalComponent.hideSettings();
+      this.showRules();
+    });
+    this.addClickListener('rulesGotItBtn', () => this.hideRules());
+
+    // Close rules modal on backdrop click or Escape key
+    const rulesModal = document.getElementById('rulesModal');
+    if (rulesModal) {
+      rulesModal.addEventListener('click', e => {
+        if (e.target === rulesModal) {
+          this.hideRules();
+        }
+      });
+    }
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
+        this.hideRules();
+      }
+    });
+
     // Difficulty presets
     document.querySelectorAll('[data-preset]').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -552,6 +579,26 @@ class App {
   showSettings() {
     ModalComponent.updateSettingsUI(gameService.settings);
     ModalComponent.showSettings();
+  }
+
+  /**
+   * Show rules modal
+   */
+  showRules() {
+    const modal = document.getElementById('rulesModal');
+    if (modal) {
+      modal.classList.add('show');
+    }
+  }
+
+  /**
+   * Hide rules modal
+   */
+  hideRules() {
+    const modal = document.getElementById('rulesModal');
+    if (modal) {
+      modal.classList.remove('show');
+    }
   }
 
   /**

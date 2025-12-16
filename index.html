@@ -50,6 +50,7 @@
           <button id="mobileNewGameBtn" class="mobile-menu-item"><span class="menu-icon">🎲</span>New Game</button>
           <button id="mobileSettingsBtn" class="mobile-menu-item"><span class="menu-icon">⚙️</span>Settings</button>
           <button id="mobileLeaderboardBtn" class="mobile-menu-item"><span class="menu-icon">🏆</span>Leaderboard</button>
+          <button id="mobileRulesBtn" class="mobile-menu-item"><span class="menu-icon">📜</span>How to Play</button>
         </nav>
       </div>
     </div>
@@ -306,9 +307,95 @@
           </div>
         </div>
 
+        <div class="settings-section rules-link-section">
+          <button id="settingsRulesBtn" class="settings-rules-btn">📜 View Game Rules</button>
+        </div>
+
         <div class="modal-buttons">
           <button id="closeSettingsBtn" class="control-btn">Cancel</button>
           <button id="applySettingsBtn" class="control-btn new-game-btn">Apply & New Game</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Rules Modal -->
+    <div id="rulesModal" class="game-modal rules-modal">
+      <div class="modal-content rules-content">
+        <h2 class="modal-title">📜 How to Play</h2>
+        
+        <div class="rules-section">
+          <h3>🎯 Objective</h3>
+          <p>Clear all cards from the dungeon deck while keeping your health above zero. Each floor presents 4 cards you must deal with strategically.</p>
+        </div>
+
+        <div class="rules-section">
+          <h3>🃏 Card Types</h3>
+          <div class="card-types-grid">
+            <div class="card-type monster">
+              <span class="card-icon">♠️ ♣️</span>
+              <span class="card-name">Monsters</span>
+              <span class="card-desc">Spades & Clubs deal damage equal to their value</span>
+            </div>
+            <div class="card-type weapon">
+              <span class="card-icon">♦️</span>
+              <span class="card-name">Weapons</span>
+              <span class="card-desc">Diamonds can be equipped to fight monsters</span>
+            </div>
+            <div class="card-type health">
+              <span class="card-icon">♥️</span>
+              <span class="card-name">Health</span>
+              <span class="card-desc">Hearts restore health equal to their value</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="rules-section">
+          <h3>⚔️ Combat</h3>
+          <div class="combat-rules">
+            <div class="combat-rule">
+              <strong>With Weapon:</strong> Drag a monster onto your equipped weapon. If the weapon's power is ≥ the monster's value, you take no damage. The monster attaches to your weapon.
+            </div>
+            <div class="combat-rule">
+              <strong>Without Weapon:</strong> Drag a monster to the "Take Damage" zone. You lose health equal to the monster's value.
+            </div>
+            <div class="combat-rule">
+              <strong>Weapon Degradation:</strong> After defeating a monster, your weapon can only fight monsters with equal or lower value than the last one defeated.
+            </div>
+          </div>
+        </div>
+
+        <div class="rules-section">
+          <h3>💎 Equipping Weapons</h3>
+          <p>Drag a diamond card to the weapon slot to equip it. This discards your current weapon (if any) and all monsters attached to it.</p>
+        </div>
+
+        <div class="rules-section">
+          <h3>❤️ Healing</h3>
+          <p>Drag a heart card to heal. You recover health equal to the card's value (up to your max health). You can only heal once per floor by default.</p>
+        </div>
+
+        <div class="rules-section">
+          <h3>🏃 Running Away</h3>
+          <p>Click "Run Away" at the start of a floor (before taking any action) to shuffle the current floor back into the deck and draw a new floor. Limited uses!</p>
+        </div>
+
+        <div class="rules-section">
+          <h3>🎲 Floor Mechanics</h3>
+          <p>When only 1 card remains on the floor, 3 new cards are automatically dealt. Clear all cards and the deck to win!</p>
+        </div>
+
+        <div class="rules-section tips-section">
+          <h3>💡 Tips</h3>
+          <ul class="tips-list">
+            <li>Save high-value weapons for high-value monsters</li>
+            <li>Use healing strategically - don't waste hearts when at full health</li>
+            <li>Sometimes taking damage is better than wasting a good weapon</li>
+            <li>Plan ahead - check what's coming next in the deck count</li>
+          </ul>
+        </div>
+
+        <div class="modal-buttons">
+          <button id="rulesGotItBtn" class="control-btn new-game-btn">Got it!</button>
         </div>
       </div>
     </div>
@@ -346,6 +433,11 @@
       <div class="no-players">Loading...</div>
     </div>
   </div>
+
+  <!-- Floating Rules Button -->
+  <button id="rulesButton" class="rules-btn" title="How to Play">
+    <span class="rules-icon">?</span>
+  </button>
 
   <script type="module" src="src/index.js"></script>
 </body>

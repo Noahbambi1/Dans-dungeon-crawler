@@ -602,3 +602,140 @@
 .mode-win-item.casual .mode-name { color: #93c5fd; }
 .mode-win-item.custom .mode-name { color: #c4b5fd; }
 
+/* ===========================================
+   RULES MODAL
+   =========================================== */
+
+.rules-modal .rules-content {
+  max-width: 600px;
+  text-align: left;
+}
+
+.rules-modal .modal-title {
+  text-align: center;
+  color: var(--accent-gold);
+  margin-bottom: var(--spacing-lg);
+}
+
+.rules-section {
+  margin-bottom: var(--spacing-lg);
+  padding-bottom: var(--spacing-md);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.rules-section:last-of-type {
+  border-bottom: none;
+}
+
+.rules-section h3 {
+  font-family: 'Cinzel', serif;
+  font-size: 1.1rem;
+  color: var(--accent-gold);
+  margin-bottom: var(--spacing-sm);
+}
+
+.rules-section p {
+  color: var(--text-secondary);
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+/* Card Types Grid */
+.card-types-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-sm);
+}
+
+.card-type {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--spacing-sm);
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  text-align: center;
+}
+
+.card-type .card-icon {
+  font-size: 1.5rem;
+  margin-bottom: var(--spacing-xs);
+}
+
+.card-type .card-name {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+}
+
+.card-type .card-desc {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: var(--spacing-xs);
+}
+
+.card-type.monster { border: 1px solid rgba(239, 68, 68, 0.3); }
+.card-type.weapon { border: 1px solid rgba(59, 130, 246, 0.3); }
+.card-type.health { border: 1px solid rgba(34, 197, 94, 0.3); }
+
+/* Combat Rules */
+.combat-rules {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.combat-rule {
+  padding: var(--spacing-sm);
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.combat-rule strong {
+  color: var(--text-primary);
+}
+
+/* Tips Section */
+.tips-section {
+  background: rgba(212, 168, 83, 0.1);
+  border: 1px solid rgba(212, 168, 83, 0.3);
+  border-radius: 8px;
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+}
+
+.tips-list {
+  margin: 0;
+  padding-left: var(--spacing-lg);
+  color: var(--text-secondary);
+}
+
+.tips-list li {
+  margin-bottom: var(--spacing-xs);
+  line-height: 1.5;
+}
+
+.rules-modal .modal-buttons {
+  margin-top: var(--spacing-lg);
+  text-align: center;
+}
+
+/* Responsive Rules Modal */
+@media (max-width: 600px) {
+  .card-types-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .rules-modal .rules-content {
+    padding: var(--spacing-md);
+  }
+  
+  .rules-section h3 {
+    font-size: 1rem;
+  }
+}
+

@@ -519,3 +519,79 @@
   transform: rotate(180deg);
 }
 
+/* ===========================================
+   RULES BUTTON (Floating)
+   =========================================== */
+
+.rules-btn {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(30, 30, 50, 0.9);
+  border: 2px solid var(--border-gold);
+  color: white;
+  font-size: 1.5rem;
+  font-weight: bold;
+  cursor: pointer;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.rules-btn:hover {
+  transform: scale(1.1);
+  background: rgba(50, 50, 80, 0.95);
+  box-shadow: 0 6px 25px rgba(212, 168, 83, 0.3);
+}
+
+.rules-btn:hover::after {
+  content: 'Rules';
+  position: absolute;
+  left: 60px;
+  background: rgba(30, 30, 50, 0.95);
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  white-space: nowrap;
+  border: 1px solid var(--border-gold);
+}
+
+.rules-icon {
+  line-height: 1;
+}
+
+/* Settings Rules Button */
+.settings-rules-btn {
+  width: 100%;
+  padding: var(--spacing-md);
+  background: linear-gradient(135deg, rgba(212, 168, 83, 0.2) 0%, rgba(212, 168, 83, 0.1) 100%);
+  border: 1px solid var(--border-gold);
+  border-radius: 8px;
+  color: var(--accent-gold);
+  font-family: 'Quicksand', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.settings-rules-btn:hover {
+  background: linear-gradient(135deg, rgba(212, 168, 83, 0.3) 0%, rgba(212, 168, 83, 0.2) 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(212, 168, 83, 0.2);
+}
+
+.rules-link-section {
+  margin-top: var(--spacing-md);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--border-subtle);
+}
+
